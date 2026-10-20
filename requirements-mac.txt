@@ -1,0 +1,3 @@
+mlx-lm[train]>=0.25
+scikit-learn>=1.4
+pypdf>=5.0
