@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
-MODEL="${MODEL:-mlx-community/Qwen3-4B-4bit}"
-mlx_lm.lora --model "$MODEL" --train --data data/mlx --batch-size 1 --num-layers 8 --iters "${ITERS:-120}" --learning-rate 1e-4 --max-seq-length 768 --grad-checkpoint --mask-prompt --adapter-path outputs/mlx_adapter --save-every 40
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+if [[ -z "${DATA:-}" ]]; then
+  echo 'DATA를 검수·분할 검증이 완료된 새 MLX 데이터 경로로 지정하세요. 기존 데이터의 템플릿 분할은 일반화 검증에 실패했습니다.' >&2
+  exit 2
+fi
+exec "$ROOT/.venv/bin/python" training/train_local.py --data "$DATA" --iters "${ITERS:-10}"

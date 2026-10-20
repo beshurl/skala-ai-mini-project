@@ -28,7 +28,10 @@ def build(seed=42):
 
 def main():
     ap=argparse.ArgumentParser(); ap.add_argument('--output',default='data/processed'); args=ap.parse_args()
-    out=Path(args.output);out.mkdir(parents=True,exist_ok=True)
+    out=Path(args.output)
+    if any((out/f'{name}.jsonl').exists() for name in ('train','val','test')):
+        raise FileExistsError('기존 데이터 덮어쓰기 금지: --output으로 새 디렉터리를 지정하세요')
+    out.mkdir(parents=True,exist_ok=True)
     rows=build()
     for name,chunk in [('train',rows[:252]),('val',rows[252:306]),('test',rows[306:])]:
         with (out/f'{name}.jsonl').open('w',encoding='utf-8') as f:

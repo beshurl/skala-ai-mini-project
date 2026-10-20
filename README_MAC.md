@@ -1,45 +1,28 @@
-# RE:CASE Apple Silicon 16GB
+# Apple Silicon 실행 안내
 
-## 0. Prerequisites
-Apple Silicon Mac, recent macOS, Python 3.11 or 3.12 (arm64), free disk space 8GB+ recommended. Use native Terminal, not Rosetta.
+2026-10-20, Apple M5/16GiB·macOS26.5.2·Python3.11.15 arm64에서 검증했습니다. 기존100회 학습 어댑터를 재사용하며 학습을 반복할 필요가 없습니다.
 
-## 1. Install
+기존 폴더에서는 `make serve` 후 [로컬 앱](http://127.0.0.1:8100)에 접속합니다. `make check`로 자동 검증하고 `make frontend`로 UI를 다시 빌드합니다.
+
+새 Python 환경:
+
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-pip install -r requirements-mac.txt
+python3.11 -m venv .venv-new
+.venv-new/bin/python -m pip install -r requirements-lock-macos-arm64.txt
+make serve PYTHON=.venv-new/bin/python
 ```
 
-## 2. Synthetic data smoke test
+프론트엔드를 빌드하지 않았다면 먼저 `make frontend`를 실행합니다. 모델 캐시는 로컬 Qwen3-4B-4bit snapshot, 어댑터는 outputs/mlx_adapter입니다. 새 장비의 모델 준비/다운로드는 별도 작업입니다. 정확한 환경/복구/설정은 [OPERATIONS](docs/OPERATIONS.md)를 따릅니다.
+
+Base/FT 재평가는 서버 종료 후:
+
 ```bash
-python scripts/prepare_data.py
-python scripts/to_mlx.py
+RECASE_RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)"
+make eval-base RUN_ID="$RECASE_RUN_ID"
+make eval-ft RUN_ID="$RECASE_RUN_ID"
+make compare BASE="outputs/runs/$RECASE_RUN_ID-base/metrics.json" TUNED="outputs/runs/$RECASE_RUN_ID-ft/metrics.json"
 ```
 
-## 3. Baseline evaluation
-```bash
-python evaluation/evaluate_mlx.py --out outputs/base_mlx --limit 15
-```
+현재 결과는 [평가 보고서](docs/EVALUATION_REPORT.md)에 있습니다. 기존54건은 개발에 노출된 반복 템플릿 데이터이므로 독립 최종 평가로 사용하지 않습니다. 새 학습은 검수·분할·hash 승인 파일이 있는 새 데이터 경로를 명시해야 하며 기존 outputs/mlx_adapter에 덮어쓰지 않습니다.
 
-## 4. Train QLoRA (quantized model)
-```bash
-bash training/train_mlx.sh
-```
-
-## 5. Fine-tuned evaluation and comparison
-```bash
-python evaluation/evaluate_mlx.py --adapter outputs/mlx_adapter --out outputs/tuned_mlx --limit 15
-python scripts/compare.py outputs/base_mlx/metrics.json outputs/tuned_mlx/metrics.json
-```
-For final evaluation, rerun both with `--limit 54`. On memory errors, close apps and reduce `--max-seq-length` from 768 to 512; try 4 adapted layers. Check model availability and exact repo spelling before download; set `MODEL` and `--model` consistently.
-
-## 6. Korean judgments (manual, rights-gated collection)
-The court judgment browsing service is not a bulk dataset or public unrestricted scraping API. Acquire authorized files manually and place in `data/judgments_raw/`. Create a JSON manifest with each filename, `permission_confirmed: true`, and `rights_basis` describing permission. Then:
-```bash
-python scripts/ingest_judgments.py --input data/judgments_raw --manifest data/rights_manifest.json
-```
-Output is **quarantined** `data/judgments_cleaned.jsonl`, with `review_required: true`. Regex masking is incomplete; manually review and remove names, addresses, case numbers, rare identifying facts, and sensitive details. Do not feed this output directly to training. There is intentionally no automatic court-site scraper or unsupervised judgment-to-ground-truth conversion. Only after review, labeling, and case-level split should real documents be converted to SFT samples.
-
-## Limitations
-Synthetic 360 examples are highly templated, so train/test share structural patterns and scores do not indicate real-world performance. No Mac runtime or model download was executed in this container. `mlx_lm` versions and model repository compatibility may vary. Do not infer guilt or label real persons as suspects using these outputs.
+실제 판결문 반입은 [용도별 권한 manifest 예시](data/rights_manifest.v2.example.json)를 따릅니다. processing을 포함한 모든 예시 권한은false이며 직접 확인한 근거가 있어야 합니다. TXT/HTML/PDF 반입 출력은 항상 격리하고 실제 사람 검수 전 학습/검색에 연결하지 않습니다. [DATA_GOVERNANCE](docs/DATA_GOVERNANCE.md)를 먼저 확인합니다.

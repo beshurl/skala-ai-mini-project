@@ -1,0 +1,10 @@
+{
+  "schema_version": 2,
+  "source_type": "user_supplied_local",
+  "documents": [{
+    "file": "authorized_document.txt",
+    "source_url": null,
+    "rights_basis": "실제 확인한 이용 근거와 허용 범위를 기입",
+    "permissions": {"processing": false, "training": false, "rag": false, "display": false, "redistribution": false}
+  }]
+}
