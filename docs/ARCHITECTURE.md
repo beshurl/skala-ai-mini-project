@@ -34,3 +34,11 @@ LangGraph 노드: scope → retrieve → analyze → verify → finalize. 생성
 SQLite schema v1: sessions, cases, evidence, claims, jobs, events, audit. evidence.released_version=NULL은 미공개. jobs.snapshot은 요청 당시 공개 자료만 포함한다. 최종 저장 transaction에서 case version/cancel flag를 확인한다. events.id는 영속 SSE 재접속 cursor이며 결과/이벤트 모두 owner를 재검사한다.
 
 파일 기반 결과는 고유 outputs/runs 하위에만 생성하고 기존 목적지는 거부한다. 프로토콜·모델 revision·tokenizer/config/adapter 해시·생성 조건·dataset hash·sample ID를 manifest에 저장한다. 자세한 계약은 REQUIREMENTS와 JSON Schema를 따른다.
+
+## 개인 로컬 운영과 데이터 통제 후속
+
+개인 접근키 → 로컬 폼 또는 API Basic → HttpOnly/SameSiteStrict 1시간 메모리 인증 세션 → 기존 owner/CSRF/public-version API → MCP → 단일 MLX → 결과의 흐름이다. 접근키는 보호 파일에만 있고 브라우저 저장소/프론트엔드 번들/로그에 넣지 않는다. 데모 owner는 여전히 합성 세션이며 다중 사용자 실명 계정 모델이 아니다.
+
+데이터 경로는 별도다: 격리 반입 → 사람 검수/목적별 권한 해시 ledger → 계열/중복/노출/정답 계약 감사 → 실제 OS 정답 접근 거부 → 고정 train/valid bundle → 최대3개 학습 예산. 한 단계라도 없으면 학습을 실행하지 않는다. 이력 해시 체인은 같은 UID 운영자의 전면 재작성을 막는 OS 경계가 아니다.
+
+삭제는 서비스 중단 잠금 아래 별도 journal을 먼저 fsync하고 DB의 사건·근거·주장·작업·이벤트/관련 세션을 제거한다. 개인 서버 기동과 통제된 새 DB 복구는 journal을 재생한다. 복구 시 모든 bearer 세션을 폐기한다. 과거 백업을 복구해 삭제 사실까지 롤백하면 안 된다. 실제 자료 파생 학습본/인덱스는 아직 연결하지 않았다.

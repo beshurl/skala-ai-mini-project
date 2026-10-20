@@ -43,3 +43,13 @@ Base run20261020-base-v2-retry1와 FT run20261020-ft-v2. 동일 dataset bytes ha
 현재 사건 keyword 검색 + 실제 MCP + LangGraph + 기존 FT의 새 합성 데모를304/1265px CUA 브라우저에서 실행했다. v1 식별 부족 판단 보류, v2 본인 확인 후 충돌, v3 무관 증거에서 유지, 원문 인용과 양쪽 비교를 통과했다. 이는 다른 데이터/프롬프트의 통합 검증이며 위 A/B의 RAG·Agent 순수 효과 실험이 아니다.
 
 오류/취소/부분 완료/미준비 UI는 명시적 fixture 서버에서 별도로 검증했다. clean locked environment에서는41개 자동 테스트와 실제 Metal 추론1건을 확인했다. 실패/검토 한계는 EVALUATION_REPORT/ISSUES에 남겼다.
+
+## 후속 독립 데이터/실험 통제 주기
+
+주기 post-legacy-independent-v1, 새 학습0/3, 실제 A~F0/6. 기존 학습/평가를 재학습 명령으로 재실행하지 않았다. 신규 v2의12개 제안 정답은 사람 검수 전 채택하지 않으며 작성/열람 노출 이력을 남겼다. 기존360건도 새 독립셋으로 재명명하지 않았다.
+
+최초 자료 표기 [E1]→E1: 및 명시적 evidence 수정1회. v1/첫 실패를 보존했다. 최종 audit는 구조 계약 오류0이지만 실제 검수/노출 범위/최종셋/OS 분리 미충족으로 BLOCKED. freeze와 A~F 비교는 예상 exit2를 기록했고 모델 학습 호출/예산 예약은0이다.
+
+실제 모델 호출은 합성 로컬 앱/인증/제한 부하 검증에 사용했으며 새로운 모델 성능 비교나 A~F 결과로 섞지 않았다. 모델 revision·기존 adapter·greedy/seed0/thinking off는 그대로다. 부하 지연 집계 오류는 같은9개 SQLite 작업에서 재계산했으며 모델을 반복 호출하지 않았다. 실제 원시 결과와 정정 이유는 real-local-load-corrected.json에 있다.
+
+판정: 기존 FT 개인 합성 데모 재사용 유지. 데이터/OS 권한 문제가 남아 새 학습·독립 최종 평가·실제 판례 RAG·파일럿 승격 보류. 다음 입력/절차는 NEXT_PHASE_PROTOCOL.md, 실제 증거는 NEXT_PHASE_REPORT.md.

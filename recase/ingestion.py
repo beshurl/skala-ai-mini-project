@@ -1,6 +1,7 @@
 """Local-only, resumable ingestion to quarantine; no network/API or approval bypass."""
 import hashlib
 import json
+import os
 import re
 import unicodedata
 from datetime import datetime, timezone
@@ -41,7 +42,9 @@ def clean(text):
 
 
 def ingest(root, manifest_path, output, limit=100, dry_run=False, resume=False):
-    root, output = Path(root).resolve(), Path(output)
+    root, output = Path(root).resolve(), Path(output).absolute()
+    if output.is_symlink() or any(p.is_symlink() for p in output.parents):
+        raise ValueError("Quarantine output symlinks refused")
     if not root.is_dir() or not 1 <= limit <= 1000:
         raise ValueError("Invalid input directory or limit")
     manifest = json.loads(Path(manifest_path).read_text())
@@ -51,8 +54,12 @@ def ingest(root, manifest_path, output, limit=100, dry_run=False, resume=False):
     if output.exists() and not resume:
         raise FileExistsError("Existing output requires --resume; overwrite is forbidden")
     if not dry_run:
-        output.mkdir(parents=True, exist_ok=True)
+        output.mkdir(parents=True, exist_ok=True, mode=0o700)
+        if output.stat().st_uid != os.geteuid() or output.stat().st_mode & 0o077:
+            raise PermissionError("Quarantine directory requires current UID ownership and mode0700")
     rows_path = output / "quarantined.jsonl"
+    if rows_path.is_symlink() or rows_path.exists() and (rows_path.stat().st_mode & 0o077 or rows_path.stat().st_uid != os.geteuid()):
+        raise PermissionError("Protected quarantine file required")
     existing = [json.loads(x) for x in rows_path.read_text().splitlines()] if rows_path.is_file() else []
     seen = {r["raw_sha256"] for r in existing}
     clean_seen = {r.get("clean_sha256") for r in existing}
@@ -117,12 +124,14 @@ def ingest(root, manifest_path, output, limit=100, dry_run=False, resume=False):
         except Exception as error:
             record.update(state="QUARANTINED", quarantine_reason="PARSE_FAILED", error_type=type(error).__name__)
             results["failed"] += 1
-        with rows_path.open("a", encoding="utf8") as f:
+        fd = os.open(rows_path, os.O_WRONLY | os.O_CREAT | os.O_APPEND | os.O_NOFOLLOW, 0o600)
+        with os.fdopen(fd, "a", encoding="utf8") as f:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
             f.flush()
         seen.add(digest)
     if not dry_run:
         report = output / ("report-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ") + ".json")
-        with report.open("x") as f:
+        fd = os.open(report, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+        with os.fdopen(fd, "w") as f:
             json.dump(results, f, ensure_ascii=False, indent=2)
     return results

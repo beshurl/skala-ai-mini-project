@@ -14,7 +14,9 @@ os.environ["LANGSMITH_TRACING"] = "false"
 os.environ["DO_NOT_TRACK"] = "1"
 
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse, StreamingResponse, FileResponse
+from fastapi.responses import JSONResponse, StreamingResponse, FileResponse, HTMLResponse, RedirectResponse
+from urllib.parse import parse_qs
+import base64
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -22,6 +24,7 @@ from recase.mcp_client import connect
 from recase.model import LocalModel
 from recase.store import Store, NotFound, Conflict, TERMINAL
 from recase.worker import Worker
+from recase.local_auth import LocalAuth
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -31,8 +34,24 @@ class VersionRequest(BaseModel):
     evidence_version: int = Field(ge=1)
 
 
-def create_app(db_path=None, model=None, testing=False):
+def create_app(db_path=None, model=None, testing=False, auth_file=None, deletions_file=None):
     db_path = Path(db_path or os.environ.get("RECASE_DB", ROOT / "runtime" / "recase.sqlite3")).resolve()
+    auth_file = auth_file or os.environ.get("RECASE_AUTH_FILE")
+    mode = os.environ.get("RECASE_MODE", "demo")
+    if mode not in {"demo", "personal"} or mode == "personal" and not auth_file:
+        raise RuntimeError("Personal mode requires a protected RECASE_AUTH_FILE")
+    auth = LocalAuth(auth_file) if auth_file else None
+    explicit_deletions = deletions_file is not None or not testing and "RECASE_DELETIONS" in os.environ
+    deletions_file = deletions_file or (None if testing else os.environ.get("RECASE_DELETIONS", ROOT / "runtime" / "deletions.jsonl"))
+
+    def login_page(error=False, status=200):
+        html = (ROOT / "recase" / "templates" / "local-login.html").read_text()
+        message = '<p id="login-error" role="alert">접근키가 일치하지 않습니다. 이 Mac에 저장된 키를 확인한 뒤 다시 입력하세요.</p>' if error else ""
+        if error:
+            html = html.replace('aria-describedby="key-hint"', 'aria-invalid="true" aria-describedby="key-hint login-error" autofocus')
+        return HTMLResponse(html.replace("<!-- error -->", message), status, headers={
+            "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "same-origin",
+            "Content-Security-Policy": "default-src 'none'; style-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"})
 
     @asynccontextmanager
     async def lifespan(app):
@@ -45,6 +64,11 @@ def create_app(db_path=None, model=None, testing=False):
             raise RuntimeError("SERVER_ALREADY_RUNNING: use one API worker") from None
         try:
             store = Store(db_path)
+            if deletions_file and Path(deletions_file).exists():
+                from recase.retention import apply_deletions
+                apply_deletions(db_path, deletions_file, revoke_all_sessions=False)
+            elif auth and not testing or explicit_deletions:
+                raise RuntimeError("Personal mode requires an independent RECASE_DELETIONS journal")
             store.recover()
             app.state.store = store
             selected = model
@@ -92,11 +116,17 @@ def create_app(db_path=None, model=None, testing=False):
             return JSONResponse({"error": "ORIGIN_DENIED", "request_id": request_id}, 403)
         if request.headers.get("sec-fetch-site") == "cross-site":
             return JSONResponse({"error": "ORIGIN_DENIED", "request_id": request_id}, 403)
+        if auth and not auth.permits(request.headers.get("authorization", ""), request.cookies.get("recase_local_auth", "")):
+            if request.method == "GET" and request.url.path == "/":
+                return login_page()
+            if (request.method, request.url.path) not in {("POST", "/api/local-login"), ("GET", "/auth.css"), ("GET", "/login")}:
+                return JSONResponse({"error": "LOCAL_AUTH_REQUIRED", "request_id": request_id}, 401,
+                                    headers={"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"})
         response = await call_next(request)
         response.headers["X-Request-ID"] = request_id
         response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["Referrer-Policy"] = "no-referrer"
-        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"
+        response.headers["Referrer-Policy"] = "same-origin"
+        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"
         response.headers["Cache-Control"] = "no-store" if request.url.path.startswith("/api/") else "no-cache"
         return response
 
@@ -119,7 +149,41 @@ def create_app(db_path=None, model=None, testing=False):
 
     @app.get("/health")
     def health():
-        return {"status": "ok", "mode": "local_demo"}
+        return {"status": "ok", "mode": "local_personal" if auth else "local_demo", "authenticated_operator": auth.user if auth else None}
+
+    @app.get("/auth.css", include_in_schema=False)
+    def auth_css():
+        return FileResponse(ROOT / "frontend" / "public" / "local-auth.css", media_type="text/css")
+
+    @app.get("/login", include_in_schema=False)
+    def login():
+        if not auth:
+            raise HTTPException(404)
+        return login_page()
+
+    @app.post("/api/local-login", include_in_schema=False)
+    async def local_login(request: Request):
+        if not auth:
+            raise HTTPException(404)
+        if request.headers.get("content-type", "").split(";", 1)[0] != "application/x-www-form-urlencoded":
+            raise HTTPException(415, detail="FORM_REQUIRED")
+        body = bytearray()
+        async for part in request.stream():
+            body.extend(part)
+            if len(body) > 2048:
+                raise HTTPException(413, detail="LOGIN_INPUT_TOO_LARGE")
+        try:
+            fields = parse_qs(body.decode("ascii"), strict_parsing=True, max_num_fields=2)
+            keys = fields.get("access_key", [])
+            token = keys[0] if len(keys) == 1 and len(fields) == 1 else ""
+            authorization = "Basic " + base64.b64encode((auth.user + ":" + token).encode()).decode()
+        except (ValueError, UnicodeError):
+            return login_page(error=True, status=401)
+        if not auth.permits(authorization):
+            return login_page(error=True, status=401)
+        response = RedirectResponse("/", status_code=303)
+        response.set_cookie("recase_local_auth", auth.new_session(), httponly=True, samesite="strict", max_age=3600, path="/")
+        return response
 
     @app.get("/ready")
     def ready():
@@ -210,6 +274,8 @@ def create_app(db_path=None, model=None, testing=False):
                 if await request.is_disconnected():
                     return
                 app.state.store.session(request.cookies.get("recase_session", ""))
+                if auth and not auth.permits(request.headers.get("authorization", ""), request.cookies.get("recase_local_auth", "")):
+                    return
                 rows = app.state.store.events(s["user_id"], job_id, cursor)
                 for row in rows:
                     cursor = row["id"]

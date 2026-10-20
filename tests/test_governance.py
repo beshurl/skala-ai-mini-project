@@ -33,7 +33,8 @@ def test_ingestion_dry_run_resume_and_quarantine_gate(tmp_path):
 
 def test_purpose_separation_and_human_review():
     d={'state':'APPROVED_FOR_SPECIFIC_USE','permissions':{'rag':True,'training':False},'privacy_review':{'human_reviewed':True,'reviewer':'human-test-fixture'}}
-    assert approved_for(d,'rag')
+    # Legacy boolean flags have no hash-bound human attestation.
+    assert not approved_for(d,'rag')
     assert not approved_for(d,'training')
     assert not approved_for(d,'display')
     assert not approved_for({**d,'privacy_review':{'human_reviewed':False}},'rag')

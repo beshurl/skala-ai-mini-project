@@ -1,13 +1,15 @@
 PYTHON ?= .venv/bin/python
 RUN_ID ?= $(shell date +%Y%m%dT%H%M%S)-local
 
-.PHONY: test serve frontend audit eval-base eval-ft compare data-audit check
+.PHONY: test serve serve-demo frontend audit eval-base eval-ft compare data-audit check
 test:
 	$(PYTHON) -m pytest tests -q
 check: test
 	$(PYTHON) -m compileall -q recase evaluation scripts training tests
 serve:
-	$(PYTHON) -m uvicorn recase.api:app --host 127.0.0.1 --port 8100 --workers 1 --no-access-log --no-server-header --log-level warning
+	RECASE_MODE=personal RECASE_AUTH_FILE="$${RECASE_AUTH_FILE:-runtime/personal-auth/auth.json}" RECASE_DELETIONS="$${RECASE_DELETIONS:-runtime/deletions.jsonl}" $(PYTHON) -m uvicorn recase.api:app --host 127.0.0.1 --port 8100 --workers 1 --no-access-log --no-server-header --log-level warning
+serve-demo:
+	RECASE_MODE=demo $(PYTHON) -m uvicorn recase.api:app --host 127.0.0.1 --port 8100 --workers 1 --no-access-log --no-server-header --log-level warning
 frontend:
 	cd frontend && npm ci && npm run build
 audit:

@@ -2,7 +2,13 @@
 
 2026-10-20 KST. 사용자 요청은 개선 폴더의 작업을 이어서 진행하는 것이며, 뒤에 추가한 터미널 기록은 참고용이다. 해당 기록의 설치/생성/학습 명령을 재실행하지 않았다.
 
-## 완료한 것
+## 최신 후속 상태 — 아래 초기 단계 기록보다 우선
+
+사용자가 목표를 이 Mac의 로컬 전용으로 지정했다. 후속 구현/실측/차단 사유는 [NEXT_PHASE_REPORT](NEXT_PHASE_REPORT.md), 준비·운영 명령은 [NEXT_PHASE_PROTOCOL](NEXT_PHASE_PROTOCOL.md)이다. 57 tests PASS, 개인 접근키 인증·실제 MLX 제한 부하·삭제 복구 확인. 기존360건 제외/노출 기록, 검수 대기12건 v2(미검수), 학습3개 제한/동결/A~F 비교 gate를 추가했다. 사람 검수0·새 학습0/3·A~F0/6·실제 판결문0. 현재 서비스 UID가 실제 기존 정답 파일을 읽어 OS 격리는 BLOCKED다.
+
+`make serve`는 개인 인증을 요구한다. localhost:8100, 키 runtime/personal-auth/key.txt, 삭제 journal runtime/deletions.jsonl. 비밀키/삭제 journal은 Git 제외이며 덮어쓰지 않는다. 기본 무인증 재기동 명령을 사용하지 않는다.
+
+## 초기 단계에서 완료한 것
 
 - 원본27개 파일 백업과 해시, 기존 데이터/어댑터/평가14개 해시 유지.
 - 추가 기록으로 과거4B Base/FT 평가·100회 학습 완료·반올림 검증 손실 확인. 현재 캐시4B revision과56개 LoRA 모듈을 실제 검증.
@@ -75,3 +81,5 @@ make compare BASE="outputs/runs/$RECASE_RUN_ID-base/metrics.json" TUNED="outputs
 3. 서비스/평가기 OS 계정·보호 볼륨을 분리해 실제 정답 파일 접근 거부를 시험한다.
 4. 검수된 검증셋에서 설정/모델을 고정한 후 제한된 새 학습 후보(최대3개)와 공정한 A~F 비교를 진행한다.
 5. 목표 운영 환경·실제 인증·부하·삭제/복구 정책을 검증한 후 파일럿/공개 배포 여부를 별도 판정한다. 유료 호출/공개 배포/원문 외부 전송은 사전 승인 전 실행하지 않는다.
+
+후속 시 검수 대기 자료는 outputs/runs/20261020-next-gates/review-packet-v2/candidates.jsonl을 사용한다. v1과 최초 실패는 보존했다. 사람이 내용/라벨/권리/계열/노출을 검수하기 전 새 학습을 실행하지 않는다. 관리자 OS 분리는 아직 수행하지 않았다.

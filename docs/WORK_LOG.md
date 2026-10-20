@@ -39,3 +39,20 @@
 - `git diff --check`, 최종 compileall: exit0. 원본14개 산출물 SHA 전부 유지. 별도 운영/최종 평가 차단 항목은 ISSUES와 EXECUTION_CHECKLIST에서 미완료로 유지.
 
 새 학습 후보0/3, 유료 API0, GPU 구매0, 공개 배포0, 원문 외부 전송0. 단위/fixture와 실제 MLX 결과를 혼합하지 않았다.
+
+## 2026-10-20 KST — 사용자 후속5항목/개인 로컬 운영
+
+- 사용자는 목표 환경을 이 Mac의 로컬 전용으로 지정했다. 검수 담당자/검수 완료 자료는 추가 제공되지 않았다.
+- ledger/dataset_control: 기존360건의 학습/검증/개발 노출 기록, v1/v2 작성12건씩을 더해384개 기록. 원문/정답은 이력에 넣지 않고 보호된 서명을 사용한다. 기존360건을 새 독립 분할에서 제외했다.
+- 검수 대기 v1의 [E1] 표기가 기존 E1: 계약과 달라 전체 검증 중1건이 실패했다. 최초 final-validation/원본 묶음을 보존하고 생성기·fixture를 수정해 review-packet-v2를 새로 만들었다. v2 구조 계약 오류0, 사람 검수/역할/이력 게이트는 BLOCKED. 실제 사람 승인 기록0.
+- 해시 결합 목적별 대화형 검수/철회, family connected components/정확·정규화·숫자 템플릿·Jaccard 유사 후보·과거 노출·정답 계약 검사를 추가했다. 유사 탐지가 의미 중복 전부를 찾는다는 주장은 하지 않는다.
+- OS verifier를 실제 data/processed/test.jsonl와 실제 서비스PID로 실행: exit2/BLOCKED. 현재 서비스/evaluator UID501, 같은 볼륨, 서비스 open 성공. sudo -n -l은 password required. 계정/보호 볼륨은 생성하지 않았고 비밀번호를 수집하지 않았다.
+- freeze_training_cycle은 live 감사/OS 접근/실제 토큰 길이를 통과해야만 새 train/valid 파일과 모델·코드·자료 hash를 고정한다. train_local의 기존 approval.json true 경로를 제거하고 실패 포함3회 영속 예산을 추가했다. 실제 후보0/3, freeze 차단/출력 미생성/예산 미예약을 실제 명령으로 확인했다.
+- A~F 계획은 모두 NOT_RUN. compare_af는 누락 행/자료·모델·출력 조건/어댑터/비용을 확인한다. 승인 코퍼스나 실제 여섯 실행 성능을 만들었다고 보고하지 않는다.
+- local_auth: mode0700/0600의 새 자격정보, 로컬 폼→1시간 HttpOnly/SameSiteStrict 세션, 서버 재시작/설정 변경 시 거부, 최대16세션. API Basic도 점검용으로 허용. 키는 출력/커밋하지 않았다.
+- 최초 내장 브라우저 Basic 창 실패 후 폼을 추가. no-referrer 폼 Origin:null 거부는 공식 Fetch 표준과 실제 헤더를 확인해 same-origin referrer 정책으로 수정. Origin null/교차 출처 검사를 우회하지 않았다. 진단 print는 제거했다.
+- 실제 인증 브라우저 E2E: 실제56개 LoRA/MLX v1보류→v2충돌→v3유지/근거/비교 PASS. 새 인증 UI 관측 폭592/607px. 입력/버튼48px, 오류 포커스/aria 연결, 대비 측정 PASS. 초기304/1265px 앱 검증을 새 로그인 모바일 검증으로 전용하지 않는다.
+- 실제 로컬 MLX 부하:6개 합성 세션/동시12요청,9완료/3개429. 무인증/잘못된 키401·타인404·CSRF403. raw final p95=max 집계 오류는 보존 후 같은9개 영속 작업으로 corrected 파일에서 선형 보간 정정, 추가 추론0. 지연/호출/토큰/실제 작업 ID 보존.
+- 삭제 journal/서버 중단 잠금/secure_delete+compact/복구 재적용/기동 중간중단 재생을 추가. verify_deletion_recovery.py 실제 CLI6명령 exit 기대값 통과. 삭제된 사건·증거·작업·이벤트가 과거 백업 복구 후 없음, 세션 폐기/다른 사건 유지/0600/integrity PASS. 백업 바이트는 남으며 물리 삭제/보존기간은 미확정이다.
+- clean locked venv의 scripts/validate_local.py --out outputs/runs/20261020-next-gates/final-validation-retry1:57 tests/compileall/pip check/기존 비교 모두exit0, 원본14개 SHA 유지. npm build exit0. 추가 집계 수정은 같은 평가 percentile 함수를 재사용하며 별도 compile/소스 확인을 수행했다.
+- 모든 새 결과는 outputs/runs/20261020-next-gates. make serve는 현재 개인 인증/독립 삭제 journal/실제 모델로 유지. 유료 호출0/공개 배포0/실제 판결문 원문 외부 전송0. LOCAL_VALIDATED만 유지한다.

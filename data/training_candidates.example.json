@@ -1,0 +1,4 @@
+[
+  {"id": "small-30", "iters": 30, "learning_rate": 0.0001, "rank": 8, "layers": 8, "sequence_length": 768},
+  {"id": "slower-60", "iters": 60, "learning_rate": 0.00005, "rank": 8, "layers": 8, "sequence_length": 768}
+]

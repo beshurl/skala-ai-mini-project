@@ -12,7 +12,9 @@
 make serve
 ```
 
-[로컬 앱](http://127.0.0.1:8100)에서 데모에 입장합니다. 사건 선택 → 분석 → 인용 원문 확인 → 새 증거 공개 → 재분석 → 이전 결과와 비교합니다. `새 합성 데모 시작`은 별도 사건/세션을 만듭니다.
+새 checkout에서는 먼저 `.venv/bin/python scripts/local_auth.py --directory runtime/personal-auth --user LOCAL_USER`와 `.venv/bin/python scripts/operations.py init-deletions --deletions runtime/deletions.jsonl`을 한 번 실행합니다. 기존 자격정보/삭제 journal은 덮어쓰지 않습니다. `make serve-demo`는 인증 없는 합성 데모를 명시적으로 실행합니다.
+
+[로컬 앱](http://localhost:8100)에서 접근키로 로그인한 뒤 데모에 입장합니다. 현재 키는 runtime/personal-auth/key.txt에 mode0600으로 보관됩니다. 채팅/URL에 붙여 넣지 않습니다. 사건 선택 → 분석 → 인용 원문 확인 → 새 증거 공개 → 재분석 → 이전 결과와 비교합니다. `새 합성 데모 시작`은 별도 사건/세션을 만듭니다.
 
 ```bash
 make check       # 자동 테스트·문법 검사
@@ -24,7 +26,7 @@ Python3.11/Apple Silicon의 새 환경은 [운영 문서](docs/OPERATIONS.md)의
 ## 실제 확인한 것
 
 - Apple M5/16GiB에서 Base/기존 FT 동일54건 순차 평가, 실제 어댑터56개 LoRA 모듈 로드.
-- 새 고정 의존성 환경에서41개 테스트와 실제 Metal 추론, frontend npm ci/build.
+- 초기 새 고정 의존성 환경에서41개, 후속 clean 환경에서57개 테스트와 실제 Metal 추론, frontend npm ci/build.
 - 실제 MLX 브라우저304/1265px: 판단 보류 → 본인 확인 자료 후 충돌 → 무관한 새 기록에서 판단 유지.
 - 실제 stdio MCP/공개 증거·타인 사건 격리, 영속 SSE/취소/timeout/버전 변경/재시작, DB 백업·복구.
 - 오류·취소·부분 완료 UI는 명시적 모의 서버에서 별도 확인하며 실제 모델 결과와 구분.
@@ -40,3 +42,5 @@ Python3.11/Apple Silicon의 새 환경은 [운영 문서](docs/OPERATIONS.md)의
 - [운영·장애·복구](docs/OPERATIONS.md), [미해결 문제](docs/ISSUES.md)
 
 유료 호출·공개 배포·원문 외부 전송은 하지 않습니다. 실제 모델을 평가하거나 학습하기 전 실행 중인 서버를 중단하세요. 개선된 MLX 진입점은 프로세스 lock으로 중복 모델 로딩을 거부합니다. 기존 데이터/어댑터/결과 경로 덮어쓰기는 금지하며 고유 outputs/runs 경로를 사용합니다.
+
+후속 데이터·인증·삭제 검증은 [후속 프로토콜](docs/NEXT_PHASE_PROTOCOL.md)을 따릅니다. 새 검수 대기12건은 사람 검수 전 사용하지 않으며, 현재 실제 정답 OS 격리는 BLOCKED입니다.

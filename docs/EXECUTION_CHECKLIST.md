@@ -81,3 +81,19 @@
 - [x] E08 PASS — 실제 새 파일 백업/복구/digest/무결성/재시작 상태. B1. 이전 소스는 별도 checkout/tar로 복구 가능.
 - [x] E09 PASS — 새 잠금 환경 설치/실제 Metal, frontend npm ci/build. I1. 모델 캐시는 기존 것을 재사용했으며 새 장비 다운로드는 미검증.
 - [x] E10 PASS — LOCAL_VALIDATED 범위와 파일럿/공개 운영 차단 항목 판정. PROJECT_STATUS/ISSUES/OPERATIONS.
+
+## 후속 검증 — Mac 로컬 전용
+
+- [x] N01 PASS — 정확/정규화/어휘 유사·계열 연결·과거 노출·정답 계약 검사와 해시 결합 목적별 검수/철회. 57 tests의 관련 회귀와 candidate-audit-v2.json. 실제 데이터 승인 완료와는 별개.
+- [x] N02 PASS — 기존360건 이력 등록/신규 독립 분할 제외. v1/v2 작성 노출까지 현재384개 기록. v2 신규12건은 검수 대기.
+- [ ] N03 BLOCKED — 검수 완료 독립 자료/최종셋0건. 노출 범위의 실제 사람 확인 없음.
+- [ ] N04 BLOCKED — os-isolation-final.json, 실제 정답 파일 서비스 UID501 읽기 성공. 다른 계정/보호 볼륨 필요.
+- [x] N05 PASS — freeze/학습 gate 예상 거부, 영속3개 제한의 실패 포함/새 폴더 reset 거부 회귀, A~F 누락/정보 조건/어댑터/비용 검사.
+- [ ] N06 NOT_RUN — 새 학습0/3, 검증셋 모델 선택·최종 A~F0/6. 검사기 구현을 실제 실험 실행으로 보고하지 않음.
+- [x] N07 PASS — 개인 접근키/폼·쿠키 인증, 잘못된 키401·타인404·CSRF403, 실제 브라우저 MLX 전체 흐름. 현재 로그인 관측 폭592/607px.
+- [x] N08 PASS — real-local-load-corrected.json: 실제12요청/9완료/3개429.9호출/토큰/큐 지연 기록. 짧은 기능 부하에 한정.
+- [x] N09 PASS — deletion-recovery/report.json: 실제 합성 DB CLI 삭제/복구6명령, 삭제 재생/세션 폐기/다른 사건 보존. 기동 중간중단 재생은 API fixture 회귀.
+- [ ] N10 NOT_CONFIGURED — 자동 보존기간/백업 완전 삭제/실제 자료의 파생 인덱스·학습본 삭제 정책.
+- [x] N11 PASS — clean venv final-validation-retry1:57 tests, compileall/pip check/이전 비교 exit0, 원본14개 해시. frontend final build0.
+
+초기 final-validation의1개 근거 표기 실패와 v1 자료를 보존했다. 후속 p95 집계 정정은 같은9개 영속 작업에서 재계산했으며 추가 모델 호출하지 않았다. LOCAL_VALIDATED 유지, 파일럿 승격 BLOCKED. 상세 NEXT_PHASE_REPORT.

@@ -13,7 +13,9 @@ cd frontend
 npm ci
 npm run build
 cd ..
-.venv-new/bin/python -m uvicorn recase.api:app --host 127.0.0.1 --port 8100 --workers 1 --no-access-log --no-server-header --log-level warning
+.venv-new/bin/python scripts/local_auth.py --directory runtime/personal-auth --user LOCAL_USER
+.venv-new/bin/python scripts/operations.py init-deletions --deletions runtime/deletions.jsonl
+make serve PYTHON=.venv-new/bin/python
 ```
 
 이 프로젝트의 기존 `.venv`를 재사용할 때는 `make serve`, 확인은 `make check`. 브라우저 http://127.0.0.1:8100 에서 명시적 데모 입장. 새 합성 데모 시작은 새 세션/사건을 만들며 이전 DB 자료를 삭제하지 않는다.
@@ -52,4 +54,28 @@ Base 서빙 전환은 이번 앱 검증 범위에서 실행하지 않았다. 오
 
 ## 운영 한계
 
-로컬 데모 범위 LOCAL_VALIDATED. 실제 인증/역할·다른 OS 사용자와 최종 정답의 파일권한 분리·보존/삭제 자동화·암호화 백업·실사용 부하·광범위 장애 복구·배포 환경 검증은 미완료. 공개 배포와 유료 호출은 수행하지 않았다. 현재 로컬 처리량을 공개 서비스 동시 사용자 수로 일반화하지 않는다.
+로컬 데모 범위 LOCAL_VALIDATED. 실제 인증/역할·다른 OS 사용자와 최종 정답의 파일권한 분리·보존/삭제 자동화·암호화 백업·실사용 부하·광범위 장애 복구·배포 환경 검증은 미완료. 공개 배포와 유료 호출은 수행하지 않았다. 현재 로컬 처리량을 공개 서비스 동시 사용자 수로 일반화하지 않는다. 아래 후속 검증을 이 초기 한계 기록보다 우선한다.
+
+## 개인 로컬 운영 후속 검증
+
+사용자가 목표 환경을 이 Mac 로컬 전용으로 지정했다. `make serve`는 RECASE_MODE=personal/RECASE_AUTH_FILE/RECASE_DELETIONS를 설정한다. 새로운 자격정보는 새 디렉터리만 생성하며 비밀키는 출력하지 않는다. 보호 폴더0700, config/key 파일0600, 현재 UID 소유자만 허용한다.
+
+브라우저는 localhost:8100의 로컬 폼으로 로그인한다. 접근키는 runtime/personal-auth/key.txt에서 복사한다. 키 자체를 채팅/URL/로그에 넣지 않는다. HttpOnly/SameSiteStrict 인증 쿠키는1시간, 서버 재기동 시 즉시 만료된다. 프로세스 안에는 토큰 해시만 보관하며 최대16세션이다. config 변경/제거/권한 오류도 인증을 거부한다. API 점검은 같은 키의 HTTP Basic 헤더를 사용할 수 있다. 단일 로컬 운영자 인증이며 원격/TLS/다중 사용자 신원 체계가 아니다. 합성 사건의 소유권과 CSRF는 별도로 계속 검사한다.
+
+회전은 새 credential 디렉터리를 생성하고 이전 서버를 중단한 뒤 RECASE_AUTH_FILE을 새 config로 바꾸어 재기동한다. 접근키 상실 시 기존키를 덮어쓰지 않는다. `make serve-demo`는 무인증 합성 데모 선택이며 개인 운영 검증으로 보고하지 않는다.
+
+현재 서버는 개인정보·판결문이 아닌 합성 사례만 다룬다. 실제 MLX 제한 부하 시험은6개 합성 세션/동시12요청/최대60초였다. 승인된9건 완료와 큐 초과3건429를 확인했다. 지속 부하·원격 처리량·실제 사건 품질을 측정한 결과는 아니다.
+
+### 삭제와 복구
+
+이전 절의 restore 명령은 역사적 실행 기록이다. 새 복구 명령은 반드시 최신 독립 --deletions journal을 요구하며 복구된 bearer 세션을 모두 폐기한다. 서버는 기동 시 journal의 미완료 삭제를 먼저 적용한다. 개인 모드에서 journal이 없으면 기동을 거부한다.
+
+```bash
+# 아래는 운영자가 명시적으로 삭제할 사건에만 실행한다. 먼저 서버를 중단한다.
+.venv/bin/python scripts/operations.py delete-case --db runtime/recase.sqlite3 --deletions runtime/deletions.jsonl --owner OWNER_ID --case-id CASE_ID
+.venv/bin/python scripts/operations.py restore --db BACKUP.sqlite3 --target NEW.sqlite3 --deletions runtime/deletions.jsonl
+```
+
+삭제 기록은 DB보다 먼저 fsync하므로 중간 중단 후 다음 기동/복구에서 재적용된다. 사건·근거·주장·작업·이벤트와 관련 세션을 제거한다. 원본 데이터·학습 어댑터·기존 평가 파일에는 이 삭제 명령을 적용하지 않았다. 실제 검증은 scripts/verify_deletion_recovery.py가 만든 별도 합성 DB에서 수행했다. 기존 백업 바이트는 보존되며 자동 보존기간/암호화 키 폐기/APFS 스냅샷 완전 삭제는 미검증이다.
+
+독립 검수/OS 격리와 파일럿 판정은 NEXT_PHASE_PROTOCOL.md와 NEXT_PHASE_REPORT.md를 따른다.
