@@ -15,11 +15,11 @@ def now():
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--out',required=True);a=p.parse_args()
-    root=Path(__file__).resolve().parents[1];out=Path(a.out).resolve();out.mkdir(parents=True,exist_ok=False)
-    commands=[('T01',[sys.executable,'-m','pytest','tests','-q','--tb=short']),
-              ('T02',[sys.executable,'-m','compileall','-q','recase','evaluation','scripts','training','tests']),
+    root=Path(__file__).resolve().parents[2];out=Path(a.out).resolve();out.mkdir(parents=True,exist_ok=False)
+    commands=[('T01',[sys.executable,'-m','pytest','backend/tests','-q','--tb=short']),
+              ('T02',[sys.executable,'-m','compileall','-q','backend']),
               ('T03',[sys.executable,'-m','pip','check']),
-              ('T04',[sys.executable,'scripts/compare.py','outputs/runs/20261020-base-v2-retry1/metrics.json','outputs/runs/20261020-ft-v2/metrics.json'])]
+              ('T04',[sys.executable,'backend/scripts/compare.py','outputs/runs/20261020-base-v2-retry1/metrics.json','outputs/runs/20261020-ft-v2/metrics.json'])]
     checks=[]
     for name,command in commands:
         start=now();log=out/(name+'.log')

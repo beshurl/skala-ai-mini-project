@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from recase.paths import PROJECT_ROOT
 from recase.dataset_control import (PURPOSES, audit, exposure_entries, file_identity,
                                     latest_reviews, signature, subject_hash)
 from recase.ledger import append_record, digest, read_ledger, utc_now
@@ -67,7 +68,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="action", required=True)
     history = sub.add_parser("register-legacy")
-    history.add_argument("--source", default="data/processed")
+    history.add_argument("--source", default=str(PROJECT_ROOT / "data/processed"))
     history.add_argument("--history", required=True)
     check = sub.add_parser("audit")
     for key in ("candidates", "history", "reviews", "out"):

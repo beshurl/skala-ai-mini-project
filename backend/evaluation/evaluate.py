@@ -1,6 +1,7 @@
 """Evaluate a model/adapter on held-out cases. Produces per-example JSONL and metrics JSON."""
 import argparse,json,re,time
 from pathlib import Path
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 from sklearn.metrics import accuracy_score,f1_score,classification_report
 
 def parse_label(text):
@@ -12,7 +13,7 @@ def parse_label(text):
         return 'invalid'
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--model',default='Qwen/Qwen3-0.6B');ap.add_argument('--adapter');ap.add_argument('--test',default='data/processed/test.jsonl');ap.add_argument('--out',default='outputs/eval');ap.add_argument('--max-examples',type=int,default=54);args=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--model',default='Qwen/Qwen3-0.6B');ap.add_argument('--adapter');ap.add_argument('--test',default=str(PROJECT_ROOT / 'data/processed/test.jsonl'));ap.add_argument('--out',default=str(PROJECT_ROOT / 'outputs/eval'));ap.add_argument('--max-examples',type=int,default=54);args=ap.parse_args()
     import torch
     from transformers import AutoTokenizer,AutoModelForCausalLM
     from peft import PeftModel

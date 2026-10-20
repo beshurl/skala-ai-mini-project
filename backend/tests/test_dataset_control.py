@@ -7,6 +7,7 @@ import pytest
 
 from recase.dataset_control import audit, latest_reviews, permitted, signature, subject_hash
 from recase.ledger import append_record, read_ledger
+from recase.paths import BACKEND_ROOT
 
 
 def sample(sid, split="train", text=None):
@@ -81,7 +82,7 @@ def test_ledger_tampering_and_noninteractive_review_are_rejected(tmp_path):
         read_ledger(path)
     candidates = tmp_path / "candidates.jsonl"
     candidates.write_text(json.dumps(sample("A")))
-    result = subprocess.run([sys.executable, "scripts/dataset_control.py", "review", "--candidates", str(candidates),
+    result = subprocess.run([sys.executable, str(BACKEND_ROOT / "scripts" / "dataset_control.py"), "review", "--candidates", str(candidates),
                              "--sample-id", "A", "--reviews", str(tmp_path / "reviews.jsonl")], capture_output=True)
     assert result.returncode != 0
     assert not (tmp_path / "reviews.jsonl").exists()

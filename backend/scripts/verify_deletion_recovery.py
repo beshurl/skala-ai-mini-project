@@ -8,6 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from recase.ledger import file_digest, utc_now
 from recase.store import Store
+from recase.paths import BACKEND_ROOT
 from scripts.dataset_control import write_new
 
 
@@ -24,7 +25,7 @@ def main():
     job = store.create_job(session["user_id"], case["id"], 1, {"backend": "operation_fixture_no_model"})
     checks = []
     def run(arguments, expected=0):
-        command = [sys.executable, "scripts/operations.py", *arguments]
+        command = [sys.executable, str(BACKEND_ROOT / "scripts" / "operations.py"), *arguments]
         started = utc_now()
         result = subprocess.run(command, text=True, capture_output=True)
         checks.append({"command": command, "started_at": started, "finished_at": utc_now(),

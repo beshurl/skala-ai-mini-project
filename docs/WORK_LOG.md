@@ -56,3 +56,14 @@
 - 삭제 journal/서버 중단 잠금/secure_delete+compact/복구 재적용/기동 중간중단 재생을 추가. verify_deletion_recovery.py 실제 CLI6명령 exit 기대값 통과. 삭제된 사건·증거·작업·이벤트가 과거 백업 복구 후 없음, 세션 폐기/다른 사건 유지/0600/integrity PASS. 백업 바이트는 남으며 물리 삭제/보존기간은 미확정이다.
 - clean locked venv의 scripts/validate_local.py --out outputs/runs/20261020-next-gates/final-validation-retry1:57 tests/compileall/pip check/기존 비교 모두exit0, 원본14개 SHA 유지. npm build exit0. 추가 집계 수정은 같은 평가 percentile 함수를 재사용하며 별도 compile/소스 확인을 수행했다.
 - 모든 새 결과는 outputs/runs/20261020-next-gates. make serve는 현재 개인 인증/독립 삭제 journal/실제 모델로 유지. 유료 호출0/공개 배포0/실제 판결문 원문 외부 전송0. LOCAL_VALIDATED만 유지한다.
+
+## 2026-10-20 13:40–13:44 KST — 프론트·백엔드 폴더 구분
+
+- 사용자 요청으로 Python 서비스/도구/학습/평가/테스트/requirements/환경 예시를 backend/로 이동했다. Vue는 frontend/에 유지하고 로그인 HTML·브라우저 검증 스크립트도 frontend/로 모았다. 공유 data/outputs/runtime/.venv는 이동하지 않았다.
+- Makefile, pytest.ini, 서비스 공용 경로와 MCP 자식 실행 디렉터리, CLI 기본 경로·학습 launcher·검증 도구를 새 구조에 맞췄다. 과거 실행 로그의 명령/경로는 당시 기록으로 보존했다.
+- `.venv/bin/python backend/scripts/validate_local.py --out outputs/runs/20261020-folder-split/validation`: 13:40:36–13:40:43 KST/exit0. 57 tests/compileall/pip check/기존54건 비교 PASS, 원본 산출물14개 SHA 유지. 상세 명령·시각·종료코드는 validation/summary.json.
+- backend/에서 `../.venv/bin/python -m pytest tests -q --tb=short`: exit0/57 passed(6.37초). backend/의 운영·동결·평가·학습 CLI10개 --help도 13:43:48–13:43:49 KST/모두exit0, backend-cli-help.json. 새 학습/평가 실행은 하지 않았다.
+- frontend/에서 `npm run build`: exit0. 프록시 수정 후 최종 빌드도 exit0, frontend-build-final.log. requirements4개와 로그인 HTML의 이동 전후 바이트 동일, move-integrity.json.
+- make serve로 새 backend/ 서버를 기동했다. HTTP 로그인/정적 자산/실제56개 LoRA readiness·MCP를 거친 MLX 합성 분석1건 COMPLETED/INSUFFICIENT를 확인했다. JOB-6884bdcc36aa4290, 실제 모델1호출. 후속 재검사는 같은 저장 작업을 확인했고 추가 추론0.
+- 첫 개발 프록시 로그인은 Vite 문자열 프록시 기본값이 Host를 바꿔 ORIGIN_DENIED403/exit1이었다. 명시적 changeOrigin:false로 수정1회 후 개발 로그인·API·CSRF 쓰기·교차 출처 거부를 확인했다. 인증/Origin 경계를 완화하지 않았다. runtime-smoke.json은 실패 원인과 최종 HTTP 검증의 시각/exit0을 기록한다.
+- 근거는 outputs/runs/20261020-folder-split/. 실제 브라우저 화면 재검증을 했다고 주장하지 않는다. 모델·검수·OS 격리/승격 상태는 그대로다.

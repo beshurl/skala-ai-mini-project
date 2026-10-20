@@ -7,6 +7,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from recase.paths import PROJECT_ROOT
 from evaluation.scoring import LABELS, parse_response, allowed_evidence, percentile
 from recase.model import resolve_model, SYSTEM
 
@@ -51,7 +52,7 @@ def audit(source, tokenize=True):
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--source',default='data/processed');p.add_argument('--out',required=True);p.add_argument('--no-tokenize',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--source',default=str(PROJECT_ROOT / 'data/processed'));p.add_argument('--out',required=True);p.add_argument('--no-tokenize',action='store_true');a=p.parse_args()
     out=Path(a.out);out.parent.mkdir(parents=True,exist_ok=True)
     if out.exists():raise FileExistsError(out)
     report=audit(a.source,not a.no_tokenize)

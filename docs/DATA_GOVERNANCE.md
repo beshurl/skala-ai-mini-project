@@ -23,7 +23,7 @@
 
 ## 로컬 반입 계약
 
-`scripts/ingest_judgments.py`는 TXT/HTML/PDF, 최대8MiB/파일, 한 번에 최대1000건(기본100), dry-run, 명시적 resume, raw/clean SHA-256 중복 방지, 인코딩 UTF-8/CP949 및 NFC, 문단/페이지 단위 정제 위치, 파싱 실패 격리를 지원한다. HTTP 요청과 URL fetch를 하지 않는다. 경로 탈출/심볼릭 링크/알 수 없는 확장자를 거부한다.
+`backend/scripts/ingest_judgments.py`는 TXT/HTML/PDF, 최대8MiB/파일, 한 번에 최대1000건(기본100), dry-run, 명시적 resume, raw/clean SHA-256 중복 방지, 인코딩 UTF-8/CP949 및 NFC, 문단/페이지 단위 정제 위치, 파싱 실패 격리를 지원한다. HTTP 요청과 URL fetch를 하지 않는다. 경로 탈출/심볼릭 링크/알 수 없는 확장자를 거부한다.
 
 `data/rights_manifest.v2.example.json`의 processing/training/rag/display/redistribution은 서로 독립이다. 예시는 모두false. 과거 blanket permission_confirmed만으로 수집이나 학습을 허용하지 않는다. 처리 허용과 권리 근거가 있어도 출력은 항상 QUARANTINED, privacy_review.human_reviewed=false, label_review.human_reviewed=false다.
 

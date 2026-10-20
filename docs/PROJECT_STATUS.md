@@ -34,9 +34,9 @@
 | 9 MCP | PASS | 실제 stdio/권한 도구 호출 |
 | 10 그래프 | PASS 로컬 | 최대4호출/180초/루프0, 검증/버전 일관성 |
 | 11 앱 | PASS 로컬 | 실제 브라우저 전체 흐름 |
-| 12 회귀 | PASS 범위 제한 | 자동41개 + 실제 모델/fixture 브라우저 별도. 광범위 보안 보증 아님 |
+| 12 회귀 | PASS 범위 제한 | 자동57개 + 실제 모델/fixture 브라우저 별도. 광범위 보안 보증 아님 |
 | 13 최종 비교 | BLOCKED | 개발 A/B만 실행, 독립 최종 평가/전체 A~F는 미실행 |
-| 14 운영 | LOCAL_VALIDATED | clean install/복구 확인; OS 정답 격리·개인 로컬 인증·제한 부하·삭제 복구 확인; 검수/OS 격리·보존기간 미완료, 공개는 범위 밖 |
+| 14 운영 | LOCAL_VALIDATED | clean install/복구 확인; 개인 로컬 인증·제한 부하·삭제 복구 확인; 검수/OS 격리·보존기간 미완료, 공개는 범위 밖 |
 
 ## 실행 상태와 다음 작업
 
@@ -45,3 +45,7 @@
 다음 우선순위는 검수된 독립 사건/시나리오·문서 계열 데이터와 목적별 승인/사람 검수, OS 수준 평가 정답 격리다. 이를 확보하기 전 새 학습/실제 판례 RAG/최종 성능/공개 운영 승격을 진행하지 않는다. 유료 호출·공개 배포·원문 외부 전송0건.
 
 세부 명령/증거/제약은 EXECUTION_CHECKLIST, EVALUATION_REPORT, ISSUES, HANDOFF를 참조한다.
+
+## 폴더 구조
+
+프론트 소스/로그인 화면/브라우저 E2E는 frontend/, Python 앱·도구·학습·평가·테스트·requirements는 backend/로 분리했다. 공유 data/outputs/runtime/.venv는 루트에 유지한다. 실행은 기존 make serve/make check를 사용하며 현재 경로는 STRUCTURE.md를 따른다. 이전 실행 기록의 옛 파일 경로는 당시 기록이다.

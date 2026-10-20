@@ -4,6 +4,26 @@
 
 **상태: LOCAL_VALIDATED, 합성 로컬 흐름에 한정.** 실제 수사/유죄 판단이나 공개 서비스의 신뢰성을 검증한 모델이 아닙니다. 기존 데이터·어댑터·결과는 보존했고 새 학습은 하지 않았습니다.
 
+## 폴더 구성
+
+```text
+frontend/             Vue 화면, 로그인 HTML/CSS, 브라우저 E2E
+backend/
+  recase/             FastAPI · MLX · MCP · 데이터/권한 로직
+  scripts/            반입·검수·운영 도구
+  training/           학습 실행
+  evaluation/         평가·비교
+  tests/              Python 테스트
+  requirements*.txt   Python 의존성
+  .env.example        백엔드 환경변수 예시
+
+data/                 공용 데이터
+outputs/              모델 어댑터·평가·실행 결과
+runtime/              DB·접근키·삭제 이력
+```
+
+실행 명령은 프로젝트 루트를 기준으로 합니다. [백엔드 안내](backend/README.md), [프론트엔드 안내](frontend/README.md), [경로 변경 안내](docs/STRUCTURE.md)를 참고하세요.
+
 ## 바로 실행
 
 이 폴더의 기존 `.venv`와 모델 캐시/outputs/mlx_adapter를 사용하는 경우:
@@ -12,7 +32,7 @@
 make serve
 ```
 
-새 checkout에서는 먼저 `.venv/bin/python scripts/local_auth.py --directory runtime/personal-auth --user LOCAL_USER`와 `.venv/bin/python scripts/operations.py init-deletions --deletions runtime/deletions.jsonl`을 한 번 실행합니다. 기존 자격정보/삭제 journal은 덮어쓰지 않습니다. `make serve-demo`는 인증 없는 합성 데모를 명시적으로 실행합니다.
+새 checkout에서는 먼저 `.venv/bin/python backend/scripts/local_auth.py --directory runtime/personal-auth --user LOCAL_USER`와 `.venv/bin/python backend/scripts/operations.py init-deletions --deletions runtime/deletions.jsonl`을 한 번 실행합니다. 기존 자격정보/삭제 journal은 덮어쓰지 않습니다. `make serve-demo`는 인증 없는 합성 데모를 명시적으로 실행합니다.
 
 [로컬 앱](http://localhost:8100)에서 접근키로 로그인한 뒤 데모에 입장합니다. 현재 키는 runtime/personal-auth/key.txt에 mode0600으로 보관됩니다. 채팅/URL에 붙여 넣지 않습니다. 사건 선택 → 분석 → 인용 원문 확인 → 새 증거 공개 → 재분석 → 이전 결과와 비교합니다. `새 합성 데모 시작`은 별도 사건/세션을 만듭니다.
 

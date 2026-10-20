@@ -1,10 +1,11 @@
+from recase.paths import PROJECT_ROOT
 import json
 import pytest
 from scripts.data_audit import audit
 
 
 def test_legacy_exact_and_template_leakage_is_detected():
-    report=audit('data/processed',tokenize=False)
+    report=audit(PROJECT_ROOT / 'data/processed',tokenize=False)
     assert report['status']=='FAIL' and report['generalization_split']=='FAIL'
     assert report['overlap']['train_test']['exact_prompts']==9
     assert report['overlap']['train_test']['normalized_template_families']==3

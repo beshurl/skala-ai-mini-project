@@ -14,6 +14,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from recase.ledger import file_digest, utc_now
+from recase.paths import PROJECT_ROOT
 from scripts.dataset_control import write_new
 
 PROBE = """
@@ -87,7 +88,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for key in ("service-user", "evaluator-user", "answers", "protected-root", "out"):
         parser.add_argument("--" + key, required=True)
-    parser.add_argument("--workspace", default=str(Path(__file__).resolve().parents[1]))
+    parser.add_argument("--workspace", default=str(PROJECT_ROOT))
     parser.add_argument("--service-pid", type=int)
     args = parser.parse_args()
     report = verify(args.service_user, args.evaluator_user, args.answers, args.protected_root, args.workspace, args.service_pid)

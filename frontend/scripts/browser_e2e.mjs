@@ -1,5 +1,5 @@
 /** Run through cua_repl, using the documented tab.playwright API for every UI action.
- * const {run}=await import('/absolute/project/scripts/browser_e2e.mjs'); await run(tab)
+ * const {run}=await import('/absolute/project/frontend/scripts/browser_e2e.mjs'); await run(tab)
  * No external browser transport, private page state, or fabricated progress is used.
  */
 import assert from 'node:assert/strict'

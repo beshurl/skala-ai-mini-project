@@ -53,3 +53,7 @@ Base run20261020-base-v2-retry1와 FT run20261020-ft-v2. 동일 dataset bytes ha
 실제 모델 호출은 합성 로컬 앱/인증/제한 부하 검증에 사용했으며 새로운 모델 성능 비교나 A~F 결과로 섞지 않았다. 모델 revision·기존 adapter·greedy/seed0/thinking off는 그대로다. 부하 지연 집계 오류는 같은9개 SQLite 작업에서 재계산했으며 모델을 반복 호출하지 않았다. 실제 원시 결과와 정정 이유는 real-local-load-corrected.json에 있다.
 
 판정: 기존 FT 개인 합성 데모 재사용 유지. 데이터/OS 권한 문제가 남아 새 학습·독립 최종 평가·실제 판례 RAG·파일럿 승격 보류. 다음 입력/절차는 NEXT_PHASE_PROTOCOL.md, 실제 증거는 NEXT_PHASE_REPORT.md.
+
+## 프론트·백엔드 경로 분리
+
+2026-10-20 KST. 소스만 frontend/backend로 구분했다. 기존 데이터·어댑터·평가 결과는 이동/변경하지 않았고 원본14개 해시를 재확인했다. 새 학습0/3, A~F0/6 유지. 경로 회귀 확인용 합성 서비스 분석1건(실제 MLX1호출)은 모델 성능 비교에 포함하지 않는다. 근거: outputs/runs/20261020-folder-split/validation/summary.json, runtime-smoke.json.

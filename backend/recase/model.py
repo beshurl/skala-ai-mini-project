@@ -6,6 +6,7 @@ import os
 import threading
 import time
 from pathlib import Path
+from recase.paths import PROJECT_ROOT, workspace_path
 
 MODEL_ID = "mlx-community/Qwen3-4B-4bit"
 SYSTEM = "당신은 증거를 근거로 판단하며, 불충분한 증거에는 단정하지 않는 분석가입니다."
@@ -36,7 +37,7 @@ class LocalModel:
     def __init__(self, model=MODEL_ID, adapter=None, max_tokens=256):
         os.environ["HF_HUB_OFFLINE"] = "1"
         self.path = resolve_model(model)
-        self.adapter = Path(adapter).resolve() if adapter else None
+        self.adapter = workspace_path(adapter).resolve() if adapter else None
         if self.adapter:
             cfg = json.loads((self.adapter / "adapter_config.json").read_text())
             if cfg.get("model") != MODEL_ID:
@@ -58,7 +59,7 @@ class LocalModel:
     def load(self):
         if self.model is not None:
             return
-        lock_path = Path(__file__).resolve().parents[1] / "runtime" / "model.lock"
+        lock_path = PROJECT_ROOT / "runtime" / "model.lock"
         lock_path.parent.mkdir(exist_ok=True)
         self.process_lock = lock_path.open("a")
         try:

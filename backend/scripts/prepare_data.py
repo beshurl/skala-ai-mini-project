@@ -1,6 +1,9 @@
 """Prepare synthetic Korean evidence reasoning examples; no real persons/cases."""
 import json, random, re, argparse
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from recase.paths import PROJECT_ROOT
 
 def build(seed=42):
     rng=random.Random(seed)
@@ -27,7 +30,7 @@ def build(seed=42):
     return rows
 
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument('--output',default='data/processed'); args=ap.parse_args()
+    ap=argparse.ArgumentParser(); ap.add_argument('--output',default=str(PROJECT_ROOT / 'data/processed')); args=ap.parse_args()
     out=Path(args.output)
     if any((out/f'{name}.jsonl').exists() for name in ('train','val','test')):
         raise FileExistsError('기존 데이터 덮어쓰기 금지: --output으로 새 디렉터리를 지정하세요')

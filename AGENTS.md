@@ -19,3 +19,9 @@
 - review-packet-v2의12건은 에이전트 작성 검수 대기/개발 노출 자료다. 실제 사람 승인/최종셋으로 계산하지 않는다. 새 학습은 freeze_training_cycle/3회 ledger gate를 거치며 approval.json boolean을 허용하지 않는다.
 - 현재 실제 정답 OS 접근 거부는 실패다. 서비스/evaluator UID501/동일 볼륨 상태를 분리 완료로 보고하지 않는다.
 - 복구에는 최신 독립 deletion journal을 적용하고 세션을 폐기한다. journal을 과거 DB 백업과 함께 롤백하지 않는다. 원본 데이터/어댑터/기존 평가를 삭제 정책 시험에 사용하지 않는다.
+
+## 폴더 구분
+
+- 프론트 소스/로그인 화면/E2E는 frontend/, Python 소스·도구·학습·평가·테스트·requirements·환경변수 예시는 backend/에 둔다.
+- data/outputs/runtime/.venv는 공유 루트 경로를 유지한다. 서비스 기본 경로는 backend/recase/paths.py에서 정의하며 실행 위치에 의존하지 않는다.
+- 루트 make serve는 --app-dir backend를 사용한다. make check와 pytest.ini가 backend/tests를 수집한다. 과거 WORK_LOG/EXPERIMENT_LOG와 기존 산출물의 옛 경로는 재작성하지 않는다.

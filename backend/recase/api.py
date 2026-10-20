@@ -25,8 +25,9 @@ from recase.model import LocalModel
 from recase.store import Store, NotFound, Conflict, TERMINAL
 from recase.worker import Worker
 from recase.local_auth import LocalAuth
+from recase.paths import PROJECT_ROOT, FRONTEND_ROOT, workspace_path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = PROJECT_ROOT
 
 
 class VersionRequest(BaseModel):
@@ -35,17 +36,19 @@ class VersionRequest(BaseModel):
 
 
 def create_app(db_path=None, model=None, testing=False, auth_file=None, deletions_file=None):
-    db_path = Path(db_path or os.environ.get("RECASE_DB", ROOT / "runtime" / "recase.sqlite3")).resolve()
+    db_path = workspace_path(db_path or os.environ.get("RECASE_DB", ROOT / "runtime" / "recase.sqlite3")).resolve()
     auth_file = auth_file or os.environ.get("RECASE_AUTH_FILE")
+    auth_file = workspace_path(auth_file) if auth_file else None
     mode = os.environ.get("RECASE_MODE", "demo")
     if mode not in {"demo", "personal"} or mode == "personal" and not auth_file:
         raise RuntimeError("Personal mode requires a protected RECASE_AUTH_FILE")
     auth = LocalAuth(auth_file) if auth_file else None
     explicit_deletions = deletions_file is not None or not testing and "RECASE_DELETIONS" in os.environ
     deletions_file = deletions_file or (None if testing else os.environ.get("RECASE_DELETIONS", ROOT / "runtime" / "deletions.jsonl"))
+    deletions_file = workspace_path(deletions_file) if deletions_file else None
 
     def login_page(error=False, status=200):
-        html = (ROOT / "recase" / "templates" / "local-login.html").read_text()
+        html = (FRONTEND_ROOT / "public" / "local-login.html").read_text()
         message = '<p id="login-error" role="alert">접근키가 일치하지 않습니다. 이 Mac에 저장된 키를 확인한 뒤 다시 입력하세요.</p>' if error else ""
         if error:
             html = html.replace('aria-describedby="key-hint"', 'aria-invalid="true" aria-describedby="key-hint login-error" autofocus')
@@ -153,7 +156,7 @@ def create_app(db_path=None, model=None, testing=False, auth_file=None, deletion
 
     @app.get("/auth.css", include_in_schema=False)
     def auth_css():
-        return FileResponse(ROOT / "frontend" / "public" / "local-auth.css", media_type="text/css")
+        return FileResponse(FRONTEND_ROOT / "public" / "local-auth.css", media_type="text/css")
 
     @app.get("/login", include_in_schema=False)
     def login():
@@ -301,7 +304,7 @@ def create_app(db_path=None, model=None, testing=False, auth_file=None, deletion
         return {"case_id": case_id, "before_version": a["version"], "after_version": b["version"], "findings": changes,
                 "model_changed": a["model"] != b["model"], "reason": "공개 증거 버전과 각 결과의 근거를 대조하세요."}
 
-    dist = ROOT / "frontend" / "dist"
+    dist = FRONTEND_ROOT / "dist"
     if (dist / "assets").is_dir():
         app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
 

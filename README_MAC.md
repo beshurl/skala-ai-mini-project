@@ -8,9 +8,9 @@
 
 ```bash
 python3.11 -m venv .venv-new
-.venv-new/bin/python -m pip install -r requirements-lock-macos-arm64.txt
-.venv-new/bin/python scripts/local_auth.py --directory runtime/personal-auth --user LOCAL_USER
-.venv-new/bin/python scripts/operations.py init-deletions --deletions runtime/deletions.jsonl
+.venv-new/bin/python -m pip install -r backend/requirements-lock-macos-arm64.txt
+.venv-new/bin/python backend/scripts/local_auth.py --directory runtime/personal-auth --user LOCAL_USER
+.venv-new/bin/python backend/scripts/operations.py init-deletions --deletions runtime/deletions.jsonl
 make serve PYTHON=.venv-new/bin/python
 ```
 

@@ -8,6 +8,7 @@ from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from recase.paths import PROJECT_ROOT
 from evaluation.scoring import PROTOCOL, score
 from recase.model import LocalModel, MODEL_ID
 
@@ -16,7 +17,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--model", default=MODEL_ID)
     p.add_argument("--adapter")
-    p.add_argument("--test", default="data/processed/test.jsonl")
+    p.add_argument("--test", default=str(PROJECT_ROOT / "data/processed/test.jsonl"))
     p.add_argument("--out")
     p.add_argument("--limit", type=int, default=54)
     a = p.parse_args()
@@ -25,7 +26,7 @@ def main():
     source = Path(a.test)
     examples = [json.loads(x) for x in source.read_text().splitlines() if x.strip()][:a.limit]
     score(examples, [])
-    out = Path(a.out) if a.out else Path("outputs/runs") / (datetime.now().astimezone().strftime("%Y%m%dT%H%M%S%z") + ("-ft" if a.adapter else "-base"))
+    out = Path(a.out) if a.out else (PROJECT_ROOT / "outputs/runs") / (datetime.now().astimezone().strftime("%Y%m%dT%H%M%S%z") + ("-ft" if a.adapter else "-base"))
     out.mkdir(parents=True, exist_ok=False)
     model = LocalModel(a.model, a.adapter)
     model.load()

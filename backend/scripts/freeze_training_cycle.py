@@ -11,6 +11,7 @@ from recase.dataset_control import file_identity
 from recase.experiments import IMPROVEMENT_CYCLE, candidate_configs
 from recase.ledger import digest, utc_now
 from recase.model import MODEL_ID, SYSTEM, resolve_model
+from recase.paths import BACKEND_ROOT, PROJECT_ROOT
 from scripts.dataset_control import audit_files, load_rows, write_new
 from scripts.verify_os_isolation import verify
 
@@ -26,7 +27,7 @@ def main():
         p.exit(2, "DATA_GATE_BLOCKED: " + json.dumps(result["issue_counts"]) + "\n")
     isolation = json.loads(Path(args.isolation).read_text())
     fresh = verify(isolation["service_user"], isolation["evaluator_user"], isolation["answers"],
-                   isolation["protected_root"], Path(__file__).resolve().parents[1])
+                   isolation["protected_root"], PROJECT_ROOT)
     if fresh["status"] != "PASS" or fresh["answer_sha256"] != isolation["answer_sha256"]:
         p.exit(2, "OS_ISOLATION_BLOCKED\n")
     rows = load_rows(args.candidates)
@@ -60,16 +61,16 @@ def main():
         bound[filename] = file_identity(model / filename)
     for path in model.glob("*.safetensors"):
         bound[path.name] = file_identity(path)
-    project = Path(__file__).resolve().parents[1]
+    project = BACKEND_ROOT
     for filename in ("training/train_local.py", "recase/dataset_control.py", "recase/experiments.py",
-                     "scripts/freeze_training_cycle.py", "scripts/verify_os_isolation.py", "requirements-lock-macos-arm64.txt"):
+                     "recase/paths.py", "scripts/freeze_training_cycle.py", "scripts/verify_os_isolation.py", "requirements-lock-macos-arm64.txt"):
         bound[filename] = file_identity(project / filename)
     cycle = {"state": "FROZEN", "frozen_at": utc_now(), "improvement_cycle": IMPROVEMENT_CYCLE,
              "candidates": configs, "max_attempts": 3, "data": str(out), "model": str(model),
              "model_id": MODEL_ID, "revision": model.name, "platform": platform.platform(),
              "bound_files": bound, "token_max": max(lengths), "training_timeout_seconds": 1800,
              "audit_inputs": {key: str(Path(getattr(args, key)).resolve()) for key in ("candidates", "history", "reviews")},
-             "isolation": {**fresh, "workspace": str(Path(__file__).resolve().parents[1])}}
+             "isolation": {**fresh, "workspace": str(PROJECT_ROOT)}}
     cycle["cycle_sha256"] = digest(cycle)
     write_new(out / "cycle.json", cycle)
     print(json.dumps({"state": "FROZEN", "path": str(out / "cycle.json"), "training_executed": False}))

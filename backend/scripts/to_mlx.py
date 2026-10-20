@@ -4,13 +4,14 @@ import json
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from recase.paths import PROJECT_ROOT
 from recase.model import SYSTEM
 
 
 def main():
     p=argparse.ArgumentParser()
-    p.add_argument('--source', default='data/processed')
-    p.add_argument('--output', default='data/mlx')
+    p.add_argument('--source', default=str(PROJECT_ROOT / 'data/processed'))
+    p.add_argument('--output', default=str(PROJECT_ROOT / 'data/mlx'))
     args=p.parse_args()
     source,target=Path(args.source),Path(args.output)
     if target.exists():

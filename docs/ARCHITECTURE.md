@@ -1,6 +1,6 @@
 # 구조와 데이터 흐름
 
-로컬 단일 프로세스 FastAPI + Vue3/Vite. 서버는127.0.0.1:8100에 한 worker로 기동한다. 원래 학습/evaluation 디렉터리는 오프라인 도구로 보존하고 서비스 모듈은 recase/에 분리했다.
+로컬 단일 프로세스 FastAPI + Vue3/Vite. 서버는127.0.0.1:8100에 한 worker로 기동한다. UI와 로그인 자산은 frontend/, 서비스는 backend/recase/, 오프라인 도구와 테스트는 backend/ 하위에 둔다. 공용 data/outputs/runtime은 루트에 유지한다. 상세 경로는 [STRUCTURE](STRUCTURE.md)를 따른다.
 
 ```mermaid
 flowchart LR

@@ -97,3 +97,9 @@
 - [x] N11 PASS — clean venv final-validation-retry1:57 tests, compileall/pip check/이전 비교 exit0, 원본14개 해시. frontend final build0.
 
 초기 final-validation의1개 근거 표기 실패와 v1 자료를 보존했다. 후속 p95 집계 정정은 같은9개 영속 작업에서 재계산했으며 추가 모델 호출하지 않았다. LOCAL_VALIDATED 유지, 파일럿 승격 BLOCKED. 상세 NEXT_PHASE_REPORT.
+
+## 폴더 구분 후 경로 검증
+
+- [x] F01 PASS — backend/로 Python 소스·도구·의존성 이동, frontend/로 UI·로그인·브라우저 검증 구분. 공유 경로 유지, STRUCTURE.md.
+- [x] F02 PASS — 루트/백엔드 실행 위치에서 각각57 tests, compileall/pip check/기존 비교/원본14개 SHA, CLI10개 --help. outputs/runs/20261020-folder-split/validation/summary.json, backend-cli-help.json.
+- [x] F03 PASS — 최종 Vue 빌드 exit0, 실제 MLX/MCP 합성 분석1건, HTTP 로그인/자산 및 개발 프록시 인증/API/CSRF/교차 출처 거부. frontend-build-final.log, runtime-smoke.json. 이번 검증은 브라우저 화면 검증이나 새 성능 평가가 아니다.

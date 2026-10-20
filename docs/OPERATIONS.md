@@ -2,19 +2,21 @@
 
 검증 환경: Apple M5/16GiB, macOS26.5.2 arm64, Python3.11.15, Node/npm. `requirements-lock-macos-arm64.txt`는 실제 환경 freeze이며 별도 새 venv 설치와 테스트를 실행했다. 다른 OS/Python/Intel Mac 검증은 NOT_RUN.
 
+현재 폴더 경로는 [STRUCTURE](STRUCTURE.md)를 따른다. 아래 과거 백업/복구 실행 기록은 당시 경로를 보존했다.
+
 ## 실행
 
 프로젝트 루트에서:
 
 ```bash
 python3.11 -m venv .venv-new
-.venv-new/bin/python -m pip install -r requirements-lock-macos-arm64.txt
+.venv-new/bin/python -m pip install -r backend/requirements-lock-macos-arm64.txt
 cd frontend
 npm ci
 npm run build
 cd ..
-.venv-new/bin/python scripts/local_auth.py --directory runtime/personal-auth --user LOCAL_USER
-.venv-new/bin/python scripts/operations.py init-deletions --deletions runtime/deletions.jsonl
+.venv-new/bin/python backend/scripts/local_auth.py --directory runtime/personal-auth --user LOCAL_USER
+.venv-new/bin/python backend/scripts/operations.py init-deletions --deletions runtime/deletions.jsonl
 make serve PYTHON=.venv-new/bin/python
 ```
 
@@ -72,10 +74,10 @@ Base 서빙 전환은 이번 앱 검증 범위에서 실행하지 않았다. 오
 
 ```bash
 # 아래는 운영자가 명시적으로 삭제할 사건에만 실행한다. 먼저 서버를 중단한다.
-.venv/bin/python scripts/operations.py delete-case --db runtime/recase.sqlite3 --deletions runtime/deletions.jsonl --owner OWNER_ID --case-id CASE_ID
-.venv/bin/python scripts/operations.py restore --db BACKUP.sqlite3 --target NEW.sqlite3 --deletions runtime/deletions.jsonl
+.venv/bin/python backend/scripts/operations.py delete-case --db runtime/recase.sqlite3 --deletions runtime/deletions.jsonl --owner OWNER_ID --case-id CASE_ID
+.venv/bin/python backend/scripts/operations.py restore --db BACKUP.sqlite3 --target NEW.sqlite3 --deletions runtime/deletions.jsonl
 ```
 
-삭제 기록은 DB보다 먼저 fsync하므로 중간 중단 후 다음 기동/복구에서 재적용된다. 사건·근거·주장·작업·이벤트와 관련 세션을 제거한다. 원본 데이터·학습 어댑터·기존 평가 파일에는 이 삭제 명령을 적용하지 않았다. 실제 검증은 scripts/verify_deletion_recovery.py가 만든 별도 합성 DB에서 수행했다. 기존 백업 바이트는 보존되며 자동 보존기간/암호화 키 폐기/APFS 스냅샷 완전 삭제는 미검증이다.
+삭제 기록은 DB보다 먼저 fsync하므로 중간 중단 후 다음 기동/복구에서 재적용된다. 사건·근거·주장·작업·이벤트와 관련 세션을 제거한다. 원본 데이터·학습 어댑터·기존 평가 파일에는 이 삭제 명령을 적용하지 않았다. 실제 검증은 backend/scripts/verify_deletion_recovery.py가 만든 별도 합성 DB에서 수행했다. 기존 백업 바이트는 보존되며 자동 보존기간/암호화 키 폐기/APFS 스냅샷 완전 삭제는 미검증이다.
 
 독립 검수/OS 격리와 파일럿 판정은 NEXT_PHASE_PROTOCOL.md와 NEXT_PHASE_REPORT.md를 따른다.

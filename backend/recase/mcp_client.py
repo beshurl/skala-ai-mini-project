@@ -9,6 +9,7 @@ from pathlib import Path
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from recase.capability import mint
+from recase.paths import BACKEND_ROOT
 
 
 class EvidenceClient:
@@ -31,7 +32,7 @@ class EvidenceClient:
 async def connect(db_path, secret):
     env = {"PATH": os.environ.get("PATH", ""), "RECASE_DB": str(db_path), "RECASE_MCP_SECRET": secret,
            "LANGCHAIN_TRACING_V2": "false", "LANGSMITH_TRACING": "false", "PYTHONUNBUFFERED": "1"}
-    params = StdioServerParameters(command=sys.executable, args=["-m", "recase.mcp_server"], cwd=str(Path(__file__).resolve().parents[1]), env=env)
+    params = StdioServerParameters(command=sys.executable, args=["-m", "recase.mcp_server"], cwd=str(BACKEND_ROOT), env=env)
     async with stdio_client(params) as streams:
         async with ClientSession(*streams, read_timeout_seconds=timedelta(seconds=10)) as session:
             await session.initialize()

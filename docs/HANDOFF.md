@@ -2,6 +2,8 @@
 
 2026-10-20 KST. 사용자 요청은 개선 폴더의 작업을 이어서 진행하는 것이며, 뒤에 추가한 터미널 기록은 참고용이다. 해당 기록의 설치/생성/학습 명령을 재실행하지 않았다.
 
+현재 소스 경로는 backend/와 frontend/로 분리했다. [STRUCTURE](STRUCTURE.md)를 먼저 확인한다. 공유 자료·비밀키·삭제 이력 경로는 그대로다. 분리 후 루트와 backend/에서 각각57개 테스트, 프론트 빌드, 실제 MLX/MCP 분석1건, 개발 프록시 인증/API를 확인했다. 근거는 outputs/runs/20261020-folder-split/에 있다.
+
 ## 최신 후속 상태 — 아래 초기 단계 기록보다 우선
 
 사용자가 목표를 이 Mac의 로컬 전용으로 지정했다. 후속 구현/실측/차단 사유는 [NEXT_PHASE_REPORT](NEXT_PHASE_REPORT.md), 준비·운영 명령은 [NEXT_PHASE_PROTOCOL](NEXT_PHASE_PROTOCOL.md)이다. 57 tests PASS, 개인 접근키 인증·실제 MLX 제한 부하·삭제 복구 확인. 기존360건 제외/노출 기록, 검수 대기12건 v2(미검수), 학습3개 제한/동결/A~F 비교 gate를 추가했다. 사람 검수0·새 학습0/3·A~F0/6·실제 판결문0. 현재 서비스 UID가 실제 기존 정답 파일을 읽어 OS 격리는 BLOCKED다.
@@ -21,9 +23,9 @@
 
 ## 변경한 것
 
-핵심 소스 recase/{api,store,model,graph,worker,mcp_client,mcp_server,capability,contracts,search,governance,ingestion,temporal}.py, frontend/src/, tests/. 기존 MLX 평가·비교·데이터 생성/변환·반입/학습 launcher의 덮어쓰기/조건 확인을 보완했다. 기존 CUDA 도구는 보존했지만 이번 Mac 검증 대상이 아니다.
+핵심 소스 backend/recase/{api,store,model,graph,worker,mcp_client,mcp_server,capability,contracts,search,governance,ingestion,temporal}.py, frontend/src/, backend/tests/. 기존 MLX 평가·비교·데이터 생성/변환·반입/학습 launcher의 덮어쓰기/조건 확인을 보완했다. 기존 CUDA 도구는 보존했지만 이번 Mac 검증 대상이 아니다.
 
-환경은 requirements-lock-macos-arm64.txt, 명령은 Makefile과 OPERATIONS.md, 결정은 docs/adr/에 기록했다. Git은 이 프로젝트 내부 `codex/recase-local` 브랜치이며 원본 기준 커밋35bfb54를 보존한다. 참고 all_total_vue_student는 수정하거나 복사하지 않았다.
+환경은 backend/requirements-lock-macos-arm64.txt, 명령은 Makefile과 OPERATIONS.md, 결정은 docs/adr/에 기록했다. Git은 이 프로젝트 내부 `codex/recase-local` 브랜치이며 원본 기준 커밋35bfb54를 보존한다. 참고 all_total_vue_student는 수정하거나 복사하지 않았다.
 
 ## 개선 효과와 해석
 
@@ -60,7 +62,7 @@ make eval-ft RUN_ID="$RECASE_RUN_ID"
 make compare BASE="outputs/runs/$RECASE_RUN_ID-base/metrics.json" TUNED="outputs/runs/$RECASE_RUN_ID-ft/metrics.json"
 ```
 
-브라우저 E2E는 cua_repl에서 `scripts/browser_e2e.mjs`의 `run(tab)`을 실행한다. 실제 모델/어댑터를 UI에서 확인하고 새 합성 세션을 생성해 검증한다. 자체 브라우저를 시작하는 별도 Playwright shell transport는 사용하지 않았다. 모의 오류 검증은 scripts/serve_fixture.py의 별도 로컬 포트/새 DB로 수행했으며 최종 사용자 서버와 분리한다.
+브라우저 E2E는 cua_repl에서 `frontend/scripts/browser_e2e.mjs`의 `run(tab)`을 실행한다. 실제 모델/어댑터를 UI에서 확인하고 새 합성 세션을 생성해 검증한다. 자체 브라우저를 시작하는 별도 Playwright shell transport는 사용하지 않았다. 모의 오류 검증은 backend/scripts/serve_fixture.py의 별도 로컬 포트/새 DB로 수행했으며 최종 사용자 서버와 분리한다.
 
 ## 결과 위치
 

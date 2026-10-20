@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from recase.experiments import reserve_candidate, verify_frozen
 from recase.ledger import append_record, utc_now
+from recase.paths import PROJECT_ROOT
 
 
 def main():
@@ -22,7 +23,7 @@ def main():
     if args.candidate not in candidates:
         p.error("Candidate was not declared at freeze time")
     config = candidates[args.candidate]
-    root = Path(__file__).resolve().parents[1]
+    root = PROJECT_ROOT
     runtime = root / "runtime"
     runtime.mkdir(exist_ok=True, mode=0o700)
     ledger = runtime / "training-attempts.jsonl"

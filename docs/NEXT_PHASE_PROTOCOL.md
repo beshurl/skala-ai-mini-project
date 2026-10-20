@@ -12,7 +12,7 @@
 
 ## 데이터 기록과 승인
 
-`recase/ledger.py`는 mode0600, 현재 소유자, 심볼릭 링크 거부, 파일 잠금, sequence/이전 해시/현재 해시, fsync를 적용한다. 같은 UID의 악의적인 전체 재작성까지 막는 신뢰 경계는 아니다. 서비스 계정과 검수자 계정을 분리해야 한다.
+`backend/recase/ledger.py`는 mode0600, 현재 소유자, 심볼릭 링크 거부, 파일 잠금, sequence/이전 해시/현재 해시, fsync를 적용한다. 같은 UID의 악의적인 전체 재작성까지 막는 신뢰 경계는 아니다. 서비스 계정과 검수자 계정을 분리해야 한다.
 
 `dataset_control.py register-legacy`는 원본 파일 해시+행 위치+이용 목적을 키로360건의 노출을 등록한다. 재실행은 중복 등록하지 않는다. 노출 서명은 prompt 원문/정답을 포함하지 않고 해시·해시된 문자3-gram·계열 ID를 보관한다. 서명도 보호 대상 메타데이터다.
 
@@ -23,16 +23,16 @@
 검수는 로컬 대화형 터미널에서 자료 전체를 읽고 `직접 검수 완료`와 목적별 yes, 라벨 검수 여부, 근거를 입력하는 **사람의 확인 절차**다. 에이전트는 이를 실행하지 않았다. 기록은 현재 OS 사용자/UID/시간과 문서·라벨·권한을 포함한 전체 subject 해시에 묶인다. 수정본은 새 해시로 재검수해야 한다. `revoke`는 뒤의 승인 상태를 무효화한다. legacy human_reviewed=true 같은 불리언만으로는 통과하지 않는다. 이 로컬 확인은 공인 전자서명이나 독립 신원 인증이 아니다.
 
 ```bash
-.venv/bin/python scripts/dataset_control.py register-legacy --history outputs/runs/20261020-next-gates/exposures.jsonl
-.venv/bin/python scripts/dataset_control.py audit --candidates outputs/runs/20261020-next-gates/review-packet-v2/candidates.jsonl --history outputs/runs/20261020-next-gates/exposures.jsonl --reviews outputs/runs/20261020-next-gates/human-reviews.jsonl --out outputs/runs/NEW-audit.json
+.venv/bin/python backend/scripts/dataset_control.py register-legacy --history outputs/runs/20261020-next-gates/exposures.jsonl
+.venv/bin/python backend/scripts/dataset_control.py audit --candidates outputs/runs/20261020-next-gates/review-packet-v2/candidates.jsonl --history outputs/runs/20261020-next-gates/exposures.jsonl --reviews outputs/runs/20261020-next-gates/human-reviews.jsonl --out outputs/runs/NEW-audit.json
 ```
 
 아래 명령은 실제 검수 담당자가 직접 수행한다. 코드를 실행하는 에이전트가 사람 검수로 입력하면 안 된다. 검수 후에도 candidate의 역할/계열/내용 변경은 새 자료로 기록하고 다시 검수한다. 최종 자료는 개발 작업자가 열람하지 않은 별도 묶음이 필요하다.
 
 ```bash
-.venv/bin/python scripts/dataset_control.py review --candidates PATH/candidates.jsonl --sample-id SAMPLE_ID --reviews PRIVATE/human-reviews.jsonl
-.venv/bin/python scripts/dataset_control.py attest-history --history PRIVATE/exposures.jsonl
-.venv/bin/python scripts/dataset_control.py revoke --subject-sha256 SUBJECT_HASH --reviews PRIVATE/human-reviews.jsonl
+.venv/bin/python backend/scripts/dataset_control.py review --candidates PATH/candidates.jsonl --sample-id SAMPLE_ID --reviews PRIVATE/human-reviews.jsonl
+.venv/bin/python backend/scripts/dataset_control.py attest-history --history PRIVATE/exposures.jsonl
+.venv/bin/python backend/scripts/dataset_control.py revoke --subject-sha256 SUBJECT_HASH --reviews PRIVATE/human-reviews.jsonl
 ```
 
 최초 review-packet은 근거 표기가 [E1]로 기존 E1: 계약과 달라 INVALIDATED했다. v2를 새 폴더에 생성했고 v1과 두 작성 노출을 보존했다. v2의 구조 계약은 통과하지만 사람 검수/이력/역할 게이트는 계속 BLOCKED다.
@@ -49,7 +49,7 @@
 4. 아래 verifier를 실행한다. 실제 정답 파일의 내용은 출력하지 않고 evaluator의 해시/실제 open과 서비스의 EACCES/EPERM을 확인한다. sudo 자체 실패, Python 실행 실패, 없는 파일은 접근 거부 PASS가 아니다. probe interpreter는 venv symlink의 실제 경로를 사용한다.
 
 ```bash
-.venv/bin/python scripts/verify_os_isolation.py --service-user recase_service --evaluator-user recase_evaluator --answers /Volumes/RECASE_EVAL/answers/final.jsonl --protected-root /Volumes/RECASE_EVAL/answers --service-pid SERVICE_PID --out PRIVATE/os-isolation.json
+.venv/bin/python backend/scripts/verify_os_isolation.py --service-user recase_service --evaluator-user recase_evaluator --answers /Volumes/RECASE_EVAL/answers/final.jsonl --protected-root /Volumes/RECASE_EVAL/answers --service-pid SERVICE_PID --out PRIVATE/os-isolation.json
 ```
 
 보호 루트/정답 소유자·권한, workspace와 다른 device, 다른 비root UID, evaluator 읽기, 실제 서비스 읽기 거부를 함께 확인한다. 파일 한 개/한 시점의 검증이며 관리자·다른 복사본까지 보호한다는 주장은 하지 않는다.
@@ -61,8 +61,8 @@
 `data/training_candidates.example.json`은 30회/1e-4와60회/5e-5의 **제안 예시**이며 실행하지 않았다. 한 주기 최대3개, rank8/layers8/seq768/batch1/seed0/scale20/dropout0, 전체 검증셋 loss, 외부 report 비활성, 후보당 최대1800초다. 품질 선택은 검증셋만 사용하며 최종 정답을 보고 설정을 바꾸지 않는다. loss 최저값만으로 모델 승격하지 않는다.
 
 ```bash
-.venv/bin/python scripts/freeze_training_cycle.py --candidates PRIVATE/reviewed-train-valid.jsonl --history PRIVATE/exposures.jsonl --reviews PRIVATE/human-reviews.jsonl --configs data/training_candidates.example.json --protocol docs/NEXT_PHASE_PROTOCOL.md --isolation PRIVATE/os-isolation.json --out PRIVATE/frozen-cycle
-.venv/bin/python training/train_local.py --cycle PRIVATE/frozen-cycle/cycle.json --candidate small-30 --out outputs/runs/NEW-small-30
+.venv/bin/python backend/scripts/freeze_training_cycle.py --candidates PRIVATE/reviewed-train-valid.jsonl --history PRIVATE/exposures.jsonl --reviews PRIVATE/human-reviews.jsonl --configs data/training_candidates.example.json --protocol docs/NEXT_PHASE_PROTOCOL.md --isolation PRIVATE/os-isolation.json --out PRIVATE/frozen-cycle
+.venv/bin/python backend/training/train_local.py --cycle PRIVATE/frozen-cycle/cycle.json --candidate small-30 --out outputs/runs/NEW-small-30
 ```
 
 현재 자료로 첫 명령은 DATA_GATE_BLOCKED가 정답이다. `approval.json`의 수동 true 플래그 경로는 제거했다. launcher는 고정 파일과 live 검수/이력/OS 접근을 재확인하고 singleton 모델 lock을 확보한 후에만 후보 예산을 예약한다. runtime/training-attempts.jsonl에 실패·시간초과·중단도 사용 횟수로 기록한다. 새 freeze 폴더가 예산을 초기화하지 않으며 자동 reset/네 번째 실행 경로는 없다. 같은 UID가 파일/코드를 직접 고치거나 MLX 명령을 직접 실행하는 것까지 방지하는 OS 보안 장치는 아니다.
@@ -82,7 +82,7 @@
 
 실험 전에 동일 sample ID/공개 증거 버전·해시/참고 자료 접근 범위/모델ID·revision·양자화·config·tokenizer·chat template/생성/출력·복구/평가기/장비/검증셋 선택 고정 해시/최종셋 해시를 정한다. B/D/F는 같은 실제 어댑터를 사용한다. A/C/E는 어댑터를 로드하지 않는다. A~D는 모델 호출1회, E/F는 최대4회/복구1회이며 추가 호출/토큰/시간을 모두 보고한다. 정보까지 달라지면 순수 에이전트 효과가 아닌 전체 시스템 비교다.
 
-`evaluation/compare_af.py`는 A.json~F.json이 모두 있을 때만 조건과 비용 지표를 확인한다. 누락 행을 채우거나 효과를 추정하지 않는다. 이 비교 검사기가 전체 여섯 실행기를 구현/검증했다는 뜻은 아니다. 실제 독립 자료와 승인 RAG 코퍼스가 확보되면 각 실행 경로의 실제 추론과 인용·검색 Recall/MRR를 먼저 검증해야 한다.
+`backend/evaluation/compare_af.py`는 A.json~F.json이 모두 있을 때만 조건과 비용 지표를 확인한다. 누락 행을 채우거나 효과를 추정하지 않는다. 이 비교 검사기가 전체 여섯 실행기를 구현/검증했다는 뜻은 아니다. 실제 독립 자료와 승인 RAG 코퍼스가 확보되면 각 실행 경로의 실제 추론과 인용·검색 Recall/MRR를 먼저 검증해야 한다.
 
 ## 로컬 운영 정책과 판정
 
