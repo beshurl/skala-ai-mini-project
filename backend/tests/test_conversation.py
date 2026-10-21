@@ -40,6 +40,21 @@ def app_at(tmp_path, model=None):
     return create_app(tmp_path/'cases.db',model or ChatModel(),testing=True)
 
 
+def test_unclassified_case_is_readable_but_cannot_start_model_conversation(tmp_path):
+    model=ChatModel()
+    app=app_at(tmp_path,model)
+    with TestClient(app) as c:
+        case=enter(c)
+        path=f'/api/cases/{case["case_id"]}/conversation'
+        with app.state.store.db() as db:
+            db.execute("UPDATE case_lifecycle SET data_class='unclassified' WHERE case_id=?",(case['case_id'],))
+        assert c.get(path).status_code==200
+        result=c.post(path,json={'question':'공개 기록을 설명해줘','request_id':uuid.uuid4().hex,'evidence_version':1})
+        assert result.status_code==409 and result.json()['error']=='CASE_PROVENANCE_REVIEW_REQUIRED'
+        assert model.prompts==[]
+        assert c.get(path).json()['turns']==[]
+
+
 def test_followup_fresh_evidence_citations_history_persistence_and_analysis_separation(tmp_path):
     model=ChatModel()
     with TestClient(app_at(tmp_path,model)) as c:

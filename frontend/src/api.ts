@@ -16,6 +16,7 @@ export const errors: Record<string, string> = {
   ANALYSIS_QUEUE_FULL: '대기열이 가득 찼습니다. 진행 중인 작업이 끝난 뒤 다시 요청하세요.',
   JOB_ALREADY_ACTIVE: '이 사건의 분석이 진행 중입니다. 상태를 새로고침하세요.',
   CASE_CLOSED: '종료된 사건입니다. 사건 관리에서 검토를 재개한 뒤 진행하세요.',
+  CASE_PROVENANCE_REVIEW_REQUIRED: '자료 출처와 처리 승인을 확인해야 하는 읽기 전용 사건입니다. 현재 공개 기록과 과거 분석을 확인하세요.',
   CASE_HAS_ACTIVE_JOB: '진행 중인 분석이 있어 사건을 종료할 수 없습니다. 분석 상태를 확인하세요.',
   LIFECYCLE_REVISION_CHANGED: '사건의 종료·보류 상태가 바뀌었습니다. 현재 상태를 확인한 뒤 다시 선택하세요.',
   CLOCK_BEFORE_CASE_CREATION: '서버 시각을 확인해야 합니다. 사건 생성일보다 앞선 날짜로 종료할 수 없습니다.',

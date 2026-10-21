@@ -36,6 +36,8 @@ def create_turn(store, owner, case_id, version, request_id, question, after_turn
         if prior:
             return prior, False
         snapshot = store.snapshot(owner, case_id, version)
+        if lifecycle.state(db, owner, case_id)["data_class"] != "synthetic_fixture":
+            raise Conflict("CASE_PROVENANCE_REVIEW_REQUIRED")
         lifecycle.require_open(db, owner, case_id)
         latest = db.execute("SELECT id FROM jobs WHERE owner=? AND case_id=? AND json_extract(snapshot,'$.conversation.contract')=? ORDER BY created DESC,rowid DESC LIMIT 1", (owner, case_id, CONTRACT)).fetchone()
         if after_turn_id != (latest["id"] if latest else None):
