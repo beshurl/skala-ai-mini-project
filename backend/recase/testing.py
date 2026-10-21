@@ -20,7 +20,13 @@ class FixtureModel:
             if cancel and cancel.is_set():
                 raise InterruptedError("CANCELLED")
             time.sleep(.01)
-        if "\nINPUT_JSON=" in prompt and not self.invalid:
+        if "\nCONVERSATION_JSON=" in prompt and not self.invalid:
+            data = json.loads(prompt.split("\nCONVERSATION_JSON=", 1)[1])
+            evidence = data["evidence"]
+            citations = [{"evidence_id": e["evidence_id"], "quote": e["text"][:100]} for e in evidence[:2]]
+            text = json.dumps({"status": "INSUFFICIENT", "paragraphs": [{"text": "합성 응답입니다. 공개 원문 연결과 후속 질문 흐름을 확인하며 실제 추론 성능을 나타내지 않습니다.", "citations": citations}] if citations else [],
+                               "missing_information": ["실제 모델의 해석과 독립 검증"], "follow_up_questions": ["현재 자료에서 더 확인해야 할 점은 무엇인가요?"]}, ensure_ascii=False)
+        elif "\nINPUT_JSON=" in prompt and not self.invalid:
             data = json.loads(prompt.split("\nINPUT_JSON=", 1)[1])
             evidence = data["evidence"]
             citations = [{"evidence_id":e["evidence_id"],"quote":e["text"][:100]} for e in evidence[:2]]

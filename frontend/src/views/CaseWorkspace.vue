@@ -7,6 +7,7 @@ import ModelDetails from "../components/ModelDetails.vue";
 import CaseLifecycle from "../components/CaseLifecycle.vue";
 import GeneralReview from "../components/GeneralReview.vue";
 import GeneralCaseComposer from "../components/GeneralCaseComposer.vue";
+import CaseConversation from "../components/CaseConversation.vue";
 import {quoteParts} from "../quotes";
 const props = defineProps({ caseId: String });
 
@@ -34,6 +35,7 @@ const reviewFor = id => job.value?.result?.reasoning?.reviews.find(r=>r.claim_id
 const practiceNotice = ref("");
 const lifecycle = ref(null), lifecycleBusy = ref(false), workspaceHeading = ref(null);
 const lifecycleRefreshKey = ref(0);
+const conversationActive = ref(false);
 const filteredCases = computed(() => cases.value.filter(c => `${c.title} ${c.summary}`.toLocaleLowerCase().includes(search.value.trim().toLocaleLowerCase())));
 let stream = null,
   selection = 0;
@@ -45,7 +47,7 @@ const terminal = new Set([
   "STALE",
 ]);
 const active = computed(() => job.value && !terminal.has(job.value.status));
-const activeCaseJob = computed(() => active.value || jobs.value.some(j => !terminal.has(j.status)));
+const activeCaseJob = computed(() => conversationActive.value || active.value || jobs.value.some(j => !terminal.has(j.status)));
 const caseReadOnly = computed(() => !lifecycle.value || !!lifecycle.value.closed_at || lifecycle.value.evidence_version !== detail.value?.evidence_version);
 const caseWriteBlocked = computed(() => busy.value || lifecycleBusy.value || activeCaseJob.value || caseReadOnly.value);
 const completed = computed(() => jobs.value.filter((j) => j.result));
@@ -342,6 +344,7 @@ function clearCase() {
   error.value = "";
   lifecycle.value = null;
   lifecycleBusy.value = false;
+  conversationActive.value = false;
   document.title = '사건 기록 · RE:CASE';
 }
 watch(() => props.caseId, id => {
@@ -458,7 +461,7 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
           }}
         </button>
       </section>
-      <nav class="workspace-jumps" aria-label="사건 검토 영역"><a href="#evidence-heading">공개 증거 ↓</a><a href="#analysis-heading">분석과 판단 ↓</a></nav>
+      <nav class="workspace-jumps" aria-label="사건 검토 영역"><a href="#evidence-heading">공개 증거 ↓</a><a href="#conversation-heading">사건에 질문 ↓</a><a href="#analysis-heading">분석과 판단 ↓</a></nav>
       <CaseLifecycle :key="detail.case_id" :case-id="detail.case_id" :evidence-version="detail.evidence_version" :refresh-key="lifecycleRefreshKey" :api="api" :active="!!activeCaseJob" :busy="busy" @state="lifecycleState" @pending="lifecyclePending" @refresh-case="action(()=>selectCase(detail.case_id))" />
       <div class="workspace-grid">
         <section class="evidence-column" aria-labelledby="evidence-heading">
@@ -512,6 +515,7 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
           </div>
         </section>
         <section class="analysis-column" aria-labelledby="analysis-heading">
+          <CaseConversation :key="detail.case_id" :case-id="detail.case_id" :version="detail.evidence_version" :api="api" :read-only="caseReadOnly" :busy="busy || lifecycleBusy || !!active" :evidence-title="evidenceTitle" @cite="showCitation" @active="conversationActive=$event" />
           <div class="section-heading">
             <h2 id="analysis-heading">분석과 판단</h2>
             <button

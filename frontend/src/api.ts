@@ -1,4 +1,10 @@
 export const errors: Record<string, string> = {
+  CHAT_HISTORY_CHANGED:'다른 대화가 먼저 저장되었습니다. 대화를 새로고침한 뒤 질문을 보내세요.',
+  CHAT_REQUEST_CONFLICT:'같은 전송 요청의 내용이 달라졌습니다. 대화 기록에서 저장 여부를 확인하세요.',
+  CHAT_CONTEXT_LIMIT:'현재 증거와 질문이 모델 문맥 한도를 넘습니다. 질문이나 가상 자료의 범위를 줄이세요.',
+  CHAT_INPUT_BUDGET:'대화에 사용할 공개 자료 범위를 넘었습니다. 최대 24개 자료, 원문 합계 24,000자까지 지원합니다.',
+  CHAT_OUTPUT_INVALID:'답변의 형식 또는 원문 인용을 확인하지 못해 내용을 표시하지 않았습니다. 원문을 확인하고 새 질문을 작성하세요.',
+  CHAT_MODEL_FAILED:'모델 실행에 실패했습니다. 서버 상태를 확인한 뒤 새 질문을 작성하세요.',
   GENERAL_OUTPUT_INVALID:'다중 증거 분석의 원문 인용 또는 출력 검증에 실패했습니다. 원문과 실행 정보를 확인하세요.',
   GENERAL_CONTEXT_LIMIT:'모델 입력 한도를 넘었습니다. 사건을 나누어 작성하거나 검토할 원문 범위를 줄이세요.',
   GENERAL_INPUT_BUDGET:'주장·자료 처리 범위를 넘었습니다. 최대 8개 주장, 24개 자료, 원문 합계 24,000자까지 지원합니다.',

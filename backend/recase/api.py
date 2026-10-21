@@ -39,6 +39,20 @@ class VersionRequest(BaseModel):
     evidence_version: int = Field(ge=1)
 
 
+class ConversationRequest(VersionRequest):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    request_id: str = Field(pattern=r"^[a-f0-9]{32}$")
+    question: str = Field(min_length=1, max_length=1500)
+    after_turn_id: str | None = Field(default=None, pattern=r"^JOB-[a-f0-9]{16}$")
+
+    @field_validator("question")
+    @classmethod
+    def nonblank_question(cls, value):
+        if not value.strip():
+            raise ValueError("Explicit question required")
+        return value.strip()
+
+
 class LifecycleRequest(VersionRequest):
     model_config = ConfigDict(extra="forbid", strict=True)
     lifecycle_revision: int = Field(ge=1)
@@ -327,6 +341,30 @@ def create_app(db_path=None, model=None, testing=False, deletions_file=None, acc
     def analyses(case_id: str, request: Request):
         return app.state.store.jobs(session(request)["user_id"], case_id)
 
+    @app.get("/api/cases/{case_id}/conversation")
+    def conversation(case_id: str, request: Request, before: str | None = None):
+        from recase.conversation_store import list_turns
+        return list_turns(app.state.store, session(request)["user_id"], case_id, before)
+
+    @app.post("/api/cases/{case_id}/conversation", status_code=202)
+    async def ask(case_id: str, body: ConversationRequest, request: Request):
+        from recase.conversation_store import create_turn, replay_turn
+        owner = session(request, True)["user_id"]
+        args = (app.state.store, owner, case_id, body.evidence_version, body.request_id, body.question, body.after_turn_id)
+        prior = replay_turn(*args)
+        if prior:
+            return prior
+        if not app.state.ready:
+            raise HTTPException(503, detail="MODEL_NOT_READY")
+        if app.state.worker.queue.full():
+            raise HTTPException(429, detail="ANALYSIS_QUEUE_FULL")
+        job, created = create_turn(*args, app.state.model.info)
+        if created:
+            request.state.trace_id = job["id"]
+            app.state.worker.request_ids[job["id"]] = request.state.request_id
+            app.state.worker.queue.put_nowait((owner, job["id"]))
+        return job
+
     @app.get("/api/jobs/{job_id}")
     def job(job_id: str, request: Request):
         return app.state.store.job(session(request)["user_id"], job_id)
@@ -370,7 +408,7 @@ def create_app(db_path=None, model=None, testing=False, deletions_file=None, acc
         owner = session(request)["user_id"]
         app.state.store.snapshot(owner, case_id)
         a, b = (app.state.store.job(owner, i) for i in (before, after))
-        if any(j["case_id"] != case_id or not j["result"] for j in (a, b)):
+        if any(j["case_id"] != case_id or j["kind"] != "analysis" or not j["result"] for j in (a, b)):
             raise Conflict("COMPARABLE_RESULTS_REQUIRED")
         if a["id"] == b["id"] or a["created"] >= b["created"]:
             raise Conflict("CHRONOLOGICAL_RESULTS_REQUIRED")
