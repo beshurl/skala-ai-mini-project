@@ -204,6 +204,11 @@ class Store:
         result = dict(row)
         for key in ("snapshot", "result", "model"):
             result[key] = json.loads(result[key]) if result[key] else None
+        conversation = result["snapshot"].get("conversation", {})
+        result["kind"] = "conversation" if conversation.get("contract") == "case-conversation-v1" else "analysis"
+        if result["kind"] == "conversation":
+            result["question"] = conversation["question"]
+            result["request_id"] = conversation["request_id"]
         if not private:
             result.pop("snapshot")
             result.pop("owner")
@@ -212,7 +217,7 @@ class Store:
     def jobs(self, owner, case_id):
         self.snapshot(owner, case_id)
         with self.db() as db:
-            ids = [r[0] for r in db.execute("SELECT id FROM jobs WHERE owner=? AND case_id=? ORDER BY created DESC LIMIT 100", (owner, case_id))]
+            ids = [r[0] for r in db.execute("SELECT id FROM jobs WHERE owner=? AND case_id=? AND json_extract(snapshot,'$.conversation.contract') IS NULL ORDER BY created DESC LIMIT 100", (owner, case_id))]
         return [self.job(owner, i) for i in ids]
 
     def event(self, job_id, event_type, payload=None):

@@ -337,3 +337,19 @@ preparation-plan.json은 execution_ready=false/executable=null인 준비본이�
 사용자 제공 SafetyDream 키는 프로젝트 밖 개인 저장소의 새0600 파일에 보관했다. 공식 HTTPS POST 최소 조회1회에 HTTP200/result00·반환1건·totalCount321을 확인했다. 원문/개인정보 저장0·키 출력/URL 노출0·전체 인증 수집/전처리/학습 NOT_RUN. 연결 결과는 개인 저장소 connection_checks/에 보관하며 키를 Git에 넣지 않는다. 모델 실행 세션 도구는 소스/시뮬레이션만 검증했으며 실제 sudo·서비스 중지/재개·학습/모델 요청은 실행하지 않았다.
 
 게시 직전 병행 추가된 FAILED/CANCELLED/STALE 작업의 후속 모델 중단 조건과 복구 테스트를 포함했다. backend-reasoning-final.json/log: 10:18:30~10:18:35 KST, pytest -q backend/tests/test_reasoning_session.py backend/tests/test_reasoning_evaluation.py, exit0/15 PASS. 전체271 PASS 이후 변경한 두 소스에 대한 후속 검증이다.
+
+
+## 2026-10-21 사건별 대화 구현 — 20261021T102531+0900-case-conversation-b79dc2
+
+사용자의 대화형 기능 추가 요청으로 back/feature/recase-case-conversation의 별도 worktree에 구현했다. 원본의 고정 모델 평가 계획과 병행 문서/운영 소스를 보존한다. 기존 jobs·단일 Worker/MCP/모델을 사용해 사건별 질문/답변·최근3개 맥락·정확 원문 인용·현재/과거 증거 버전·20개 cursor를 연결했다. 요청 ID 재확인으로 새 모델 중복 호출을 방지하고 네트워크 오류 시 초안 보존·늦은 다른 화면 응답 거부·취소를 추가했다. 실제 모델/학습/서비스 중지·배포/키 출력/외부 전송0이다.
+
+backend-tests.json/log: 10:33:29~10:34:50 KST, 기존 venv/python -m pytest -q backend/tests, exit0/285 PASS(새13개). frontend-final-checks.json: 10:36:21~10:36:23 KST, npm --prefix frontend test/typecheck/build 모두 exit0/22 tests PASS(새6개). 후속 문구 수정의 frontend-copy-final.json:10:39:12~10:39:14 타입/빌드 exit0. 실행 cwd는 run/source이고 원본 frontend/dist·실제 UID499·원래 model.lock을 바꾸지 않았다. 실모델 성능 NOT_RUN/NOT_MEASURED다.
+
+실제 브라우저의 모의 계정에서 질문3개·후속/Enter·정확 인용 원문 포커스·v1→v2/이전 버전 표시·재로그인 후 보존을 확인했다. 최초 재로딩이 로그인으로 이동한 이력은 남겼으며 미리보기만의 쿠키 이름과 새 DB/journal로 분리했다. 모바일/마감 검토·비밀값/원본 보존 검사·최종 Git 결과는 같은 run에 기록한다. 자동 작업 폴더 도구가 다른 저장소의 pristine checkout을 생성해 그 사본만 정리한 뒤 올바른 프로젝트의 worktree로 교정했다. 최초 프론트 작성 경로 오류는 파일 변경0으로 보존하고 올바른 경로에서 실제 작성/검증했다.
+
+
+## 2026-10-21 사건 대화·프론트 QA 게시 통합 — 20261021T132444+0900-ui-conversation-integration-5a2925
+
+사용자 커밋·푸시·병합/백엔드 수정 요청으로 기존 사건 대화 브랜치 b37ae8e와 화면 QA를 별도 소스 사본에서 통합했다. 미검수 출처의 새 대화를 서버에서 거부하고, 공통 버튼 디자인·분석 이력 링크/로그인 복귀·사건 목록 우선순위와 모바일 긴 내용 표시를 보완했다. 메인의 최신 스크롤·읽기 전용 UI를 보존하며 메인 작성 중인 별도 backend/검수 소스는 게시하지 않는다.
+
+게시 사본 backend286/frontend24·npm offline ci/typecheck/build PASS, 메인 동시 소스 통합 사본 backend379·후속 승인/API 관련35 PASS. 브라우저 모의 질문3·후속/인용/v1-v2/기존 분석/재로딩·320/390/1280px PASS·console0이다. source-only 검증이며 실제 MLX 대화 품질 NOT_MEASURED·학습/UID499 운영배포0·8100 제어/공유잠금 변경0이다. 상세 범위는 docs/FRONTEND_QA.md·CASE_CONVERSATION.md, 실제 Git SHA/명령·비밀값 검사 결과는 고유 run에 기록한다. 기존 평가/학습 계획은 소스 해시가 다르면 재사용하지 않는다.

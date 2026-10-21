@@ -2,7 +2,13 @@ import { shallowRef } from 'vue';
 export const location = shallowRef(window.location.pathname);
 export const query = shallowRef(window.location.search);
 export function safeNext(value: string|null): string {
-  return value && /^\/(?:cases(?:\/[A-Za-z0-9_-]+)?|history|settings|admin(?:\/[a-z]+)?)$/.test(value) ? value : '/cases';
+  if(!value)return '/cases';
+  if(/^\/(?:cases(?:\/[A-Za-z0-9_-]+)?|history|settings|admin(?:\/[a-z]+)?)$/.test(value))return value;
+  // A saved analysis may survive sign-in; arbitrary queries still cannot.
+  return /^\/cases\/[A-Za-z0-9_-]+\?job=[A-Za-z0-9_-]+$/.test(value) ? value : '/cases';
+}
+export function loginPathFor(pathname: string, search = ''): string {
+  return '/login?next=' + encodeURIComponent(safeNext(pathname + search));
 }
 function syncLocation() {
   location.value = window.location.pathname;
@@ -11,9 +17,10 @@ function syncLocation() {
 window.addEventListener('popstate', syncLocation);
 export function navigate(path: string) {
   if (path === window.location.pathname + window.location.search) return;
+  const previousPath = window.location.pathname;
   window.history.pushState(null, '', path);
   syncLocation();
-  window.scrollTo({top: 0, behavior: 'instant'});
+  if (window.location.pathname !== previousPath) window.scrollTo({top: 0, behavior: 'instant'});
 }
 export function followLink(event: MouseEvent) {
   const a = (event.target as Element)?.closest('a');

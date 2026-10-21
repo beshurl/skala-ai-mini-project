@@ -50,12 +50,16 @@ class Worker:
                     self.store.set_status(owner, job_id, "CANCELLED", error="CANCELLED")
                     continue
                 self.store.set_status(owner, job_id, "RUNNING")
-                result = await build_graph(self.store, self.mcp, self.model, flag).ainvoke({"job": job}, config={"recursion_limit": 8, "callbacks": []})
+                if job["kind"] == "conversation":
+                    from recase.conversation import answer_turn
+                    result = await answer_turn(self.store, self.mcp, self.model, job, flag)
+                else:
+                    result = await build_graph(self.store, self.mcp, self.model, flag).ainvoke({"job": job}, config={"recursion_limit": 8, "callbacks": []})
                 current = self.store.job(owner, job_id)
                 if flag.is_set():
                     self.store.set_status(owner, job_id, "CANCELLED" if current["cancel_requested"] else "FAILED", error="CANCELLED" if current["cancel_requested"] else "ANALYSIS_TIMEOUT")
                 else:
-                    partial = any(code in result["result"]["limitations"] for code in ("MODEL_OUTPUT_INVALID", "RETRIEVAL_INSUFFICIENT", "GENERAL_OUTPUT_INVALID", "GENERAL_CONTEXT_LIMIT", "GENERAL_INPUT_BUDGET", "GENERAL_MODEL_FAILED"))
+                    partial = any(code in result["result"]["limitations"] for code in ("MODEL_OUTPUT_INVALID", "RETRIEVAL_INSUFFICIENT", "GENERAL_OUTPUT_INVALID", "GENERAL_CONTEXT_LIMIT", "GENERAL_INPUT_BUDGET", "GENERAL_MODEL_FAILED", "CHAT_CONTEXT_LIMIT", "CHAT_INPUT_BUDGET", "CHAT_OUTPUT_INVALID", "CHAT_MODEL_FAILED"))
                     self.store.set_status(owner, job_id, "PARTIAL" if partial else "COMPLETED", result=result["result"])
             except InterruptedError:
                 current = self.store.job(owner, job_id)
@@ -74,8 +78,8 @@ class Worker:
                         current = self.store.job(owner, job_id)
                         outcome = "SUCCESS" if current["status"] == "COMPLETED" else "CANCELLED" if current["status"] == "CANCELLED" else "INVALID" if current["status"] == "PARTIAL" else "ERROR"
                         limitations = current["result"]["limitations"] if current["result"] else []
-                        error = current["error"] or next((code for code in limitations if code in {"MODEL_OUTPUT_INVALID", "RETRIEVAL_INSUFFICIENT", "GENERAL_OUTPUT_INVALID", "GENERAL_CONTEXT_LIMIT", "GENERAL_INPUT_BUDGET", "GENERAL_MODEL_FAILED"}), None)
-                        self.observations.record(component="system", event="analysis_finished", operation="analysis", outcome=outcome, error=error)
+                        error = current["error"] or next((code for code in limitations if code in {"MODEL_OUTPUT_INVALID", "RETRIEVAL_INSUFFICIENT", "GENERAL_OUTPUT_INVALID", "GENERAL_CONTEXT_LIMIT", "GENERAL_INPUT_BUDGET", "GENERAL_MODEL_FAILED", "CHAT_CONTEXT_LIMIT", "CHAT_INPUT_BUDGET", "CHAT_OUTPUT_INVALID", "CHAT_MODEL_FAILED"}), None)
+                        self.observations.record(component="system", event="conversation_finished" if current["kind"] == "conversation" else "analysis_finished", operation=current["kind"], outcome=outcome, error=error)
                     except Exception:
                         self.observations.dropped += 1
                 trace_context.reset(trace_token)

@@ -1,12 +1,13 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from "vue";
 import { createApiClient, errors } from "../api";
-import { navigate } from "../navigation";
+import { navigate, query } from "../navigation";
 import SiteHeader from "../components/SiteHeader.vue";
 import ModelDetails from "../components/ModelDetails.vue";
 import CaseLifecycle from "../components/CaseLifecycle.vue";
 import GeneralReview from "../components/GeneralReview.vue";
 import GeneralCaseComposer from "../components/GeneralCaseComposer.vue";
+import CaseConversation from "../components/CaseConversation.vue";
 import {quoteParts} from "../quotes";
 const props = defineProps({ caseId: String });
 
@@ -25,6 +26,7 @@ const connected = ref(""),
   beforeId = ref(""),
   selectedEvidence = ref("");
 const search = ref("");
+const composer = ref(null);
 const selectedQuote = ref(null);
 const selectedQuoteParts = computed(()=>{
   const source=detail.value?.evidence.find(e=>e.id===selectedQuote.value?.evidence_id);
@@ -34,6 +36,7 @@ const reviewFor = id => job.value?.result?.reasoning?.reviews.find(r=>r.claim_id
 const practiceNotice = ref("");
 const lifecycle = ref(null), lifecycleBusy = ref(false), workspaceHeading = ref(null);
 const lifecycleRefreshKey = ref(0);
+const conversationActive = ref(false);
 const filteredCases = computed(() => cases.value.filter(c => `${c.title} ${c.summary}`.toLocaleLowerCase().includes(search.value.trim().toLocaleLowerCase())));
 let stream = null,
   selection = 0;
@@ -45,8 +48,9 @@ const terminal = new Set([
   "STALE",
 ]);
 const active = computed(() => job.value && !terminal.has(job.value.status));
-const activeCaseJob = computed(() => active.value || jobs.value.some(j => !terminal.has(j.status)));
-const caseReadOnly = computed(() => !lifecycle.value || !!lifecycle.value.closed_at || lifecycle.value.evidence_version !== detail.value?.evidence_version);
+const activeCaseJob = computed(() => conversationActive.value || active.value || jobs.value.some(j => !terminal.has(j.status)));
+const provenanceReadOnly = computed(() => detail.value?.read_only === true);
+const caseReadOnly = computed(() => provenanceReadOnly.value || !lifecycle.value || !!lifecycle.value.closed_at || lifecycle.value.evidence_version !== detail.value?.evidence_version);
 const caseWriteBlocked = computed(() => busy.value || lifecycleBusy.value || activeCaseJob.value || caseReadOnly.value);
 const completed = computed(() => jobs.value.filter((j) => j.result));
 const eligibleBefore = computed(() =>
@@ -212,8 +216,9 @@ async function selectCase(id) {
   lifecycleRefreshKey.value++;
   document.title = `${data.title} · RE:CASE`;
   jobs.value = history;
-  job.value = jobs.value.find(j=>j.id === requestedJob) || jobs.value[0] || null;
-  navigate(`/cases/${encodeURIComponent(id)}`);
+  const requested = jobs.value.find(j=>j.id === requestedJob);
+  job.value = requested || jobs.value[0] || null;
+  navigate(`/cases/${encodeURIComponent(id)}${requested ? `?job=${encodeURIComponent(requested.id)}` : ''}`);
   if (active.value) subscribe(job.value.id);
   if(!booting.value) {await nextTick();workspaceHeading.value?.focus();}
 }
@@ -258,6 +263,7 @@ async function analyze() {
       method: "POST",
       body: JSON.stringify({ evidence_version: detail.value.evidence_version }),
     });
+    navigate(`/cases/${encodeURIComponent(detail.value.case_id)}?job=${encodeURIComponent(job.value.id)}`);
     comparison.value = null;
     beforeId.value = "";
     subscribe(job.value.id);
@@ -276,6 +282,7 @@ async function release() {
   });
 }
 async function cancel() {
+  if(provenanceReadOnly.value) return;
   await action(async () => {
     await api(`/api/jobs/${job.value.id}/cancel`, { method: "POST" });
     await refreshJob();
@@ -286,7 +293,10 @@ async function inspectJob(item) {
   comparison.value = null;
   beforeId.value = "";
   events.value = [];
+  selectedEvidence.value = "";
+  selectedQuote.value = null;
   disconnect();
+  navigate(`/cases/${encodeURIComponent(detail.value.case_id)}?job=${encodeURIComponent(item.id)}`);
   if (active.value) subscribe(item.id);
 }
 async function compare() {
@@ -342,11 +352,18 @@ function clearCase() {
   error.value = "";
   lifecycle.value = null;
   lifecycleBusy.value = false;
+  conversationActive.value = false;
   document.title = '사건 기록 · RE:CASE';
 }
 watch(() => props.caseId, id => {
   if(!id) {clearCase();nextTick(()=>workspaceHeading.value?.focus());}
   else if(session.value && id !== detail.value?.case_id) action(() => selectCase(id));
+});
+watch(query, value => {
+  if(booting.value || !detail.value || active.value || window.location.pathname!==`/cases/${encodeURIComponent(detail.value.case_id)}`)return;
+  const requested = new URLSearchParams(value).get('job');
+  const selected = requested ? jobs.value.find(item=>item.id===requested) : jobs.value[0];
+  if(selected && selected.id!==job.value?.id) void inspectJob(selected);
 });
 onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
 </script>
@@ -379,30 +396,38 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
   </main>
   <main v-else-if="!caseId" id="workspace" class="case-library">
     <div class="library-heading">
+      <div>
       <h1 ref="workspaceHeading" tabindex="-1">사건 기록</h1>
       <p>미제사건 재수사를 위한 진술·증거 대조와 새 증거 전후의 분석 비교를 체험합니다.</p>
+      </div>
+      <button class="secondary library-create" :disabled="busy" aria-label="새 가상 사건 작성 폼 열기" aria-controls="library-composer" @click="composer?.open()">새 가상 사건 작성 <span aria-hidden="true">＋</span></button>
     </div>
     <p v-if="model?.backend==='fixture'" class="fixture-notice" role="status">테스트 모드 · 실제 모델을 호출하지 않는 예시 분석입니다.</p>
-    <GeneralCaseComposer :create-case="createGeneralCase" :disabled="busy" />
-    <section class="practice-entry" aria-labelledby="practice-heading">
-      <div><h2 id="practice-heading">직접 테스트하기</h2><p>신원 확인, 증거 부족, 다른 날짜의 기록을 다루는 가상 사건입니다. 각 사건에서 새 증거를 두 번 공개해 판단을 비교하세요.</p></div>
-      <button class="secondary" :disabled="busy" @click="addPractice">테스트 사건 3개 추가</button>
-      <button class="secondary" :disabled="busy" @click="addGeneralPractice">다중 증거 검토용 사건 12개 추가</button>
-      <p v-if="practiceNotice" class="practice-notice" role="status">{{practiceNotice}}</p>
-    </section>
+    <p v-if="practiceNotice" class="practice-notice" role="status">{{practiceNotice}}</p>
     <div class="library-toolbar">
       <h2>{{search.trim() ? `검색 결과 ${filteredCases.length}건` : `전체 ${cases.length}건`}}</h2>
       <label class="case-search"><span class="sr-only">사건 검색</span><input v-model="search" aria-label="사건 검색" type="search" placeholder="제목·내용 검색" /></label>
     </div>
     <div class="case-list" v-if="filteredCases.length">
       <div class="case-list-head" aria-hidden="true"><span>사건</span><span>증거 버전</span><span></span></div>
-      <button v-for="c in filteredCases" :key="c.id" class="case-file" :disabled="busy" @click="action(()=>selectCase(c.id))" :aria-label="`${c.title} 합성 기록 · 증거 v${c.version}`">
+      <button v-for="c in filteredCases" :key="c.id" class="case-file" :disabled="busy" @click="action(()=>selectCase(c.id))" :aria-label="`${c.title} 사건 기록 · 증거 v${c.version}`">
         <span class="file-content"><strong>{{c.title}}</strong><span class="file-summary">{{c.summary}}</span></span>
         <span class="file-version">v{{c.version}}</span>
         <span class="file-open">{{busy?'불러오는 중':'열기'}} <span aria-hidden="true">→</span></span>
       </button>
     </div>
     <div v-else class="library-empty"><h3>{{search?'일치하는 사건이 없습니다.':'아직 사건이 없습니다.'}}</h3><p>{{search?'다른 검색어로 찾아보세요.':'새 합성 데모를 시작해 사건을 불러오세요.'}}</p><button v-if="search" class="subtle" @click="search=''">검색 초기화</button></div>
+    <div class="library-tools">
+      <GeneralCaseComposer id="library-composer" ref="composer" :create-case="createGeneralCase" :disabled="busy" />
+      <details class="practice-entry">
+        <summary>연습 사건 더 불러오기</summary>
+        <p>신원 확인, 증거 부족, 다른 날짜의 기록을 다루는 가상 사건입니다. 각 사건에서 새 증거를 두 번 공개해 판단을 비교하세요.</p>
+        <div class="practice-options">
+          <button class="secondary" :disabled="busy" @click="addPractice">테스트 사건 3개 추가</button>
+          <button class="secondary" :disabled="busy" @click="addGeneralPractice">다중 증거 검토용 사건 12개 추가</button>
+        </div>
+      </details>
+    </div>
     <div class="library-bottom"><div class="library-context"><p>사건과 분석 기록은 로그인한 계정에 저장됩니다.</p><ModelDetails :model="model" /></div><button class="secondary" aria-label="새 합성 사건 추가" :disabled="busy" @click="freshDemo">새 합성 사건 추가</button></div>
   </main>
   <div v-else class="shell">
@@ -422,7 +447,7 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
           @click="action(() => selectCase(c.id))"
         >
           <strong>{{ c.title }}</strong
-          ><span>합성 기록 · 증거 v{{ c.version }}</span>
+          ><span>사건 기록 · 증거 v{{ c.version }}</span>
         </button>
       </nav>
       <p class="sidebar-note">
@@ -458,8 +483,9 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
           }}
         </button>
       </section>
-      <nav class="workspace-jumps" aria-label="사건 검토 영역"><a href="#evidence-heading">공개 증거 ↓</a><a href="#analysis-heading">분석과 판단 ↓</a></nav>
-      <CaseLifecycle :key="detail.case_id" :case-id="detail.case_id" :evidence-version="detail.evidence_version" :refresh-key="lifecycleRefreshKey" :api="api" :active="!!activeCaseJob" :busy="busy" @state="lifecycleState" @pending="lifecyclePending" @refresh-case="action(()=>selectCase(detail.case_id))" />
+      <p v-if="provenanceReadOnly" class="version-notice" role="status">읽기 전용 사건입니다. 자료 출처와 처리 승인을 확인하기 전까지 공개 기록과 과거 분석만 열람할 수 있습니다. 새 질문·분석·증거 공개·사건 상태 변경은 잠겨 있습니다.</p>
+      <nav class="workspace-jumps" aria-label="사건 검토 영역"><a href="#evidence-heading">공개 증거 ↓</a><a href="#conversation-heading">사건에 질문 ↓</a><a href="#analysis-heading">분석과 판단 ↓</a></nav>
+      <CaseLifecycle :key="detail.case_id" :case-id="detail.case_id" :evidence-version="detail.evidence_version" :refresh-key="lifecycleRefreshKey" :api="api" :active="!!activeCaseJob" :busy="busy" :read-only="provenanceReadOnly" @state="lifecycleState" @pending="lifecyclePending" @refresh-case="action(()=>selectCase(detail.case_id))" />
       <div class="workspace-grid">
         <section class="evidence-column" aria-labelledby="evidence-heading">
           <div class="section-heading">
@@ -496,7 +522,9 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
             </h3>
             <p>
               {{
-                detail.pending_count
+                provenanceReadOnly
+                  ? "읽기 전용으로 새 증거 공개가 잠겨 있습니다."
+                  : detail.pending_count
                   ? "새 증거가 공개되면 현재 증거로 다시 분석할 수 있습니다."
                   : "이전 분석과 현재 결과를 비교할 수 있습니다."
               }}
@@ -512,6 +540,7 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
           </div>
         </section>
         <section class="analysis-column" aria-labelledby="analysis-heading">
+          <CaseConversation :key="detail.case_id" :case-id="detail.case_id" :version="detail.evidence_version" :api="api" :read-only="caseReadOnly" :busy="busy || lifecycleBusy || !!active" :evidence-title="evidenceTitle" @cite="showCitation" @active="conversationActive=$event" />
           <div class="section-heading">
             <h2 id="analysis-heading">분석과 판단</h2>
             <button
@@ -531,7 +560,7 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
           <div v-if="!job" class="empty-state">
             <h3>아직 분석 결과가 없습니다.</h3>
             <p>
-              공개 증거를 확인한 뒤 ‘분석 시작’을 누르세요.
+              {{ provenanceReadOnly ? '읽기 전용 사건에는 새 분석을 요청할 수 없습니다. 현재 공개 기록을 확인하세요.' : '공개 증거를 확인한 뒤 ‘분석 시작’을 누르세요.' }}
             </p>
           </div>
           <template v-else>
@@ -541,7 +570,7 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
               ><button
                 v-if="active"
                 class="subtle"
-                :disabled="busy || !!job.cancel_requested"
+                :disabled="provenanceReadOnly || busy || !!job.cancel_requested"
                 @click="cancel"
               >
                 {{job.cancel_requested ? '취소 요청됨' : '분석 취소'}}</button
@@ -560,7 +589,7 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
             >
               이 결과에 사용된 증거는 v{{ job.version }}입니다. 현재 v{{
                 detail.evidence_version
-              }}의 새 증거를 반영하려면 재분석하세요.
+              }}입니다. {{ provenanceReadOnly ? '읽기 전용 사건에서는 과거 결과를 그대로 확인할 수 있습니다.' : '새 증거를 반영하려면 재분석하세요.' }}
             </p>
             <p v-if="job.error" class="job-error" role="alert">
               {{ errors[job.error] || job.error }}
@@ -577,7 +606,7 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
                 </li>
               </ol>
             </details>
-            <template v-if="job.result">
+            <template v-if="Array.isArray(job.result?.findings)">
               <article
                 v-for="finding in job.result.findings"
                 :key="finding.claim_id"
@@ -708,6 +737,7 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
                 </div>
               </section>
             </template>
+            <p v-else-if="job.result" class="version-notice" role="status">이전 형식으로 저장된 결과라 현재 화면에서 상세 표시할 수 없습니다. 저장된 결과와 분석 이력은 그대로 보존하며, 형식 호환 확인이 필요합니다.</p>
           </template>
           <section class="history" v-if="jobs.length">
             <h3>분석 이력</h3>
@@ -734,7 +764,7 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
     </main>
   </div>
   <footer>
-    RE:CASE · 현재 체험에는 합성 사건을 사용합니다. 실제 사건의 사실·유죄 판단을 대신하지 않습니다.
+    RE:CASE · 분석 결과는 실제 사건의 사실·유죄 판단을 대신하지 않습니다.
   </footer>
 </div>
 </template>
@@ -742,9 +772,16 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
 <style scoped src="../style.css"></style>
 <style scoped>
 mark {background:var(--accent);color:var(--accent-ink);padding-inline:2px}
-.practice-entry {display:grid;grid-template-columns:1fr auto;gap:14px 28px;align-items:center;margin:24px 0 32px}
-.practice-entry h2 {font-size:16px;font-weight:550;margin:0 0 9px}
-.practice-entry p {max-width:66ch;font-size:14px;line-height:1.8;color:var(--muted);margin:0}
-.practice-entry .practice-notice {grid-column:1/-1;color:var(--text)}
-@media(max-width:700px){.practice-entry{grid-template-columns:1fr;align-items:start}.practice-entry button{justify-self:start}}
+.case-library,.workspace {overflow-wrap:anywhere}
+.file-summary {display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+.library-heading {display:flex;align-items:flex-start;justify-content:space-between;gap:28px}
+.library-heading>div {min-width:0;max-width:72ch}
+.library-create {display:inline-flex;align-items:center;gap:18px;flex-shrink:0}
+.library-tools {margin-block-start:32px}
+.practice-entry {margin-block:16px}
+.practice-entry summary {padding-block:12px;font-size:14px;font-weight:550;cursor:pointer}
+.practice-entry p {max-width:66ch;font-size:13px;line-height:1.8;color:var(--muted);margin:8px 0 0}
+.practice-options {display:flex;flex-wrap:wrap;gap:12px;margin-block-start:16px}
+.practice-notice {font-size:13px;line-height:1.8;margin-block:12px;color:var(--text)}
+@media(max-width:700px){.library-heading{flex-direction:column;gap:16px}.library-create{align-self:flex-start}.practice-options{align-items:flex-start;flex-direction:column}.practice-options button{max-width:100%;text-align:left;white-space:normal}}
 </style>

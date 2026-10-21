@@ -1,11 +1,19 @@
 <!-- Local Operate extension: explicit synthetic input, retained drafts, no retry. -->
 <script setup lang="ts">
-import { ref, reactive, useId } from 'vue';
+import { ref, reactive, useId, nextTick } from 'vue';
 const props=defineProps<{ createCase:(payload:Record<string,unknown>)=>Promise<void>; disabled?:boolean }>();
 const prefix=useId(), busy=ref(false), error=ref(''), confirmed=ref(false);
 const title=ref(''), summary=ref(''), claims=ref('');
 const creationId=ref(crypto.randomUUID().replaceAll('-',''));
 const evidence=reactive([{title:'',text:'',kind:'record',initially_released:true}]);
+const disclosure=ref<HTMLDetailsElement|null>(null), titleInput=ref<HTMLInputElement|null>(null);
+async function open(){
+  if(!disclosure.value)return;
+  disclosure.value.open=true;
+  await nextTick();
+  titleInput.value?.focus();
+}
+defineExpose({open});
 async function submit(){
   if(busy.value || props.disabled)return;
   busy.value=true;error.value='';
@@ -22,12 +30,12 @@ async function submit(){
 </script>
 
 <template>
-  <details class="case-composer">
+  <details ref="disclosure" class="case-composer">
     <summary>새 가상 사건 작성</summary>
     <p class="composer-help">여러 주장과 자료를 함께 검토할 수 있습니다. 실제 사건·판결문·개인정보를 넣지 마세요. 작성한 자료는 학습이나 검수 완료 데이터로 등록되지 않습니다.</p>
     <form @submit.prevent="submit">
       <fieldset :disabled="busy || disabled"><legend class="sr-only">가상 사건 입력</legend>
-        <label :for="`${prefix}-title`">사건 제목</label><input :id="`${prefix}-title`" v-model="title" required maxlength="120" />
+        <label :for="`${prefix}-title`">사건 제목</label><input ref="titleInput" :id="`${prefix}-title`" v-model="title" required maxlength="120" />
         <label :for="`${prefix}-summary`">사건 개요</label><textarea :id="`${prefix}-summary`" v-model="summary" maxlength="2000" rows="2" />
         <label :for="`${prefix}-claims`">검토할 주장 <span>한 줄에 하나, 최대 8개</span></label><textarea :id="`${prefix}-claims`" v-model="claims" required rows="3" />
         <fieldset v-for="(item,index) in evidence" :key="index" class="evidence-input"><legend>자료 {{index+1}}</legend>

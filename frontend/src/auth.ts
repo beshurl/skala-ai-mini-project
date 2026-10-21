@@ -1,5 +1,6 @@
 import { shallowRef } from 'vue';
 import { api, createApiClient, ApiError } from './api';
+import { loginPathFor } from './navigation';
 
 export interface Account { user_id: string; email: string; name: string; role: 'user'|'admin'; csrf: string }
 export const account = shallowRef<Account|null>(null);
@@ -8,7 +9,7 @@ export const authError = shallowRef('');
 export const accountApi = createApiClient(() => account.value?.csrf);
 
 export {safeNext} from './navigation';
-export function loginPath() { return '/login?next=' + encodeURIComponent(window.location.pathname); }
+export function loginPath() { return loginPathFor(window.location.pathname, window.location.search); }
 export async function refreshAccount() {
   authError.value = '';
   try { account.value = await api<Account>('/api/auth/session'); }

@@ -12,10 +12,10 @@ request_context = contextvars.ContextVar("recase_request_id", default=None)
 trace_context = contextvars.ContextVar("recase_trace_id", default=None)
 TOOLS = frozenset({"get_public_case", "read_evidence", "search_case_evidence", "search_reference_judgments"})
 COMPONENTS = frozenset({"http", "llm", "rag", "mcp", "system"})
-EVENTS = frozenset({"request_finished", "model_inference", "model_loaded", "mcp_call", "keyword_search", "analysis_finished"})
+EVENTS = frozenset({"request_finished", "model_inference", "model_loaded", "mcp_call", "keyword_search", "analysis_finished", "conversation_finished"})
 OUTCOMES = frozenset({"SUCCESS", "ERROR", "CANCELLED", "BLOCKED", "INVALID"})
-ERRORS = frozenset({"MODEL_LOAD_FAILED", "MODEL_INFERENCE_FAILED", "MCP_TOOL_FAILED", "MODEL_OUTPUT_INVALID", "RETRIEVAL_INSUFFICIENT", "GENERAL_OUTPUT_INVALID", "GENERAL_CONTEXT_LIMIT", "GENERAL_INPUT_BUDGET", "GENERAL_MODEL_FAILED", "ANALYSIS_FAILED", "ANALYSIS_TIMEOUT", "CANCELLED", "EVIDENCE_VERSION_CHANGED", "HTTP_INTERNAL_ERROR"})
-ROUTES = frozenset({"/", "/health", "/ready", "/login", "/signup", "/api/auth/register", "/api/auth/login", "/api/auth/logout", "/api/auth/session", "/api/demo", "/api/practice", "/api/practice/general", "/api/session", "/api/demo/new", "/api/cases", "/api/cases/{case_id}", "/api/cases/{case_id}/lifecycle", "/api/cases/{case_id}/evidence/{evidence_id}", "/api/cases/{case_id}/release", "/api/cases/{case_id}/analyses", "/api/jobs/{job_id}", "/api/jobs/{job_id}/cancel", "/api/jobs/{job_id}/events", "/api/cases/{case_id}/compare", "/api/admin/session", "/api/admin/summary", "/api/admin/logs", "SPA", "ASSET", "UNMATCHED"})
+ERRORS = frozenset({"MODEL_LOAD_FAILED", "MODEL_INFERENCE_FAILED", "MCP_TOOL_FAILED", "MODEL_OUTPUT_INVALID", "RETRIEVAL_INSUFFICIENT", "GENERAL_OUTPUT_INVALID", "GENERAL_CONTEXT_LIMIT", "GENERAL_INPUT_BUDGET", "GENERAL_MODEL_FAILED", "CHAT_CONTEXT_LIMIT", "CHAT_INPUT_BUDGET", "CHAT_OUTPUT_INVALID", "CHAT_MODEL_FAILED", "ANALYSIS_FAILED", "ANALYSIS_TIMEOUT", "CANCELLED", "EVIDENCE_VERSION_CHANGED", "HTTP_INTERNAL_ERROR"})
+ROUTES = frozenset({"/", "/health", "/ready", "/login", "/signup", "/api/auth/register", "/api/auth/login", "/api/auth/logout", "/api/auth/session", "/api/demo", "/api/practice", "/api/practice/general", "/api/session", "/api/demo/new", "/api/cases", "/api/cases/{case_id}", "/api/cases/{case_id}/lifecycle", "/api/cases/{case_id}/evidence/{evidence_id}", "/api/cases/{case_id}/release", "/api/cases/{case_id}/analyses", "/api/cases/{case_id}/conversation", "/api/jobs/{job_id}", "/api/jobs/{job_id}/cancel", "/api/jobs/{job_id}/events", "/api/cases/{case_id}/compare", "/api/admin/session", "/api/admin/summary", "/api/admin/logs", "SPA", "ASSET", "UNMATCHED"})
 
 
 def identifier(value, pattern):
@@ -70,7 +70,7 @@ class Observations:
                      if isinstance(d, dict) and identifier(d.get("id"), r"E-[a-f0-9]{16}") and number(d.get("score")) is not None]
         values = (time.time(), "ERROR" if outcome in {"ERROR", "INVALID"} else "WARN" if outcome in {"BLOCKED", "CANCELLED"} else "INFO",
                   component, event, identifier(request_id or request_context.get(), r"[a-f0-9]{32}"),
-                  identifier(trace_id or trace_context.get(), r"JOB-[a-f0-9]{16}"), operation if operation in TOOLS | {"infer", "load", "analysis"} else None,
+                  identifier(trace_id or trace_context.get(), r"JOB-[a-f0-9]{16}"), operation if operation in TOOLS | {"infer", "load", "analysis", "conversation"} else None,
                   route if route in ROUTES else None, method if method in {"GET", "HEAD", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"} else None,
                   status if isinstance(status, int) and 100 <= status <= 599 else None, number(duration_ms) or 0, outcome, error,
                   int(input_tokens) if number(input_tokens) is not None else None, int(output_tokens) if number(output_tokens) is not None else None,

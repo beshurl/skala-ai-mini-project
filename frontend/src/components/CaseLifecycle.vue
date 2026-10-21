@@ -10,7 +10,7 @@ import {computed,nextTick,onBeforeUnmount,ref,watch} from 'vue';
 import {createLifecycleController} from '../lifecycle';
 import type {LifecycleAction} from '../lifecycle';
 import type {CaseLifecycle} from '../types';
-const props=defineProps<{caseId:string;evidenceVersion:number;refreshKey:number;api:(path:string,options?:{method?:string;body?:string})=>Promise<unknown>;active:boolean;busy:boolean}>();
+const props=defineProps<{caseId:string;evidenceVersion:number;refreshKey:number;api:(path:string,options?:{method?:string;body?:string})=>Promise<unknown>;active:boolean;busy:boolean;readOnly?:boolean}>();
 const emit=defineEmits<{
   state:[{caseId:string;data:CaseLifecycle|null}];
   pending:[{caseId:string;busy:boolean}];
@@ -29,7 +29,7 @@ const help:Record<LifecycleAction,string>={
 const choices=computed<LifecycleAction[]>(()=>state.data ? [state.data.closed_at?'reopen':'close',state.data.hold?'release_hold':'hold'] : []);
 const changedVersion=computed(()=>!!state.data && state.data.evidence_version!==props.evidenceVersion);
 const reasonLength=computed(()=>[...reason.value.trim()].length);
-const locked=computed(()=>props.busy || state.loading || state.saving || !state.data || changedVersion.value);
+const locked=computed(()=>props.readOnly || props.busy || state.loading || state.saving || !state.data || changedVersion.value);
 const closeBlocked=computed(()=>action.value==='close' && props.active);
 const status=computed(()=>state.loading?'상태 확인 중':!state.data?'상태 확인 필요':`${state.data.closed_at?'종료 사건':'진행 사건'}${state.data.hold?' · 보존 보류 중':''}`);
 const date=(value:string|null)=>value ? new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'medium',timeStyle:'short'}).format(new Date(value)):'기록 없음';
@@ -80,7 +80,7 @@ onBeforeUnmount(()=>controller.dispose());
       <p v-if="state.notice" role="status">{{state.notice}}</p>
     </div>
     <p v-if="changedVersion" class="lifecycle-guard" role="status">새 증거가 공개되었습니다. <button type="button" class="rc-button" :disabled="props.busy || state.saving" @click="emit('refreshCase')">사건 내용 새로고침</button></p>
-    <p v-if="state.data?.closed_at" class="lifecycle-guard" role="status">종료된 사건입니다. 새 분석과 증거 공개를 하려면 사건 관리에서 검토를 재개하세요.</p>
+    <p v-if="state.data?.closed_at && !props.readOnly" class="lifecycle-guard" role="status">종료된 사건입니다. 새 분석과 증거 공개를 하려면 사건 관리에서 검토를 재개하세요.</p>
     <p v-else-if="!state.data && !state.loading" class="lifecycle-guard">사건 상태를 확인한 뒤 분석·증거 공개를 진행할 수 있습니다.</p>
   </section>
 </template>
