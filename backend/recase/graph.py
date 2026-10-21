@@ -5,7 +5,8 @@ import re
 import time
 from typing import TypedDict
 from langgraph.graph import StateGraph, START, END
-from recase.contracts import AnalysisResult, Finding, Relation
+from recase.contracts import AnalysisResult, Finding, Relation, ReasoningReport
+from recase.reasoning import is_general, review_snapshot
 
 LABEL_MAP = {"일치": "SUPPORTED", "모순": "CONTRADICTED", "추가확인필요": "INSUFFICIENT"}
 
@@ -18,6 +19,7 @@ class State(TypedDict, total=False):
     usage: dict
     limitations: list
     result: dict
+    reasoning: dict
 
 
 def related(snapshot, claim, retrieved_ids):
@@ -57,7 +59,7 @@ def build_graph(store, mcp, model, cancel):
         check()
         job = state["job"]
         data = await mcp.call("get_public_case", job["owner"], job["case_id"], job["version"])
-        if len(data["claims"]) > 4:
+        if len(data["claims"]) > 4 and not is_general(data):
             raise ValueError("CLAIM_BUDGET_EXCEEDED")
         store.event(job["id"], "scope_checked", {"evidence_version": job["version"], "public_count": len(data["evidence"])})
         return {"snapshot": data, "usage": {"model_calls": 0, "prompt_tokens": 0, "generation_tokens": 0, "seconds": 0.0}, "limitations": []}
@@ -65,11 +67,17 @@ def build_graph(store, mcp, model, cancel):
     async def retrieve(state):
         check()
         job, snapshot = state["job"], state["snapshot"]
+        if is_general(snapshot):
+            store.event(job["id"], "retrieval_complete", {"hits": len(snapshot["evidence"]), "index_version": "authorized-snapshot-v1"})
+            return {"retrieval": []}
         hits = await mcp.call("search_case_evidence", job["owner"], job["case_id"], job["version"], query=" ".join(c["text"] for c in snapshot["claims"])[:1000], limit=5)
         store.event(job["id"], "retrieval_complete", {"hits": len(hits["hits"]), "index_version": "keyword-bigram-v1"})
         return {"retrieval": hits["hits"]}
 
     async def analyze(state):
+        if is_general(state["snapshot"]):
+            return await review_snapshot(state["snapshot"], model, cancel, check,
+                                         lambda name, data: store.event(state["job"]["id"], name, data))
         findings, limitations, usage = [], [], dict(state["usage"])
         for claim in state["snapshot"]["claims"][:4]:
             check()
@@ -117,6 +125,10 @@ def build_graph(store, mcp, model, cancel):
         result = AnalysisResult(case_id=state["job"]["case_id"], evidence_version=state["job"]["version"], findings=state["findings"],
             hypotheses=[], limitations=state["limitations"] + ["합성 사건 시뮬레이션입니다. 실제 사건의 신뢰성은 검증하지 않았습니다.", "관계 라벨은 범행이나 진술자의 고의적 거짓말을 확정하지 않습니다.", "참고 판례 코퍼스는 이용 권한과 검수가 확보되지 않아 연결하지 않았습니다."],
             model=dict(model.info), usage=state["usage"], provenance="local_mlx" if model.info["backend"] == "mlx" else "deterministic_fixture")
+        if state.get("reasoning"):
+            result.analysis_contract_version = "evidence-reasoning-v1"
+            result.reasoning = ReasoningReport.model_validate(state["reasoning"])
+            result.hypotheses = [h["text"] for review in state["reasoning"]["reviews"] for h in review["hypotheses"]]
         return {"result": result.model_dump()}
 
     graph = StateGraph(State)

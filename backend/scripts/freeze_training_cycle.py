@@ -18,9 +18,24 @@ from scripts.verify_os_isolation import verify
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    for key in ("candidates", "history", "reviews", "configs", "protocol", "isolation", "out"):
+    for key in ("history", "configs", "protocol", "isolation", "out"):
         p.add_argument("--" + key, required=True)
+    p.add_argument("--candidates")
+    p.add_argument("--reviews")
+    p.add_argument("--prepared", help="Sealed native NLI packet; shares the existing three-attempt ledger")
     args = p.parse_args()
+    if args.prepared:
+        if args.candidates or args.reviews:
+            p.error("Use --prepared alone for native NLI; reviews stay in the sealed packet")
+        from recase.native_training import freeze_native
+        try:
+            cycle = freeze_native(args.prepared, args.history, args.configs, args.protocol, args.isolation, args.out)
+        except (PermissionError, ValueError) as error:
+            p.exit(2, str(error) + "\n")
+        print(json.dumps({"state": cycle["state"], "path": str(Path(args.out).resolve() / "cycle.json"), "training_executed": False}))
+        return
+    if not args.candidates or not args.reviews:
+        p.error("Legacy evidence data requires --candidates and --reviews")
     configs = candidate_configs(json.loads(Path(args.configs).read_text()))
     result = audit_files(args.candidates, args.history, args.reviews)
     if result["status"] != "PASS":

@@ -54,6 +54,9 @@ def main():
         try:
             with (out / "training.log").open("x") as log:
                 result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, timeout=1800)
+            if result.returncode == 0 and cycle.get("audit_kind") == "prepared_native_nli_v1":
+                from recase.native_training import finalize_native_adapter
+                finalize_native_adapter(out, cycle)
             exit_code = result.returncode
             status = "COMPLETED" if exit_code == 0 else "FAILED"
         except subprocess.TimeoutExpired:

@@ -6,7 +6,7 @@ This is logical deletion, not guaranteed physical/cryptographic erasure on APFS.
 import fcntl
 import sqlite3
 import time
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from pathlib import Path
 
 from recase.ledger import append_record, digest, read_ledger
@@ -39,6 +39,10 @@ def purge_rows(db, owner, case_id):
     db.execute("DELETE FROM jobs WHERE case_id=? AND owner=?", (case_id, owner))
     db.execute("DELETE FROM evidence WHERE case_id=?", (case_id,))
     db.execute("DELETE FROM claims WHERE case_id=?", (case_id,))
+    # Schema1 backups remain restorable; schema2 lifecycle metadata is also purged.
+    for table in ("case_lifecycle_events", "case_lifecycle"):
+        if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (table,)).fetchone():
+            db.execute(f"DELETE FROM {table} WHERE case_id=?", (case_id,))
     removed = db.execute("DELETE FROM cases WHERE id=? AND owner=?", (case_id, owner)).rowcount
     # Revoke owner sessions as part of deletion; surviving cases require a fresh
     # authenticated operational workflow, not reuse of a backed-up bearer cookie.
@@ -47,7 +51,7 @@ def purge_rows(db, owner, case_id):
 
 
 def compact(path):
-    with sqlite3.connect(path) as db:
+    with closing(sqlite3.connect(path)) as db, db:
         db.execute("PRAGMA secure_delete=ON")
         db.execute("PRAGMA wal_checkpoint(TRUNCATE)")
         db.execute("VACUUM")
@@ -65,7 +69,7 @@ def delete_case(path, ledger, owner, case_id):
         # work that apply_deletions replays. Never restore without this journal.
         record = append_record(ledger, {"action": "delete_case", "owner": owner, "case_id": case_id,
                                        "scope": "case/evidence/claims/jobs/events/owner sessions", "policy": "explicit-local-operator-v1"})
-        with sqlite3.connect(path) as db:
+        with closing(sqlite3.connect(path)) as db, db:
             db.execute("PRAGMA secure_delete=ON")
             db.execute("BEGIN IMMEDIATE")
             purge_rows(db, owner, case_id)
@@ -81,7 +85,8 @@ def apply_deletions(path, ledger, revoke_all_sessions=True):
     if not events and not revoke_all_sessions:
         return {"deleted_cases_replayed": 0, "journal_events": 0, "sessions_revoked": False}
     count = 0
-    with sqlite3.connect(path) as db:
+    holds = 0
+    with closing(sqlite3.connect(path)) as db, db:
         db.execute("PRAGMA secure_delete=ON")
         db.execute("BEGIN IMMEDIATE")
         for event in events:
@@ -90,5 +95,14 @@ def apply_deletions(path, ledger, revoke_all_sessions=True):
         # unrelated to a tombstone. Historical case content is otherwise preserved.
         if revoke_all_sessions:
             db.execute("DELETE FROM sessions")
+            # A backup must not roll back a later hold or revive an old expiry plan.
+            if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='case_lifecycle'").fetchone():
+                rows = db.execute("SELECT case_id,revision FROM case_lifecycle WHERE hold=0").fetchall()
+                for case_id, revision in rows:
+                    db.execute("UPDATE case_lifecycle SET hold=1,revision=revision+1 WHERE case_id=?", (case_id,))
+                    db.execute("INSERT INTO case_lifecycle_events VALUES(?,?,?,?,?,?)",
+                               (case_id, revision + 1, "restore_hold", "local_restore", "Restored data requires a fresh retention review", time.time()))
+                holds = len(rows)
     compact(path)
-    return {"deleted_cases_replayed": count, "journal_events": len(events), "sessions_revoked": revoke_all_sessions}
+    return {"deleted_cases_replayed": count, "journal_events": len(events), "sessions_revoked": revoke_all_sessions,
+            "retention_holds_applied": holds}

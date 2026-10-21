@@ -54,6 +54,7 @@ def reserve_candidate(path, cycle, candidate_id):
             raise PermissionError("Candidate already attempted; preserve its failure/result")
         return append_locked(stream, rows, {"action": "training_started", "improvement_cycle": IMPROVEMENT_CYCLE,
                                             "candidate": candidate_id, "cycle_sha256": cycle["cycle_sha256"],
+                                            "training_exposure_signatures": cycle.get("training_exposure_signatures", []),
                                             "attempt": len(attempts) + 1})
 
 
@@ -70,6 +71,10 @@ def verify_frozen(cycle_path):
     for item in cycle["bound_files"].values():
         if file_digest(item["path"]) != item["sha256"]:
             raise PermissionError("Frozen input/review/exposure file changed; cycle invalidated")
+    if cycle.get("audit_kind") == "prepared_native_nli_v1":
+        from recase.native_training import verify_native_cycle
+        verify_native_cycle(cycle)
+        return cycle
     if audit_files(**cycle["audit_inputs"])["status"] != "PASS":
         raise PermissionError("Live dataset/review/exposure gate failed")
     isolation = cycle["isolation"]

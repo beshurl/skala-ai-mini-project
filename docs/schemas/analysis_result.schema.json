@@ -1,5 +1,52 @@
 {
   "$defs": {
+    "Citation": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_id": {
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "quote": {
+          "maxLength": 1200,
+          "minLength": 1,
+          "title": "Quote",
+          "type": "string"
+        },
+        "start": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Start"
+        },
+        "end": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "End"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "quote"
+      ],
+      "title": "Citation",
+      "type": "object"
+    },
     "Finding": {
       "additionalProperties": false,
       "properties": {
@@ -42,6 +89,27 @@
           },
           "title": "Validation Notes",
           "type": "array"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "title": "Citations",
+          "type": "array"
+        },
+        "counter_citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "title": "Counter Citations",
+          "type": "array"
+        },
+        "assumptions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
         }
       },
       "required": [
@@ -51,6 +119,255 @@
         "rationale"
       ],
       "title": "Finding",
+      "type": "object"
+    },
+    "GeneralReview": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "observations": {
+          "items": {
+            "$ref": "#/$defs/GroundedNote"
+          },
+          "title": "Observations",
+          "type": "array"
+        },
+        "conflicts": {
+          "items": {
+            "$ref": "#/$defs/GroundedNote"
+          },
+          "title": "Conflicts",
+          "type": "array"
+        },
+        "hypotheses": {
+          "items": {
+            "$ref": "#/$defs/ReviewHypothesis"
+          },
+          "title": "Hypotheses",
+          "type": "array"
+        },
+        "next_checks": {
+          "items": {
+            "$ref": "#/$defs/NextCheck"
+          },
+          "title": "Next Checks",
+          "type": "array"
+        },
+        "time_checks": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Time Checks",
+          "type": "array"
+        },
+        "status": {
+          "enum": [
+            "SOURCE_CHECKED_MODEL_ASSESSMENT",
+            "INVALID",
+            "BUDGET_BLOCKED",
+            "NO_EVIDENCE"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "claim_id",
+        "observations",
+        "conflicts",
+        "hypotheses",
+        "next_checks",
+        "time_checks",
+        "status"
+      ],
+      "title": "GeneralReview",
+      "type": "object"
+    },
+    "GroundedNote": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "maxLength": 700,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Citations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "text",
+        "citations"
+      ],
+      "title": "GroundedNote",
+      "type": "object"
+    },
+    "NextCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "maxLength": 700,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Citations",
+          "type": "array"
+        },
+        "purpose": {
+          "maxLength": 400,
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "reconsider_when": {
+          "maxLength": 400,
+          "minLength": 1,
+          "title": "Reconsider When",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "citations",
+        "purpose",
+        "reconsider_when"
+      ],
+      "title": "NextCheck",
+      "type": "object"
+    },
+    "ReasoningReport": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "evidence-reasoning-v1",
+          "default": "evidence-reasoning-v1",
+          "title": "Contract",
+          "type": "string"
+        },
+        "scope": {
+          "default": "공개 원문 인용과 형식 검사. 모델 해석의 사실성·추론 정확도는 별도 검증이 필요합니다.",
+          "title": "Scope",
+          "type": "string"
+        },
+        "visible_evidence_count": {
+          "title": "Visible Evidence Count",
+          "type": "integer"
+        },
+        "considered_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Considered Evidence Ids",
+          "type": "array"
+        },
+        "reviews": {
+          "items": {
+            "$ref": "#/$defs/GeneralReview"
+          },
+          "title": "Reviews",
+          "type": "array"
+        },
+        "model_calls_attempted": {
+          "title": "Model Calls Attempted",
+          "type": "integer"
+        },
+        "prompt_sha256": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Prompt Sha256",
+          "type": "array"
+        },
+        "generation_max_tokens": {
+          "default": 1024,
+          "title": "Generation Max Tokens",
+          "type": "integer"
+        },
+        "plan": {
+          "additionalProperties": true,
+          "title": "Plan",
+          "type": "object"
+        },
+        "remaining_model_calls": {
+          "title": "Remaining Model Calls",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "visible_evidence_count",
+        "considered_evidence_ids",
+        "reviews",
+        "model_calls_attempted",
+        "prompt_sha256",
+        "plan",
+        "remaining_model_calls"
+      ],
+      "title": "ReasoningReport",
+      "type": "object"
+    },
+    "ReviewHypothesis": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "maxLength": 700,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Citations",
+          "type": "array"
+        },
+        "counter_citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "maxItems": 6,
+          "title": "Counter Citations",
+          "type": "array"
+        },
+        "reconsider_when": {
+          "maxLength": 400,
+          "minLength": 1,
+          "title": "Reconsider When",
+          "type": "string"
+        },
+        "status": {
+          "const": "UNVERIFIED",
+          "default": "UNVERIFIED",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "citations",
+        "reconsider_when"
+      ],
+      "title": "ReviewHypothesis",
       "type": "object"
     }
   },
@@ -103,6 +420,22 @@
       ],
       "title": "Provenance",
       "type": "string"
+    },
+    "analysis_contract_version": {
+      "default": "legacy-relation-v2",
+      "title": "Analysis Contract Version",
+      "type": "string"
+    },
+    "reasoning": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ReasoningReport"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     }
   },
   "required": [

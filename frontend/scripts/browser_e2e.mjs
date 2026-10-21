@@ -4,18 +4,19 @@
  */
 import assert from 'node:assert/strict'
 
-export async function run(tab) {
+export async function run(tab, {backend='mlx'} = {}) {
   const p=tab.playwright, steps=[]
-  if (await p.getByRole('button',{name:'로컬 데모 입장',exact:true}).isVisible()) {
-    await p.getByRole('button',{name:'로컬 데모 입장',exact:true}).click()
+  if (await p.getByRole('button',{name:'합성 사건 열기',exact:true}).isVisible()) {
+    await p.getByRole('button',{name:'합성 사건 열기',exact:true}).click()
   }
-  await p.getByRole('button',{name:'새 합성 데모 시작',exact:true}).waitFor({state:'visible'})
-  await p.getByRole('button',{name:'새 합성 데모 시작',exact:true}).click()
+  await p.getByRole('button',{name:'새 합성 사건 추가',exact:true}).waitFor({state:'visible'})
+  await p.getByRole('button',{name:'새 합성 사건 추가',exact:true}).click()
   await p.getByText('실행 모델 정보',{exact:true}).click()
-  await p.getByText('mlx',{exact:true}).waitFor({state:'visible'})
-  assert.ok(await p.getByText('확인됨',{exact:true}).isVisible(),'A real, loaded adapter is required for this run')
+  await p.getByText(backend,{exact:true}).waitFor({state:'visible'})
+  if(backend==='mlx') assert.ok(await p.getByText('확인됨',{exact:true}).isVisible(),'A real, loaded adapter is required for this run')
   await p.getByText('실행 모델 정보',{exact:true}).click()
-  await p.getByRole('button',{name:/사라진 연구 노트 합성 기록/}).click()
+  // Account history retains earlier fixture copies; the newest set is listed first.
+  await p.getByRole('button',{name:/사라진 연구 노트 합성 기록/}).first().click()
   await p.getByRole('heading',{name:'사라진 연구 노트',exact:true}).waitFor({state:'visible'})
   assert.equal(await p.getByRole('heading',{name:'본인 확인이 완료된 기록',exact:true}).count(),0)
   await tab.getAXState({emit:false})
@@ -23,7 +24,9 @@ export async function run(tab) {
   await p.getByRole('button',{name:'분석 시작',exact:true}).click()
   await p.getByRole('status').filter({hasText:'분석 완료'}).waitFor({state:'visible'})
   assert.equal(await p.locator('.label').innerText(),'추가 확인 필요')
+  await p.locator('.event-panel summary').click()
   await p.getByText('결과 저장 완료',{exact:true}).waitFor({state:'visible'})
+  await p.locator('.event-panel summary').click()
   await tab.getAXState({emit:false})
   steps.push('v1 real progress events and INSUFFICIENT result')
   await p.getByRole('button',{name:/새 증거 공개.*2건 대기/}).click()
@@ -53,5 +56,5 @@ export async function run(tab) {
   const layout=await p.locator('html').evaluate(el=>({width:el.clientWidth,scrollWidth:el.scrollWidth}))
   assert.ok(layout.scrollWidth<=layout.width+1,`Horizontal overflow: ${JSON.stringify(layout)}`)
   steps.push('No horizontal overflow at observed browser viewport')
-  return {status:'PASS',browser:'cua_repl IAB',backend:'mlx; adapter confirmed through UI',started_from:'fresh synthetic demo',steps,viewport:layout,completed_at:new Date().toISOString()}
+  return {status:'PASS',browser:'cua_repl IAB',backend:backend==='mlx'?'mlx; adapter confirmed through UI':'explicit fixture; no MLX inference',started_from:'fresh synthetic demo',steps,viewport:layout,completed_at:new Date().toISOString()}
 }

@@ -1,3 +1,4 @@
+from tests.account_helpers import enter_demo
 import asyncio
 import json
 import time
@@ -18,7 +19,7 @@ def client(tmp_path):
 
 
 def enter(client):
-    session = client.post("/api/demo").json()
+    session = enter_demo(client).json()
     client.headers["x-recase-csrf"] = session["csrf"]
     case = client.get("/api/cases").json()[0]
     return case, session

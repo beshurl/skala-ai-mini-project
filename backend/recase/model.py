@@ -79,21 +79,33 @@ class LocalModel:
         if hasattr(self, "process_lock"):
             self.process_lock.close()
 
-    def infer(self, prompt, cancel=None):
+    def formatted_prompt(self, prompt):
+        if self.tokenizer is None:
+            raise RuntimeError("MODEL_NOT_READY")
+        return self.tokenizer.apply_chat_template(
+            [{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}],
+            tokenize=False, add_generation_prompt=True, enable_thinking=False)
+
+    def fits_context(self, prompt, max_tokens):
+        formatted = self.formatted_prompt(prompt)
+        return len(self.tokenizer.encode(formatted)) + max_tokens <= 4096
+
+    def infer(self, prompt, cancel=None, *, max_tokens=None):
         with self.lock:
             self.load()
+            generation_limit = self.max_tokens if max_tokens is None else max_tokens
+            if type(generation_limit) is not int or not 1 <= generation_limit <= 1024:
+                raise ValueError("GENERATION_LIMIT")
             import mlx.core as mx
             from mlx_lm import stream_generate
             from mlx_lm.sample_utils import make_sampler
             mx.random.seed(0)
-            formatted = self.tokenizer.apply_chat_template(
-                [{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}],
-                tokenize=False, add_generation_prompt=True, enable_thinking=False)
-            if len(self.tokenizer.encode(formatted)) + self.max_tokens > 4096:
+            formatted = self.formatted_prompt(prompt)
+            if len(self.tokenizer.encode(formatted)) + generation_limit > 4096:
                 raise ValueError("CONTEXT_LIMIT")
             start = time.perf_counter()
             pieces, last = [], None
-            for token in stream_generate(self.model, self.tokenizer, formatted, max_tokens=self.max_tokens, sampler=make_sampler(temp=0)):
+            for token in stream_generate(self.model, self.tokenizer, formatted, max_tokens=generation_limit, sampler=make_sampler(temp=0)):
                 if cancel and cancel.is_set():
                     raise InterruptedError("CANCELLED")
                 pieces.append(token.text)
@@ -101,5 +113,6 @@ class LocalModel:
             return {"response": "".join(pieces), "seconds": time.perf_counter() - start,
                     "prompt_tokens": last.prompt_tokens if last else 0,
                     "generation_tokens": last.generation_tokens if last else 0,
+                    "generation_max_tokens": generation_limit,
                     "finish_reason": getattr(last, "finish_reason", None),
                     "peak_memory_gb": mx.get_peak_memory() / 1e9}

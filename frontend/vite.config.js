@@ -5,11 +5,9 @@ export default defineConfig({
   server: {
     proxy: {
       // Preserve the browser's Host so the API can verify same-origin writes.
-      "/api": { target: "http://127.0.0.1:8100", changeOrigin: false },
-      "/health": { target: "http://127.0.0.1:8100", changeOrigin: false },
-      "/ready": { target: "http://127.0.0.1:8100", changeOrigin: false },
-      "/login": { target: "http://127.0.0.1:8100", changeOrigin: false },
-      "/auth.css": { target: "http://127.0.0.1:8100", changeOrigin: false },
+      "/api": { target: process.env.RECASE_API_TARGET || "http://127.0.0.1:8100", changeOrigin: false },
+      "/health": { target: process.env.RECASE_API_TARGET || "http://127.0.0.1:8100", changeOrigin: false },
+      "/ready": { target: process.env.RECASE_API_TARGET || "http://127.0.0.1:8100", changeOrigin: false },
     },
   },
 });

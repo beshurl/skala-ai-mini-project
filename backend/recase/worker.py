@@ -3,16 +3,21 @@ import asyncio
 import threading
 from recase.graph import build_graph
 from recase.store import TERMINAL
+from recase.observability import ObservedModel, request_context, trace_context
 
 
 class Worker:
-    def __init__(self, store, mcp, model, capacity=8, timeout=180):
+    def __init__(self, store, mcp, model, capacity=8, timeout=180, observations=None):
         self.store, self.mcp, self.model = store, mcp, model
         self.queue = asyncio.Queue(maxsize=capacity)
         self.timeout = timeout
         self.active = {}
         self.task = None
         self.stopping = False
+        self.observations = observations
+        self.request_ids = {}
+        if observations:
+            self.model = ObservedModel(model, observations)
 
     def start(self):
         self.task = asyncio.create_task(self.run())
@@ -32,6 +37,8 @@ class Worker:
                 self.queue.task_done()
                 return
             owner, job_id = queued
+            request_token = request_context.set(self.request_ids.pop(job_id, None))
+            trace_token = trace_context.set(job_id)
             flag = threading.Event()
             self.active[job_id] = flag
             timer = asyncio.get_running_loop().call_later(self.timeout, flag.set)
@@ -48,7 +55,7 @@ class Worker:
                 if flag.is_set():
                     self.store.set_status(owner, job_id, "CANCELLED" if current["cancel_requested"] else "FAILED", error="CANCELLED" if current["cancel_requested"] else "ANALYSIS_TIMEOUT")
                 else:
-                    partial = any(code in result["result"]["limitations"] for code in ("MODEL_OUTPUT_INVALID", "RETRIEVAL_INSUFFICIENT"))
+                    partial = any(code in result["result"]["limitations"] for code in ("MODEL_OUTPUT_INVALID", "RETRIEVAL_INSUFFICIENT", "GENERAL_OUTPUT_INVALID", "GENERAL_CONTEXT_LIMIT", "GENERAL_INPUT_BUDGET", "GENERAL_MODEL_FAILED"))
                     self.store.set_status(owner, job_id, "PARTIAL" if partial else "COMPLETED", result=result["result"])
             except InterruptedError:
                 current = self.store.job(owner, job_id)
@@ -62,6 +69,17 @@ class Worker:
                     code = "MCP_TOOL_FAILED" if isinstance(error, RuntimeError) and str(error) == "MCP_TOOL_FAILED" else "ANALYSIS_FAILED"
                     self.store.set_status(owner, job_id, "FAILED", error=code)
             finally:
+                if self.observations:
+                    try:
+                        current = self.store.job(owner, job_id)
+                        outcome = "SUCCESS" if current["status"] == "COMPLETED" else "CANCELLED" if current["status"] == "CANCELLED" else "INVALID" if current["status"] == "PARTIAL" else "ERROR"
+                        limitations = current["result"]["limitations"] if current["result"] else []
+                        error = current["error"] or next((code for code in limitations if code in {"MODEL_OUTPUT_INVALID", "RETRIEVAL_INSUFFICIENT", "GENERAL_OUTPUT_INVALID", "GENERAL_CONTEXT_LIMIT", "GENERAL_INPUT_BUDGET", "GENERAL_MODEL_FAILED"}), None)
+                        self.observations.record(component="system", event="analysis_finished", operation="analysis", outcome=outcome, error=error)
+                    except Exception:
+                        self.observations.dropped += 1
+                trace_context.reset(trace_token)
+                request_context.reset(request_token)
                 timer.cancel()
                 self.active.pop(job_id, None)
                 self.queue.task_done()

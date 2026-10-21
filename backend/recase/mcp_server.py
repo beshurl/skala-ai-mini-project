@@ -37,9 +37,19 @@ def search_case_evidence(case_id: str, evidence_version: int, access_token: str,
 
 @server.tool()
 def search_reference_judgments(case_id: str, evidence_version: int, access_token: str, query: str) -> dict:
-    """Report the unavailable reference corpus explicitly; never invent judgments."""
+    """Read freshly approved references as context, never current-case evidence."""
     scoped(case_id, evidence_version, access_token)
-    return {"status": "BLOCKED", "reason": "NO_RIGHTS_APPROVED_REVIEWED_CORPUS", "hits": [], "document_type": "reference_judgment"}
+    corpus_path = os.environ.get("RECASE_REFERENCE_CORPUS")
+    review_path = os.environ.get("RECASE_REFERENCE_REVIEWS")
+    if not corpus_path or not review_path:
+        return {"status": "BLOCKED", "reason": "NO_RIGHTS_APPROVED_REVIEWED_CORPUS", "hits": [], "document_type": "reference_judgment"}
+    from recase.reference_search import load_corpus
+    try:
+        corpus = load_corpus(corpus_path, review_path)
+    except (OSError, ValueError, PermissionError, KeyError, TypeError):
+        return {"status": "BLOCKED", "reason": "REFERENCE_APPROVAL_OR_INTEGRITY_GATE_FAILED", "hits": [], "document_type": "reference_judgment"}
+    return {"status": "AVAILABLE_APPROVED_CONTEXT_ONLY", "hits": corpus.search(query),
+            "document_type": "reference_judgment", "role": "context_not_current_case_evidence"}
 
 
 if __name__ == "__main__":
