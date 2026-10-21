@@ -1,0 +1,125 @@
+{
+  "created": "2026-10-21T10:59:50.250797+00:00",
+  "purpose": "Remove obsolete code; retain behavior and historical model evaluation evidence.",
+  "removed_files": [
+    "evaluation/live_smoke.py",
+    "evaluation/smoke.py",
+    "sh/make_student_zip.sh",
+    "sh/run_agent_ollma.sh",
+    "sh/run_agent_openai.sh",
+    "sh/run_demo.sh",
+    "sh/run_frontend.sh",
+    "sh/setup_ollama.sh"
+  ],
+  "modified_source": [
+    "agent/graph.py",
+    "agent/investigation.py",
+    "agent/judge.py",
+    "agent/llm_runtime.py",
+    "agent/reporting.py",
+    "agent/specialists.py",
+    "agent/mcp_client.py",
+    "evaluation/investigation.py",
+    "sh/setup_venv.sh",
+    "tests/test_workflows.py"
+  ],
+  "removed_file_count": 8,
+  "net_removed_source_lines_at_least": 404,
+  "tests": {
+    "before": 62,
+    "after": 61,
+    "passed": 61,
+    "removed_test": "test_sync_model_adapter_does_not_block_the_event_loop",
+    "reason": "The synchronous model adapter compatibility path was removed."
+  },
+  "fixed_regression": {
+    "passed": 12,
+    "total": 12,
+    "source": "artifacts/cleanup/evaluation.json"
+  },
+  "syntax": {
+    "python_compile": true,
+    "javascript": true,
+    "shell": true,
+    "unused_python_imports": []
+  },
+  "actual_llm_smoke": {
+    "passed": true,
+    "checks": {
+      "actual_backend": true,
+      "done_marker": true,
+      "sse_actual_plan_and_single_final": true,
+      "sqlite_board_restore": true,
+      "json_conflict_withholds_actions": true,
+      "session_isolation": true,
+      "remote_traces": true
+    },
+    "actual_llm": "ollama:qwen3.5:2b",
+    "source": "artifacts/investigation_api_smoke.json",
+    "trace_count": 2,
+    "traces": [
+      "https://smith.langchain.com/o/470574ed-ef8c-4a69-b528-bc18b8702c54/projects/p/81b28083-02be-4992-a393-c96199b48e09/r/01a15e1d-46b1-7e8c-a365-5ec0caf9a9b7?poll=true",
+      "https://smith.langchain.com/o/470574ed-ef8c-4a69-b528-bc18b8702c54/projects/p/81b28083-02be-4992-a393-c96199b48e09/r/01a15e1d-6f50-7cfe-b3c1-f32e05f92442?poll=true"
+    ]
+  },
+  "prior_six_case_judge_evaluation": {
+    "source": "artifacts/investigation_evaluation.json",
+    "changed": false,
+    "matches_current_source": false,
+    "note": "Preserved pre-cleanup run. The six-case Judge evaluation was not rerun for this code cleanup."
+  },
+  "source_fingerprints": {
+    "server.py": "e6a1be5cf1ca4b3dc829eb7e803d0d3c2a41d7ec6a87166471d981213ed4d834",
+    "web_demo_server.py": "e158b27b4f5ffd33fcce0e9fbbf7c468a51ba67258aecbf10b3e9dc3553862de",
+    "mcp_server.py": "f060e7882aa37dc0dced42012cd9e9afbdeb4a1e5fb500b5a549f883e42c161f",
+    "agent/deps.py": "dce2ee93e283d276664e7fdc1fc335e1ac651c5620988c4a84b0e872aa817f57",
+    "agent/targets.py": "667258c2f173a0b22ad87d37d2f3c6e6e43278da21f37f181394213301494200",
+    "agent/graph.py": "2d5c020d5a572995871ecf733af2827b3312b4e0d4b47f838e4f77a5b041b2ba",
+    "agent/specialists.py": "ea32d8a5264bcfc33bac49412a5da2613d07e0d6696d9b8b80222e71eb7480e5",
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/observability.py": "570810def0b44d4f400af0a0a0bea39ef335dc41765e4e568423a440ce9b1222",
+    "agent/prompts.py": "6d365c341af367ef2f2faad2853973de0363c3aa097e5096ab9b4f96f2f138b4",
+    "agent/diagnostic_data.py": "b67efd1f77cb9639e4afb65ce2304a44f23fef1c3ab1b8df708f99bcf9527ba8",
+    "agent/retry.py": "d2524552348c9faa08b5ce446434bf593677c7028fb38c9e11b03de8839d2a3a",
+    "agent/comparison.py": "aae9670babf195beac99e9ee1bd83914d4a084b5cd142bcad0b14cfa0086fab8",
+    "agent/launch.py": "dd18d187ef046c4a598b9674736d30ffffc394f9c4ff29c92b2b5828a6b4dfe9",
+    "agent/judge.py": "fa6cee22a64f5b370e7c1dc2bb8f1b59ef707a42ee2bfb47ac14a70d310f5e1e",
+    "agent/retrieval.py": "7d07d0d64d9b56518fda3c5c20cc9d9a4bd22aefe86b4af3f402dd795b9079e7",
+    "agent/contracts.py": "5069efea381a056db12e7d0b0069485045eaec0d32ce9747b4cc6fd20962fcb5",
+    "agent/settings.py": "901a8bac966b67fe3959e1feeaca8d3b055a71bf4ea7357a5154f8a3d55e1a59",
+    "agent/mcp_client.py": "b6289e255dc750d20f2b83da114ffec9ded7315844588f9f260d51cc98951109",
+    "agent/fake_llm.py": "b33725fb2c04b1cab9449453a99d1f26f0d09595f59dae8c2dfe8f6d3e8a8045",
+    "agent/investigation.py": "5a33806485bc8dd5b11c8248fc705e266a0e9f42daf121f85f3611cdaba4c151",
+    "agent/session_store.py": "d8202382a39df1e0de91cd39e578ee37e8f0c42e5c748545b0ad86a7e137db10",
+    "agent/llm_runtime.py": "e30245651c17f6fb12942f537df6b1f5d9c3fbf49151ff97c96d8e3310e013e8",
+    "agent/reporting.py": "adc7412073b30df6ac05555686bd50b8583888ce2bb50be594cc61631df6fd12",
+    "agent/validation.py": "c2c590498b7e406482ec390bd0f4b707e65505f8194f0d37c5ec447b7ebe8d40",
+    "evaluation/run.py": "46ce740483267f78ccf0f080c0e39f9c304651c88a4b9fec551fe53f1ff7e705",
+    "evaluation/investigation_smoke.py": "5ee3e179a69b305a39205cc393f0e983ad28d30f2459cb85c26cc23b69d43ffb",
+    "evaluation/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "evaluation/summary.py": "6bb5207c6636bb085938bbc22e658721e661897946198d543e12b1ad462fc53a",
+    "evaluation/live.py": "1bc25f84ba4fdaeb1fd656e6cf3c4900aa4d97fec72856f11179a2818e285e5a",
+    "evaluation/investigation.py": "1e1f00c2f853b3308b4279e8def4ea9084ed0e9ca535f3c9b3069fab388d8e42",
+    "tests/test_workflows.py": "83a5a63e9b46b8e00cd2baacff0a1d650e99f2630bd24df3331512b5aeec37db",
+    "tests/conftest.py": "3c6ed2d5412b971babc694cff757467d08afcc772635ee8412d4a28ecc85e9c8",
+    "tests/test_retrieval.py": "a0cce800feb1c4a25dcb1e62173141b9d077f5d4e28fc4d5a5de4fd4ed6f6b25",
+    "tests/support.py": "338b481a5b9fff0d059d329318092c0bc5b47cb126b7e681610346f96fb43d78",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/test_live.py": "3944d157816ee497e4858e92117e6d42fd3f0262b1455c067fe11e57e46c8d60",
+    "tests/test_evaluation_summary.py": "8b0e7b75f0f2243fbe3fc1d4fbd29d0d1620eb70b9ca56f780c2b921b9f544f4",
+    "tests/test_api.py": "d65f5c3eda411d9712d657b2d903c17f8276360cb00d7ba537331b8a420fda0a",
+    "tests/test_investigation.py": "27eb8ba71eefe374015ee178516df7d35f05a680a8274808843c8354aec58c98",
+    "sh/setup_venv.sh": "b3f0e32ce1c1ae9148d81ff8cff42646cddf1f1249e032b628d8cba42e3ec23f",
+    "sh/run_live.sh": "6509ab48dfeed83d4b9014347257d810a3281bed3e7d367208eb7f01111bcd15"
+  },
+  "preserved": [
+    ".env",
+    "session.db",
+    "data/",
+    "tests/",
+    "artifacts/baseline/",
+    "artifacts/investigation/",
+    "doc/",
+    "frontend/"
+  ]
+}

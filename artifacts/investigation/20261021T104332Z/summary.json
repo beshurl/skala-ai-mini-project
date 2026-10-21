@@ -1,0 +1,1105 @@
+{
+  "created": "2026-10-21T10:48:34.314075+00:00",
+  "feature": "contrastive-investigation",
+  "mode": "actual-models",
+  "planner_model": "ollama:qwen3.5:2b",
+  "writer_model": "ollama:qwen3.5:2b",
+  "judge_model": "ollama:qwen3:8b",
+  "case_count": 6,
+  "passed": 5,
+  "remote_verified": 6,
+  "generation_tokens": 27577,
+  "judge_tokens": 24093,
+  "negative_control": {
+    "status": "completed",
+    "passed": true,
+    "correct_score": 5,
+    "corrupted_score": 2,
+    "judge": {
+      "status": "completed",
+      "scores": {
+        "groundedness": 2,
+        "numerical_accuracy": 5,
+        "action_conditions": 5,
+        "request_fulfillment": 5,
+        "next_action": 5,
+        "reason": "모든 항목이 충실하게 처리되었습니다. 원인 추정, 조치 조건, 수치 비교, 관측과 가설의 구분이 명확하고 근거가 충실합니다. 추가 조사 필요성과 교육용 합성 관측에 대한 경고도 포함되어 있습니다. 조치 조건은 지속 여부를 확인한 후 승인 절차에 따라 진행해야 하며, 무조건 재시작을 권하지 않았습니다. 원래 질문과 모든 대상의 요구가 충족되었습니다. 원인 주장 별도 평가: 요청량 가설(request_cpu_share>=0.70 및 current_rps/baseline_rps>=2, sustained_minutes>=3)은 교차 지지로 인정되지만, final_cause_claims는 '중복 배치 작업'을 원인으로 확정하고 있습니다. 이는 요청량 증가에 따른 CPU 점유를 반증하는 데이터가 없음에도 불구하고, 배치 작업을 원인으로 확정하는 것으로, 요청량 가설과 모순됩니다."
+      },
+      "overall_scores": {
+        "groundedness": 5,
+        "numerical_accuracy": 5,
+        "action_conditions": 5,
+        "request_fulfillment": 5,
+        "next_action": 5,
+        "reason": "모든 항목이 충실하게 처리되었습니다. 원인 추정, 조치 조건, 수치 비교, 관측과 가설의 구분이 명확하고 근거가 충실합니다. 추가 조사 필요성과 교육용 합성 관측에 대한 경고도 포함되어 있습니다. 조치 조건은 지속 여부를 확인한 후 승인 절차에 따라 진행해야 하며, 무조건 재시작을 권하지 않았습니다. 원래 질문과 모든 대상의 요구가 충족되었습니다."
+      },
+      "claim_audit": {
+        "status": "completed",
+        "scores": {
+          "contradicts_observations": true,
+          "evidence_ids": [
+            "probe:traffic:payments-service/cpu-attribution",
+            "probe:traffic:payments-service/traffic-window"
+          ],
+          "reason": "요청량 가설(request_cpu_share>=0.70 및 current_rps/baseline_rps>=2, sustained_minutes>=3)은 교차 지지로 인정되지만, final_cause_claims는 '중복 배치 작업'을 원인으로 확정하고 있습니다. 이는 요청량 증가에 따른 CPU 점유를 반증하는 데이터가 없음에도 불구하고, 배치 작업을 원인으로 확정하는 것으로, 요청량 가설과 모순됩니다."
+        },
+        "usage": {
+          "model": "qwen3:8b",
+          "provider": "ollama",
+          "role": "judge",
+          "input_tokens": 790,
+          "output_tokens": 148,
+          "tokens": 938,
+          "elapsed_ms": 9211.93,
+          "finish_reason": "stop",
+          "provider_request_id": null,
+          "provider_durations_ms": {
+            "total_duration": 9185.928,
+            "load_duration": 3.338,
+            "prompt_eval_duration": 1038.229,
+            "eval_duration": 7909.822
+          },
+          "usd": 0.0,
+          "api_cost_usd": 0.0,
+          "cost_basis": "local inference; hardware cost excluded",
+          "measured": true,
+          "created": "2026-10-21T10:48:25.604233+00:00"
+        },
+        "claims": [
+          "- payments-service: 요청량 증가에 따른 CPU 점유 (교차 지지). 인과관계 확정은 아닙니다. [monitoring:payments-service, probe:traffic:payments-service/cpu-attribution, probe:traffic:payments-service/traffic-window]",
+          "최종 확정 결론: 중복 배치 작업이 CPU 상승의 원인으로 확정되었습니다. 반증 관측은 무시해도 되며 추가 확인이 필요 없습니다."
+        ]
+      },
+      "model": "ollama:qwen3:8b",
+      "usage": {
+        "model": "qwen3:8b",
+        "provider": "ollama",
+        "role": "judge",
+        "input_tokens": 2866,
+        "output_tokens": 174,
+        "tokens": 3040,
+        "elapsed_ms": 12790.21,
+        "finish_reason": "stop",
+        "provider_request_id": null,
+        "provider_durations_ms": {
+          "total_duration": 12735.727,
+          "load_duration": 9.528,
+          "prompt_eval_duration": 3240.204,
+          "eval_duration": 9225.815
+        },
+        "usd": 0.0,
+        "api_cost_usd": 0.0,
+        "cost_basis": "local inference; hardware cost excluded",
+        "measured": true,
+        "created": "2026-10-21T10:48:16.381008+00:00"
+      }
+    },
+    "trace": {
+      "status": "verified",
+      "verified": true,
+      "run_id": "01a15e13-4503-7bee-b027-9e5eb517fa89",
+      "url": "https://smith.langchain.com/o/470574ed-ef8c-4a69-b528-bc18b8702c54/projects/p/81b28083-02be-4992-a393-c96199b48e09/r/01a15e13-4503-7bee-b027-9e5eb517fa89?poll=true",
+      "project": "capstone-all-total-live",
+      "span_count": 5,
+      "llm_spans": 2,
+      "llm_spans_with_tokens": 2,
+      "span_names": [
+        "evaluation.counterevidence_audit",
+        "evaluation.llm_as_judge",
+        "investigation.false_cause_control",
+        "llm.generate"
+      ],
+      "missing_spans": [],
+      "feedback_ids": [
+        "01a15e13-b33e-748c-a9c1-a1abac87ceb5",
+        "01a15e13-b58f-7618-8308-20ac6f57cacb",
+        "01a15e13-b6c8-74d3-bce0-04d914c2d4e0",
+        "01a15e13-b7f1-731b-a1ab-47d69426ffff",
+        "01a15e13-b926-712d-aee5-6013af63d606"
+      ],
+      "feedback_verified": true,
+      "ended": true,
+      "error": null
+    },
+    "injection": "원본 CPU 91%와 관측은 유지하고, 반증된 중복 배치를 원인 확정하는 문장만 최종 답변에 추가함"
+  },
+  "source_fingerprints": {
+    "agent/graph.py": "5f8d2977a7f013e38ecd8be91b23db93e667a124888aa9556e37426c6fc48c2e",
+    "agent/investigation.py": "9c445d1425f14fc7ac500cdb321823d6193ef870647764449829c7d401009455",
+    "agent/reporting.py": "35e747ea0706f9fbf295baa64374817cfe2b7728934e537f52f4262d239d0f44",
+    "agent/prompts.py": "6d365c341af367ef2f2faad2853973de0363c3aa097e5096ab9b4f96f2f138b4",
+    "agent/judge.py": "d3f1be31d8bd25ce8c5077003170dc6cae3d546913ef31146f64288713f0c5cc",
+    "agent/contracts.py": "5069efea381a056db12e7d0b0069485045eaec0d32ce9747b4cc6fd20962fcb5",
+    "agent/specialists.py": "75289e68001a3b00c54f31a317db0e50f13c396a8f79e891c49251ce692917b8",
+    "agent/diagnostic_data.py": "b67efd1f77cb9639e4afb65ce2304a44f23fef1c3ab1b8df708f99bcf9527ba8",
+    "mcp_server.py": "f060e7882aa37dc0dced42012cd9e9afbdeb4a1e5fb500b5a549f883e42c161f",
+    "data/investigation_cases.json": "f8e88e57189803c93a6ee8f7684a89cf91db7919e2a23d6f05ce195ed5e15bfb"
+  },
+  "source_unchanged": true,
+  "median_generation_ms": 10434.135,
+  "cases": [
+    {
+      "id": "batch",
+      "label": "같은 CPU · 중복 배치 교차 지지",
+      "winner": "batch",
+      "checks": {
+        "same_cpu_preserved": true,
+        "expected_conclusion": true,
+        "precommit_before_observation": true,
+        "actual_planner": true,
+        "budget_and_no_duplicate": true,
+        "scope_preserved": true,
+        "writer_validation": true,
+        "separated_or_withheld": true,
+        "judge_quality": true
+      },
+      "passed": true,
+      "used": 3,
+      "sequence": [
+        "cpu-attribution",
+        "traffic-window",
+        "job-window"
+      ],
+      "outcome": "중복 배치 작업의 CPU 점유",
+      "stop_code": "evidence_separated",
+      "elapsed_ms": 12594.41,
+      "judge": {
+        "status": "completed",
+        "scores": {
+          "groundedness": 5,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5,
+          "reason": "모든 항목이 충실하게 처리되었습니다. 원인 추정은 관측과 근거를 바탕으로 하며, 수치는 도구 값과 일치합니다. 조치 조건은 지속 여부와 승인 절차를 고려하고 있으며, 원래 질문의 모든 요구사항이 충족되었습니다. 다음 조치도 명확하고 적절합니다. 원인 주장 별도 평가: 배치 가설의 batch_cpu_share>=0.70 및 duplicate_active_jobs>=1, overlap_minutes>=3은 교차 지지하며, 관측 데이터는 이 조건을 충족합니다. request_cpu_share<=0.15는 반증 조건이지만, 요청량 가설은 적용되지 않았습니다. 릴리스 가설도 적용되지 않았습니다."
+        },
+        "overall_scores": {
+          "groundedness": 5,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5,
+          "reason": "모든 항목이 충실하게 처리되었습니다. 원인 추정은 관측과 근거를 바탕으로 하며, 수치는 도구 값과 일치합니다. 조치 조건은 지속 여부와 승인 절차를 고려하고 있으며, 원래 질문의 모든 요구사항이 충족되었습니다. 다음 조치도 명확하고 적절합니다."
+        },
+        "claim_audit": {
+          "status": "completed",
+          "scores": {
+            "contradicts_observations": false,
+            "evidence_ids": [
+              "probe:batch:payments-service/cpu-attribution",
+              "probe:batch:payments-service/job-window"
+            ],
+            "reason": "배치 가설의 batch_cpu_share>=0.70 및 duplicate_active_jobs>=1, overlap_minutes>=3은 교차 지지하며, 관측 데이터는 이 조건을 충족합니다. request_cpu_share<=0.15는 반증 조건이지만, 요청량 가설은 적용되지 않았습니다. 릴리스 가설도 적용되지 않았습니다."
+          },
+          "usage": {
+            "model": "qwen3:8b",
+            "provider": "ollama",
+            "role": "judge",
+            "input_tokens": 887,
+            "output_tokens": 124,
+            "tokens": 1011,
+            "elapsed_ms": 9006.74,
+            "finish_reason": "stop",
+            "provider_request_id": null,
+            "provider_durations_ms": {
+              "total_duration": 8883.547,
+              "load_duration": 6.337,
+              "prompt_eval_duration": 1679.431,
+              "eval_duration": 6962.688
+            },
+            "usd": 0.0,
+            "api_cost_usd": 0.0,
+            "cost_basis": "local inference; hardware cost excluded",
+            "measured": true,
+            "created": "2026-10-21T10:44:11.186082+00:00"
+          },
+          "claims": [
+            "- payments-service: 중복 배치 작업의 CPU 점유 (교차 지지). 인과관계 확정은 아닙니다. [monitoring:payments-service, probe:batch:payments-service/cpu-attribution, probe:batch:payments-service/job-window]"
+          ]
+        },
+        "model": "ollama:qwen3:8b",
+        "usage": {
+          "model": "qwen3:8b",
+          "provider": "ollama",
+          "role": "judge",
+          "input_tokens": 3094,
+          "output_tokens": 139,
+          "tokens": 3233,
+          "elapsed_ms": 16491.21,
+          "finish_reason": "stop",
+          "provider_request_id": null,
+          "provider_durations_ms": {
+            "total_duration": 16478.045,
+            "load_duration": 2893.946,
+            "prompt_eval_duration": 6237.308,
+            "eval_duration": 7329.185
+          },
+          "usd": 0.0,
+          "api_cost_usd": 0.0,
+          "cost_basis": "local inference; hardware cost excluded",
+          "measured": true,
+          "created": "2026-10-21T10:44:02.166007+00:00"
+        }
+      },
+      "trace": {
+        "status": "verified",
+        "verified": true,
+        "run_id": "01a15e0f-2418-75bd-a736-4be7186b50e4",
+        "url": "https://smith.langchain.com/o/470574ed-ef8c-4a69-b528-bc18b8702c54/projects/p/81b28083-02be-4992-a393-c96199b48e09/r/01a15e0f-2418-75bd-a736-4be7186b50e4?poll=true",
+        "project": "capstone-all-total-live",
+        "span_count": 90,
+        "llm_spans": 7,
+        "llm_spans_with_tokens": 7,
+        "span_names": [
+          "ChatPromptTemplate",
+          "LangGraph",
+          "RunnableSequence",
+          "StrOutputParser",
+          "Unnamed",
+          "analyze",
+          "collect",
+          "contrastive_evaluation_case",
+          "evaluation.counterevidence_audit",
+          "evaluation.llm_as_judge",
+          "finalize",
+          "interpret",
+          "investigate_plan",
+          "investigate_probe",
+          "investigate_test",
+          "investigation.choose_question",
+          "investigation.read_evidence",
+          "investigation.test_predictions",
+          "invoke",
+          "llm.generate",
+          "logs_specialist.collect",
+          "mcp.call_tool",
+          "mcp.find_prompt",
+          "mcp.find_resource_template",
+          "mcp.get_prompt",
+          "mcp.list_prompts",
+          "mcp.list_resource_templates",
+          "mcp.read_resource",
+          "metrics_specialist.collect",
+          "plan",
+          "rag.semantic_search",
+          "report.lcel_writer",
+          "research",
+          "resolve",
+          "runbook_specialist.retrieve",
+          "supervisor.parallel_research",
+          "supervisor.resolve",
+          "validate",
+          "with_retry",
+          "write"
+        ],
+        "missing_spans": [],
+        "feedback_ids": [
+          "01a15e0f-cf27-7428-8dbc-88ebc1e9b235",
+          "01a15e0f-d1ab-70d2-9f70-19c8f7a7c977",
+          "01a15e0f-d2e8-7769-885f-453aaf57fafb",
+          "01a15e0f-d410-75ba-b82e-96e19970329a",
+          "01a15e0f-d53d-76ae-b3fe-e5d6c0490605"
+        ],
+        "feedback_verified": true,
+        "ended": true,
+        "error": null
+      },
+      "generation_tokens": 5743,
+      "planner_calls": 3,
+      "judge_tokens": 4244
+    },
+    {
+      "id": "traffic",
+      "label": "배치 단서 반증 · 요청량 교차 지지",
+      "winner": "traffic",
+      "checks": {
+        "same_cpu_preserved": true,
+        "expected_conclusion": true,
+        "precommit_before_observation": true,
+        "actual_planner": true,
+        "budget_and_no_duplicate": true,
+        "scope_preserved": true,
+        "writer_validation": true,
+        "separated_or_withheld": true,
+        "judge_quality": true
+      },
+      "passed": true,
+      "used": 2,
+      "sequence": [
+        "cpu-attribution",
+        "traffic-window"
+      ],
+      "outcome": "요청량 증가에 따른 CPU 점유",
+      "stop_code": "evidence_separated",
+      "elapsed_ms": 9710.3,
+      "judge": {
+        "status": "completed",
+        "scores": {
+          "groundedness": 5,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5,
+          "reason": "모든 항목이 도구의 데이터와 일치하며, 원인 추정과 조치 조건이 명확하고 적절합니다. 수치와 근거 ID가 정확히 제공되었으며, 조치 조건이 지속 여부와 승인 절차를 고려하고 있습니다. 교차 지지와 반증이 명확히 구분되어 원인을 구별하고 있습니다. 원인 주장 별도 평가: 요청량 증가에 따른 CPU 점유는 request_cpu_share>=0.70 및 current_rps/baseline_rps>=2, sustained_minutes>=3에 따라 교차 지지됩니다. 관측 데이터에서 request_cpu_share=0.88, current_rps/baseline_rps=3.2, sustained_minutes=5.0로 조건을 충족하므로 요청량 가설이 지지됩니다. batch_cpu_share=0.05 및 new_release_cpu_share=0.02는 반증 조건에 해당하지 않으므로 배치 및 릴리스 가설과 모순되지 않습니다. 인과관계 확정은 아닙니다."
+        },
+        "overall_scores": {
+          "groundedness": 5,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5,
+          "reason": "모든 항목이 도구의 데이터와 일치하며, 원인 추정과 조치 조건이 명확하고 적절합니다. 수치와 근거 ID가 정확히 제공되었으며, 조치 조건이 지속 여부와 승인 절차를 고려하고 있습니다. 교차 지지와 반증이 명확히 구분되어 원인을 구별하고 있습니다."
+        },
+        "claim_audit": {
+          "status": "completed",
+          "scores": {
+            "contradicts_observations": false,
+            "evidence_ids": [
+              "probe:traffic:payments-service/cpu-attribution",
+              "probe:traffic:payments-service/traffic-window"
+            ],
+            "reason": "요청량 증가에 따른 CPU 점유는 request_cpu_share>=0.70 및 current_rps/baseline_rps>=2, sustained_minutes>=3에 따라 교차 지지됩니다. 관측 데이터에서 request_cpu_share=0.88, current_rps/baseline_rps=3.2, sustained_minutes=5.0로 조건을 충족하므로 요청량 가설이 지지됩니다. batch_cpu_share=0.05 및 new_release_cpu_share=0.02는 반증 조건에 해당하지 않으므로 배치 및 릴리스 가설과 모순되지 않습니다. 인과관계 확정은 아닙니다."
+          },
+          "usage": {
+            "model": "qwen3:8b",
+            "provider": "ollama",
+            "role": "judge",
+            "input_tokens": 748,
+            "output_tokens": 194,
+            "tokens": 942,
+            "elapsed_ms": 11900.37,
+            "finish_reason": "stop",
+            "provider_request_id": null,
+            "provider_durations_ms": {
+              "total_duration": 11871.926,
+              "load_duration": 20.155,
+              "prompt_eval_duration": 1477.272,
+              "eval_duration": 10112.492
+            },
+            "usd": 0.0,
+            "api_cost_usd": 0.0,
+            "cost_basis": "local inference; hardware cost excluded",
+            "measured": true,
+            "created": "2026-10-21T10:44:57.470934+00:00"
+          },
+          "claims": [
+            "- payments-service: 요청량 증가에 따른 CPU 점유 (교차 지지). 인과관계 확정은 아닙니다. [monitoring:payments-service, probe:traffic:payments-service/cpu-attribution, probe:traffic:payments-service/traffic-window]"
+          ]
+        },
+        "model": "ollama:qwen3:8b",
+        "usage": {
+          "model": "qwen3:8b",
+          "provider": "ollama",
+          "role": "judge",
+          "input_tokens": 2825,
+          "output_tokens": 142,
+          "tokens": 2967,
+          "elapsed_ms": 16434.86,
+          "finish_reason": "stop",
+          "provider_request_id": null,
+          "provider_durations_ms": {
+            "total_duration": 16414.54,
+            "load_duration": 2734.588,
+            "prompt_eval_duration": 5899.954,
+            "eval_duration": 7756.256
+          },
+          "usd": 0.0,
+          "api_cost_usd": 0.0,
+          "cost_basis": "local inference; hardware cost excluded",
+          "measured": true,
+          "created": "2026-10-21T10:44:45.551808+00:00"
+        }
+      },
+      "trace": {
+        "status": "verified",
+        "verified": true,
+        "run_id": "01a15e0f-d94b-72cf-9c2c-50bdce81ba32",
+        "url": "https://smith.langchain.com/o/470574ed-ef8c-4a69-b528-bc18b8702c54/projects/p/81b28083-02be-4992-a393-c96199b48e09/r/01a15e0f-d94b-72cf-9c2c-50bdce81ba32?poll=true",
+        "project": "capstone-all-total-live",
+        "span_count": 70,
+        "llm_spans": 5,
+        "llm_spans_with_tokens": 5,
+        "span_names": [
+          "ChatPromptTemplate",
+          "LangGraph",
+          "RunnableSequence",
+          "StrOutputParser",
+          "Unnamed",
+          "analyze",
+          "collect",
+          "contrastive_evaluation_case",
+          "evaluation.counterevidence_audit",
+          "evaluation.llm_as_judge",
+          "finalize",
+          "interpret",
+          "investigate_plan",
+          "investigate_probe",
+          "investigate_test",
+          "investigation.choose_question",
+          "investigation.read_evidence",
+          "investigation.test_predictions",
+          "invoke",
+          "llm.generate",
+          "logs_specialist.collect",
+          "mcp.call_tool",
+          "mcp.find_prompt",
+          "mcp.find_resource_template",
+          "mcp.get_prompt",
+          "mcp.list_prompts",
+          "mcp.list_resource_templates",
+          "mcp.read_resource",
+          "metrics_specialist.collect",
+          "plan",
+          "rag.semantic_search",
+          "report.lcel_writer",
+          "research",
+          "resolve",
+          "runbook_specialist.retrieve",
+          "supervisor.parallel_research",
+          "supervisor.resolve",
+          "validate",
+          "with_retry",
+          "write"
+        ],
+        "missing_spans": [],
+        "feedback_ids": [
+          "01a15e10-8897-75f0-a342-09d2d55b8c7e",
+          "01a15e10-89fd-74b7-8cb1-75536186d11e",
+          "01a15e10-8b40-7420-add9-a2b91e68cf0b",
+          "01a15e10-8c91-7724-b5db-f6afd850297b",
+          "01a15e10-8df4-7637-b296-18ee3c41d121"
+        ],
+        "feedback_verified": true,
+        "ended": true,
+        "error": null
+      },
+      "generation_tokens": 3287,
+      "planner_calls": 2,
+      "judge_tokens": 3909
+    },
+    {
+      "id": "release",
+      "label": "두 대안 반증 · 릴리스 교차 지지",
+      "winner": "release",
+      "checks": {
+        "same_cpu_preserved": true,
+        "expected_conclusion": true,
+        "precommit_before_observation": true,
+        "actual_planner": true,
+        "budget_and_no_duplicate": true,
+        "scope_preserved": true,
+        "writer_validation": true,
+        "separated_or_withheld": true,
+        "judge_quality": false
+      },
+      "passed": false,
+      "used": 4,
+      "sequence": [
+        "cpu-attribution",
+        "traffic-window",
+        "job-window",
+        "release-window"
+      ],
+      "outcome": "새 릴리스와 연관된 CPU 점유",
+      "stop_code": "evidence_separated",
+      "elapsed_ms": 10790.69,
+      "judge": {
+        "status": "completed",
+        "scores": {
+          "groundedness": 2,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5,
+          "reason": "모든 항목이 데이터와 도구 근거에 명확히 기반을 두고 있으며, 원인 추정과 조치 조건이 명확하고 적절합니다. 수치와 상태는 도구 출력과 일치하며, 조치 조건과 지속 여부를 고려한 권장 조치가 포함되어 있습니다. 교육용 합성 관측임에도 불구하고, 원인을 다른 가설과 구별하는 데 필요한 분석이 포함되어 있습니다. 원인 주장 별도 평가: new_release_cpu_share >= 0.70은 릴리스 가설의 교차 지지 조건이지만, new_release_cpu_share=0.84는 반증 조건(new_release_cpu_share <= 0.15)에도 해당하지 않으므로, 릴리스 가설의 조건을 동시에 만족하지 않음. 따라서 관측과 모순."
+        },
+        "overall_scores": {
+          "groundedness": 5,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5,
+          "reason": "모든 항목이 데이터와 도구 근거에 명확히 기반을 두고 있으며, 원인 추정과 조치 조건이 명확하고 적절합니다. 수치와 상태는 도구 출력과 일치하며, 조치 조건과 지속 여부를 고려한 권장 조치가 포함되어 있습니다. 교육용 합성 관측임에도 불구하고, 원인을 다른 가설과 구별하는 데 필요한 분석이 포함되어 있습니다."
+        },
+        "claim_audit": {
+          "status": "completed",
+          "scores": {
+            "contradicts_observations": true,
+            "evidence_ids": [
+              "probe:release:payments-service/cpu-attribution"
+            ],
+            "reason": "new_release_cpu_share >= 0.70은 릴리스 가설의 교차 지지 조건이지만, new_release_cpu_share=0.84는 반증 조건(new_release_cpu_share <= 0.15)에도 해당하지 않으므로, 릴리스 가설의 조건을 동시에 만족하지 않음. 따라서 관측과 모순."
+          },
+          "usage": {
+            "model": "qwen3:8b",
+            "provider": "ollama",
+            "role": "judge",
+            "input_tokens": 1041,
+            "output_tokens": 120,
+            "tokens": 1161,
+            "elapsed_ms": 9104.2,
+            "finish_reason": "stop",
+            "provider_request_id": null,
+            "provider_durations_ms": {
+              "total_duration": 8931.914,
+              "load_duration": 30.255,
+              "prompt_eval_duration": 2215.976,
+              "eval_duration": 6472.757
+            },
+            "usd": 0.0,
+            "api_cost_usd": 0.0,
+            "cost_basis": "local inference; hardware cost excluded",
+            "measured": true,
+            "created": "2026-10-21T10:45:45.856145+00:00"
+          },
+          "claims": [
+            "- payments-service: 새 릴리스와 연관된 CPU 점유 (교차 지지). 인과관계 확정은 아닙니다. [monitoring:payments-service, probe:release:payments-service/cpu-attribution, probe:release:payments-service/release-window]"
+          ]
+        },
+        "model": "ollama:qwen3:8b",
+        "usage": {
+          "model": "qwen3:8b",
+          "provider": "ollama",
+          "role": "judge",
+          "input_tokens": 3397,
+          "output_tokens": 159,
+          "tokens": 3556,
+          "elapsed_ms": 19628.05,
+          "finish_reason": "stop",
+          "provider_request_id": null,
+          "provider_durations_ms": {
+            "total_duration": 19607.047,
+            "load_duration": 3359.151,
+            "prompt_eval_duration": 7506.286,
+            "eval_duration": 8705.282
+          },
+          "usd": 0.0,
+          "api_cost_usd": 0.0,
+          "cost_basis": "local inference; hardware cost excluded",
+          "measured": true,
+          "created": "2026-10-21T10:45:36.726261+00:00"
+        }
+      },
+      "trace": {
+        "status": "verified",
+        "verified": true,
+        "run_id": "01a15e10-907d-79c1-9dca-770a5098655d",
+        "url": "https://smith.langchain.com/o/470574ed-ef8c-4a69-b528-bc18b8702c54/projects/p/81b28083-02be-4992-a393-c96199b48e09/r/01a15e10-907d-79c1-9dca-770a5098655d?poll=true",
+        "project": "capstone-all-total-live",
+        "span_count": 92,
+        "llm_spans": 7,
+        "llm_spans_with_tokens": 7,
+        "span_names": [
+          "ChatPromptTemplate",
+          "LangGraph",
+          "RunnableSequence",
+          "StrOutputParser",
+          "Unnamed",
+          "analyze",
+          "collect",
+          "contrastive_evaluation_case",
+          "evaluation.counterevidence_audit",
+          "evaluation.llm_as_judge",
+          "finalize",
+          "interpret",
+          "investigate_plan",
+          "investigate_probe",
+          "investigate_test",
+          "investigation.choose_question",
+          "investigation.read_evidence",
+          "investigation.test_predictions",
+          "invoke",
+          "llm.generate",
+          "logs_specialist.collect",
+          "mcp.call_tool",
+          "mcp.find_prompt",
+          "mcp.find_resource_template",
+          "mcp.get_prompt",
+          "mcp.list_prompts",
+          "mcp.list_resource_templates",
+          "mcp.read_resource",
+          "metrics_specialist.collect",
+          "plan",
+          "rag.semantic_search",
+          "report.lcel_writer",
+          "research",
+          "resolve",
+          "runbook_specialist.retrieve",
+          "supervisor.parallel_research",
+          "supervisor.resolve",
+          "validate",
+          "with_retry",
+          "write"
+        ],
+        "missing_spans": [],
+        "feedback_ids": [
+          "01a15e11-48c7-7689-aed7-b6aec2e44f36",
+          "01a15e11-4a79-7043-b485-08e560214eb9",
+          "01a15e11-4bc3-75f8-bf65-32280661b413",
+          "01a15e11-4d05-7328-8de8-7d269af8ce73",
+          "01a15e11-4e2b-7107-9bb8-b71389dc3ec7"
+        ],
+        "feedback_verified": true,
+        "ended": true,
+        "error": null
+      },
+      "generation_tokens": 4471,
+      "planner_calls": 4,
+      "judge_tokens": 4717
+    },
+    {
+      "id": "conflict",
+      "label": "작업 중첩과 CPU 기여 근거 상충",
+      "winner": null,
+      "checks": {
+        "same_cpu_preserved": true,
+        "expected_conclusion": true,
+        "precommit_before_observation": true,
+        "actual_planner": true,
+        "budget_and_no_duplicate": true,
+        "scope_preserved": true,
+        "writer_validation": true,
+        "separated_or_withheld": true,
+        "conflict_visible": true,
+        "judge_quality": true
+      },
+      "passed": true,
+      "used": 4,
+      "sequence": [
+        "cpu-attribution",
+        "traffic-window",
+        "job-window",
+        "release-window"
+      ],
+      "outcome": "근거 상충",
+      "stop_code": "conflicting_evidence",
+      "elapsed_ms": 21039.11,
+      "judge": {
+        "status": "completed",
+        "scores": {
+          "groundedness": 5,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5,
+          "reason": "모든 항목이 데이터와 도구 근거에 명확히 기반을 두고 있으며, 원인 추정과 조치 조건이 명확하고 적절합니다. 수치와 근거 ID가 정확히 일치하고, 조치 조건이 지켜졌습니다. 요청된 모든 요소가 충족되었으며, 다음 조치도 명확합니다."
+        },
+        "overall_scores": {
+          "groundedness": 5,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5,
+          "reason": "모든 항목이 데이터와 도구 근거에 명확히 기반을 두고 있으며, 원인 추정과 조치 조건이 명확하고 적절합니다. 수치와 근거 ID가 정확히 일치하고, 조치 조건이 지켜졌습니다. 요청된 모든 요소가 충족되었으며, 다음 조치도 명확합니다."
+        },
+        "claim_audit": {
+          "status": "skipped",
+          "reason": "대조할 최종 원인 주장 또는 추가 관측 없음"
+        },
+        "model": "ollama:qwen3:8b",
+        "usage": {
+          "model": "qwen3:8b",
+          "provider": "ollama",
+          "role": "judge",
+          "input_tokens": 3297,
+          "output_tokens": 137,
+          "tokens": 3434,
+          "elapsed_ms": 19085.24,
+          "finish_reason": "stop",
+          "provider_request_id": null,
+          "provider_durations_ms": {
+            "total_duration": 19050.58,
+            "load_duration": 3924.284,
+            "prompt_eval_duration": 7683.115,
+            "eval_duration": 7407.011
+          },
+          "usd": 0.0,
+          "api_cost_usd": 0.0,
+          "cost_basis": "local inference; hardware cost excluded",
+          "measured": true,
+          "created": "2026-10-21T10:46:35.580166+00:00"
+        }
+      },
+      "trace": {
+        "status": "verified",
+        "verified": true,
+        "run_id": "01a15e11-507c-7833-a7d7-52039b7b028e",
+        "url": "https://smith.langchain.com/o/470574ed-ef8c-4a69-b528-bc18b8702c54/projects/p/81b28083-02be-4992-a393-c96199b48e09/r/01a15e11-507c-7833-a7d7-52039b7b028e?poll=true",
+        "project": "capstone-all-total-live",
+        "span_count": 100,
+        "llm_spans": 7,
+        "llm_spans_with_tokens": 7,
+        "span_names": [
+          "ChatPromptTemplate",
+          "LangGraph",
+          "RunnableSequence",
+          "StrOutputParser",
+          "Unnamed",
+          "analyze",
+          "collect",
+          "contrastive_evaluation_case",
+          "evaluation.counterevidence_audit",
+          "evaluation.llm_as_judge",
+          "finalize",
+          "interpret",
+          "investigate_plan",
+          "investigate_probe",
+          "investigate_test",
+          "investigation.choose_question",
+          "investigation.read_evidence",
+          "investigation.test_predictions",
+          "invoke",
+          "llm.generate",
+          "logs_specialist.collect",
+          "mcp.call_tool",
+          "mcp.find_prompt",
+          "mcp.find_resource_template",
+          "mcp.get_prompt",
+          "mcp.list_prompts",
+          "mcp.list_resource_templates",
+          "mcp.read_resource",
+          "metrics_specialist.collect",
+          "plan",
+          "rag.semantic_search",
+          "report.lcel_writer",
+          "research",
+          "resolve",
+          "runbook_specialist.retrieve",
+          "supervisor.parallel_research",
+          "supervisor.resolve",
+          "validate",
+          "with_retry",
+          "write"
+        ],
+        "missing_spans": [],
+        "feedback_ids": [
+          "01a15e12-0709-7418-8c3d-b0e2f3e1c8e5",
+          "01a15e12-087a-713b-8a72-42a211bc1b29",
+          "01a15e12-09a6-77b5-bd49-bdecb2c50ab1",
+          "01a15e12-0adc-73d9-af76-511de25c15b5",
+          "01a15e12-0cbc-77cf-8d90-82aa6e3a4ac8"
+        ],
+        "feedback_verified": true,
+        "ended": true,
+        "error": null
+      },
+      "generation_tokens": 5967,
+      "planner_calls": 4,
+      "judge_tokens": 3434
+    },
+    {
+      "id": "missing",
+      "label": "추가 관측 없음 · 판단 보류",
+      "winner": null,
+      "checks": {
+        "same_cpu_preserved": true,
+        "expected_conclusion": true,
+        "precommit_before_observation": true,
+        "actual_planner": true,
+        "budget_and_no_duplicate": true,
+        "scope_preserved": true,
+        "writer_validation": true,
+        "separated_or_withheld": true,
+        "judge_quality": true
+      },
+      "passed": true,
+      "used": 4,
+      "sequence": [
+        "cpu-attribution",
+        "traffic-window",
+        "job-window",
+        "release-window"
+      ],
+      "outcome": "판단 보류",
+      "stop_code": "evidence_exhausted",
+      "elapsed_ms": 9977.1,
+      "judge": {
+        "status": "completed",
+        "scores": {
+          "groundedness": 5,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5,
+          "reason": "모든 항목이 도구의 데이터와 일치하며, 원인 추정과 조치 조건이 명확하고 근거가 충실합니다. 수치와 상태도 정확히 반영되었으며, 추가 조사가 필요한 부분도 명시적으로 제시되었습니다."
+        },
+        "overall_scores": {
+          "groundedness": 5,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5,
+          "reason": "모든 항목이 도구의 데이터와 일치하며, 원인 추정과 조치 조건이 명확하고 근거가 충실합니다. 수치와 상태도 정확히 반영되었으며, 추가 조사가 필요한 부분도 명시적으로 제시되었습니다."
+        },
+        "claim_audit": {
+          "status": "skipped",
+          "reason": "대조할 최종 원인 주장 또는 추가 관측 없음"
+        },
+        "model": "ollama:qwen3:8b",
+        "usage": {
+          "model": "qwen3:8b",
+          "provider": "ollama",
+          "role": "judge",
+          "input_tokens": 3286,
+          "output_tokens": 115,
+          "tokens": 3401,
+          "elapsed_ms": 16269.49,
+          "finish_reason": "stop",
+          "provider_request_id": null,
+          "provider_durations_ms": {
+            "total_duration": 16254.849,
+            "load_duration": 2916.259,
+            "prompt_eval_duration": 7235.823,
+            "eval_duration": 6087.954
+          },
+          "usd": 0.0,
+          "api_cost_usd": 0.0,
+          "cost_basis": "local inference; hardware cost excluded",
+          "measured": true,
+          "created": "2026-10-21T10:47:10.503332+00:00"
+        }
+      },
+      "trace": {
+        "status": "verified",
+        "verified": true,
+        "run_id": "01a15e12-0f1d-76c6-a0fe-29ac9d1cc168",
+        "url": "https://smith.langchain.com/o/470574ed-ef8c-4a69-b528-bc18b8702c54/projects/p/81b28083-02be-4992-a393-c96199b48e09/r/01a15e12-0f1d-76c6-a0fe-29ac9d1cc168?poll=true",
+        "project": "capstone-all-total-live",
+        "span_count": 91,
+        "llm_spans": 6,
+        "llm_spans_with_tokens": 6,
+        "span_names": [
+          "ChatPromptTemplate",
+          "LangGraph",
+          "RunnableSequence",
+          "StrOutputParser",
+          "Unnamed",
+          "analyze",
+          "collect",
+          "contrastive_evaluation_case",
+          "evaluation.counterevidence_audit",
+          "evaluation.llm_as_judge",
+          "finalize",
+          "interpret",
+          "investigate_plan",
+          "investigate_probe",
+          "investigate_test",
+          "investigation.choose_question",
+          "investigation.read_evidence",
+          "investigation.test_predictions",
+          "invoke",
+          "llm.generate",
+          "logs_specialist.collect",
+          "mcp.call_tool",
+          "mcp.find_prompt",
+          "mcp.find_resource_template",
+          "mcp.get_prompt",
+          "mcp.list_prompts",
+          "mcp.list_resource_templates",
+          "mcp.read_resource",
+          "metrics_specialist.collect",
+          "plan",
+          "rag.semantic_search",
+          "report.lcel_writer",
+          "research",
+          "resolve",
+          "runbook_specialist.retrieve",
+          "supervisor.parallel_research",
+          "supervisor.resolve",
+          "validate",
+          "with_retry",
+          "write"
+        ],
+        "missing_spans": [],
+        "feedback_ids": [
+          "01a15e12-8e0e-73ae-9f89-8ae83cc6ccf0",
+          "01a15e12-9060-7135-ab4a-df3d08bc75f6",
+          "01a15e12-91f1-73ad-b623-99e2d4dfe419",
+          "01a15e12-932c-771d-a86d-350aed9cc073",
+          "01a15e12-94bc-74c6-a594-d46e6ba5ec0b"
+        ],
+        "feedback_verified": true,
+        "ended": true,
+        "error": null
+      },
+      "generation_tokens": 3929,
+      "planner_calls": 4,
+      "judge_tokens": 3401
+    },
+    {
+      "id": "probe-failure",
+      "label": "귀속 도구 시간 초과 · 원인 보류",
+      "winner": null,
+      "fault_injection": true,
+      "checks": {
+        "same_cpu_preserved": true,
+        "expected_conclusion": true,
+        "precommit_before_observation": true,
+        "actual_planner": true,
+        "budget_and_no_duplicate": true,
+        "scope_preserved": true,
+        "writer_validation": true,
+        "separated_or_withheld": true,
+        "partial_retained": true,
+        "judge_quality": true
+      },
+      "passed": true,
+      "used": 4,
+      "sequence": [
+        "cpu-attribution",
+        "traffic-window",
+        "job-window",
+        "release-window"
+      ],
+      "outcome": "판단 보류",
+      "stop_code": "evidence_exhausted",
+      "elapsed_ms": 10077.58,
+      "judge": {
+        "status": "completed",
+        "scores": {
+          "groundedness": 5,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5,
+          "reason": "모든 항목이 충실하게 처리되었습니다. 원인 추정은 관측 데이터와 근거 ID를 명시적으로 참조하며, 조치 조건과 사전 조건이 명확히 제시되었습니다. 수치는 도구 출력과 일치하며, 추가 조사 시간 초과로 인한 제한도 명시적으로 반영되었습니다. 요청된 질문에 대한 모든 대상의 요구가 충족되었으며, 다음 조치도 명확하고 적절합니다. 원인 주장 별도 평가: 배치 주장을 지지하는 조건 중 duplicate_active_jobs>=1 및 overlap_minutes>=3이 충족되었으나, batch_cpu_share>=0.70은 확인되지 않았습니다. 단서 지지로 판단하며 추가 확인을 요청합니다."
+        },
+        "overall_scores": {
+          "groundedness": 5,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5,
+          "reason": "모든 항목이 충실하게 처리되었습니다. 원인 추정은 관측 데이터와 근거 ID를 명시적으로 참조하며, 조치 조건과 사전 조건이 명확히 제시되었습니다. 수치는 도구 출력과 일치하며, 추가 조사 시간 초과로 인한 제한도 명시적으로 반영되었습니다. 요청된 질문에 대한 모든 대상의 요구가 충족되었으며, 다음 조치도 명확하고 적절합니다."
+        },
+        "claim_audit": {
+          "status": "completed",
+          "scores": {
+            "contradicts_observations": false,
+            "evidence_ids": [
+              "probe:batch:payments-service/traffic-window",
+              "probe:batch:payments-service/job-window"
+            ],
+            "reason": "배치 주장을 지지하는 조건 중 duplicate_active_jobs>=1 및 overlap_minutes>=3이 충족되었으나, batch_cpu_share>=0.70은 확인되지 않았습니다. 단서 지지로 판단하며 추가 확인을 요청합니다."
+          },
+          "usage": {
+            "model": "qwen3:8b",
+            "provider": "ollama",
+            "role": "judge",
+            "input_tokens": 904,
+            "output_tokens": 100,
+            "tokens": 1004,
+            "elapsed_ms": 7042.7,
+            "finish_reason": "stop",
+            "provider_request_id": null,
+            "provider_durations_ms": {
+              "total_duration": 7003.032,
+              "load_duration": 5.319,
+              "prompt_eval_duration": 1999.315,
+              "eval_duration": 4846.764
+            },
+            "usd": 0.0,
+            "api_cost_usd": 0.0,
+            "cost_basis": "local inference; hardware cost excluded",
+            "measured": true,
+            "created": "2026-10-21T10:47:54.819117+00:00"
+          },
+          "claims": [
+            "- payments-service: 중복 배치 작업의 CPU 점유 (단서 지지). 인과관계 확정은 아닙니다. [monitoring:payments-service, probe:batch:payments-service/job-window]"
+          ]
+        },
+        "model": "ollama:qwen3:8b",
+        "usage": {
+          "model": "qwen3:8b",
+          "provider": "ollama",
+          "role": "judge",
+          "input_tokens": 3224,
+          "output_tokens": 160,
+          "tokens": 3384,
+          "elapsed_ms": 18544.76,
+          "finish_reason": "stop",
+          "provider_request_id": null,
+          "provider_durations_ms": {
+            "total_duration": 18533.502,
+            "load_duration": 2927.52,
+            "prompt_eval_duration": 7147.918,
+            "eval_duration": 8439.075
+          },
+          "usd": 0.0,
+          "api_cost_usd": 0.0,
+          "cost_basis": "local inference; hardware cost excluded",
+          "measured": true,
+          "created": "2026-10-21T10:47:47.767070+00:00"
+        }
+      },
+      "trace": {
+        "status": "verified",
+        "verified": true,
+        "run_id": "01a15e12-9766-753b-a625-584f45774853",
+        "url": "https://smith.langchain.com/o/470574ed-ef8c-4a69-b528-bc18b8702c54/projects/p/81b28083-02be-4992-a393-c96199b48e09/r/01a15e12-9766-753b-a625-584f45774853?poll=true",
+        "project": "capstone-all-total-live",
+        "span_count": 91,
+        "llm_spans": 7,
+        "llm_spans_with_tokens": 7,
+        "span_names": [
+          "ChatPromptTemplate",
+          "LangGraph",
+          "RunnableSequence",
+          "StrOutputParser",
+          "Unnamed",
+          "analyze",
+          "collect",
+          "contrastive_evaluation_case",
+          "evaluation.counterevidence_audit",
+          "evaluation.llm_as_judge",
+          "finalize",
+          "interpret",
+          "investigate_plan",
+          "investigate_probe",
+          "investigate_test",
+          "investigation.choose_question",
+          "investigation.read_evidence",
+          "investigation.test_predictions",
+          "invoke",
+          "llm.generate",
+          "logs_specialist.collect",
+          "mcp.call_tool",
+          "mcp.find_prompt",
+          "mcp.find_resource_template",
+          "mcp.get_prompt",
+          "mcp.list_prompts",
+          "mcp.list_resource_templates",
+          "mcp.read_resource",
+          "metrics_specialist.collect",
+          "plan",
+          "rag.semantic_search",
+          "report.lcel_writer",
+          "research",
+          "resolve",
+          "runbook_specialist.retrieve",
+          "supervisor.parallel_research",
+          "supervisor.resolve",
+          "validate",
+          "with_retry",
+          "write"
+        ],
+        "missing_spans": [],
+        "feedback_ids": [
+          "01a15e13-3cd0-76f5-b844-59b6fee19455",
+          "01a15e13-3f09-71ca-9181-bb9279b09199",
+          "01a15e13-402f-749e-926b-2c54d15b1bec",
+          "01a15e13-4150-75e5-98f5-93ea756b6440",
+          "01a15e13-4277-75b8-9ede-9c7752dcb21d"
+        ],
+        "feedback_verified": true,
+        "ended": true,
+        "error": null
+      },
+      "generation_tokens": 4180,
+      "planner_calls": 4,
+      "judge_tokens": 4388
+    }
+  ],
+  "details_path": "/Users/beshu/Downloads/all_total_vue_student/artifacts/investigation/20261021T104332Z/details.json",
+  "limitations": "같은 최초 CPU·경고 로그를 사용하는 고정 합성 사례의 1회 실행입니다. 실제 LLM은 조사 선택·작성·별도 평가에 사용했습니다. 관측 조건에 따른 교차 지지는 실제 원인 확정이 아닙니다. 생성기와 Judge는 같은 Qwen 계열이며 실제 운영 일반화는 검증하지 않았습니다."
+}

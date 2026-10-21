@@ -1,0 +1,578 @@
+[
+  {
+    "case": {
+      "id": "cpu",
+      "label": "CPU 급증과 근거 수치 일치",
+      "query": "payments-service CPU 급증 진단",
+      "targets": [
+        "payments-service"
+      ],
+      "runbooks": [
+        "cpu-spike"
+      ]
+    },
+    "result": {
+      "query": "payments-service CPU 급증 진단",
+      "thread_id": "live-evaluation",
+      "history": [],
+      "context": {
+        "pending": null,
+        "targets": [
+          "payments-service"
+        ],
+        "last_question": "payments-service CPU 급증 진단",
+        "original_question": "payments-service CPU 급증 진단",
+        "details": {
+          "onset": "2026-10-21 오전 9시",
+          "error_message": "없음"
+        }
+      },
+      "targets": [
+        "payments-service"
+      ],
+      "unknown_targets": [],
+      "effective_query": "payments-service CPU 급증 진단",
+      "route": "incident",
+      "mode": "helpdesk",
+      "scenario": "stable",
+      "details": {
+        "onset": "2026-10-21 오전 9시",
+        "error_message": "없음"
+      },
+      "procedure": "시스템: payments-service\n사용자 증상(사실로 간주하지 말 것): payments-service CPU 급증 진단\n1. 확정된 대상만 조회하고 실패 항목을 격리한다.\n2. 모니터링과 로그를 수집하고 증상 및 관측값으로 여러 Runbook을 의미 검색한다.\n3. 관측 사실, 원인 가설, 조건부 권장 조치, 정보 부족과 근거 ID를 구분한다.\n4. 시스템명·수치·출처·조치 조건 검증 실패 시 재작성하며 강제 통과하지 않는다.\n",
+      "collected": [
+        {
+          "id": "monitoring:payments-service",
+          "source": "monitoring",
+          "target": "payments-service",
+          "phase": null,
+          "status": "completed",
+          "data": {
+            "system_name": "payments-service",
+            "status": "degraded",
+            "cpu_percent": 91.0,
+            "memory_percent": 55.0,
+            "last_checked": "2026-10-21T00:05:00Z",
+            "alerts": [
+              "CPU 91% (threshold 80%)",
+              "payments-service-3 instance responding slow"
+            ],
+            "data_kind": "synthetic"
+          },
+          "retries": 0
+        },
+        {
+          "id": "logs:payments-service",
+          "source": "logs",
+          "target": "payments-service",
+          "phase": null,
+          "status": "completed",
+          "data": {
+            "system_name": "payments-service",
+            "entries": [
+              {
+                "time": "2026-10-21T00:05:00Z",
+                "level": "WARN",
+                "message": "batch settlement job started twice with the same schedule key"
+              },
+              {
+                "time": "2026-10-21T00:06:00Z",
+                "level": "WARN",
+                "message": "worker queue backlog increasing"
+              }
+            ],
+            "data_kind": "synthetic"
+          },
+          "retries": 0
+        },
+        {
+          "id": "R:cpu-spike",
+          "source": "runbook",
+          "target": "runbook://incident-response/cpu-spike",
+          "status": "completed",
+          "data": {
+            "id": "R:cpu-spike",
+            "title": "Runbook: CPU 급증 대응 절차",
+            "uri": "runbook://incident-response/cpu-spike",
+            "score": 0.6573,
+            "text": "# Runbook: CPU 급증 대응 절차\n\n1. get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인한다.\n2. 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그에서 확인한다.\n3. CPU가 90%를 넘고 지속되면 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.\n4. 급증이 특정 배포 직후 시작됐다면 직전 배포를 롤백하고 원인 분석은 별도로 진행한다.\n5. 정상화 후 프로파일링 결과를 바탕으로 핫스팟 코드를 식별해 최적화 작업을 등록한다.\n",
+            "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+          }
+        },
+        {
+          "id": "R:memory-leak",
+          "source": "runbook",
+          "target": "runbook://incident-response/memory-leak",
+          "status": "completed",
+          "data": {
+            "id": "R:memory-leak",
+            "title": "Runbook: 메모리 누수(Memory Leak) 대응 절차",
+            "uri": "runbook://incident-response/memory-leak",
+            "score": 0.5067,
+            "text": "# Runbook: 메모리 누수(Memory Leak) 대응 절차\n\n1. get_monitoring_status로 메모리 사용률 추세(시간에 따라 꾸준히 증가하는지)를 확인한다.\n2. OOM 직전(90% 이상)이면 해당 프로세스를 즉시 재시작해 서비스 중단을 막는다 — 재시작은 임시 조치일 뿐임을 기록해둔다.\n3. 힙 덤프 또는 프로파일링 도구로 어떤 객체가 계속 쌓이는지 확인한다.\n4. 캐시 무제한 증가, 커넥션 미반환, 이벤트 리스너 중복 등록 같은 패턴이 최근 배포에 있었는지 점검한다.\n5. 원인이 된 배포가 있으면 롤백하고, 컨테이너 메모리 상한선을 재확인해 재발 시 더 빨리 감지되도록 조정한다.\n",
+            "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+          }
+        },
+        {
+          "id": "R:network-timeout",
+          "source": "runbook",
+          "target": "runbook://incident-response/network-timeout",
+          "status": "completed",
+          "data": {
+            "id": "R:network-timeout",
+            "title": "Runbook: 네트워크 타임아웃 대응 절차",
+            "uri": "runbook://incident-response/network-timeout",
+            "score": 0.435,
+            "text": "# Runbook: 네트워크 타임아웃 대응 절차\n\n1. get_monitoring_status로 어떤 시스템 간 호출에서 타임아웃이 발생하는지 확인한다.\n2. DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 중 최근 변경 사항이 있었는지 점검한다.\n3. 특정 리전/가용영역에서만 발생하면 해당 구간을 우회하는 라우팅으로 임시 전환한다.\n4. 타임아웃 값이 너무 짧아 정상 응답도 실패로 처리되는 경우라면 임계값을 임시 상향해 2차 피해를 줄인다.\n5. 정상화 후 네트워크 경로 기록을 남기고, 재발 방지를 위해 헬스체크 주기와 재시도 정책을 재검토한다.\n",
+            "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+          }
+        },
+        {
+          "id": "R:high-latency",
+          "source": "runbook",
+          "target": "runbook://incident-response/high-latency",
+          "status": "completed",
+          "data": {
+            "id": "R:high-latency",
+            "title": "Runbook: 응답 지연(High Latency) 대응 절차",
+            "uri": "runbook://incident-response/high-latency",
+            "score": 0.4769,
+            "text": "# Runbook: 응답 지연(High Latency) 대응 절차\n\n1. get_monitoring_status로 p95 지연시간과 커넥션 풀 사용률을 확인한다.\n2. 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다.\n3. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에서 일시 제외한다.\n4. 5분 내 p95가 임계치(1.0s) 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산한다.\n5. 정상화 후 느린 쿼리 로그를 분석해 근본 원인을 문서화하고 후속 최적화 티켓을 등록한다.\n",
+            "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+          }
+        }
+      ],
+      "events": [
+        {
+          "type": "TargetResolved",
+          "route": "incident",
+          "targets": [
+            "payments-service"
+          ],
+          "unknown": []
+        },
+        {
+          "type": "PlanCreated",
+          "targets": [
+            "payments-service"
+          ],
+          "specialists": [
+            "metrics",
+            "logs",
+            "runbooks"
+          ],
+          "mode": "helpdesk"
+        },
+        {
+          "type": "ProcedureLoaded",
+          "source": "MCP Prompt"
+        },
+        {
+          "type": "ResearchCompleted",
+          "succeeded": 5,
+          "failed": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "reason": "관측 알림을 반영한 의미 검색 보강"
+        },
+        {
+          "type": "EvidenceReady",
+          "facts": 1,
+          "runbooks": [
+            {
+              "id": "R:cpu-spike",
+              "title": "Runbook: CPU 급증 대응 절차",
+              "uri": "runbook://incident-response/cpu-spike",
+              "score": 0.6573
+            },
+            {
+              "id": "R:memory-leak",
+              "title": "Runbook: 메모리 누수(Memory Leak) 대응 절차",
+              "uri": "runbook://incident-response/memory-leak",
+              "score": 0.5067
+            },
+            {
+              "id": "R:network-timeout",
+              "title": "Runbook: 네트워크 타임아웃 대응 절차",
+              "uri": "runbook://incident-response/network-timeout",
+              "score": 0.435
+            },
+            {
+              "id": "R:high-latency",
+              "title": "Runbook: 응답 지연(High Latency) 대응 절차",
+              "uri": "runbook://incident-response/high-latency",
+              "score": 0.4769
+            }
+          ],
+          "verdict": "주의"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1
+        },
+        {
+          "type": "Validation",
+          "attempt": 1,
+          "verdict": "합격",
+          "errors": []
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2",
+          "status": "completed"
+        }
+      ],
+      "report": {
+        "title": "인시던트 진단 보고서",
+        "verdict": "주의",
+        "targets": [
+          "payments-service"
+        ],
+        "question": "payments-service CPU 급증 진단",
+        "data_kind": "synthetic",
+        "scenario": "stable",
+        "facts": [
+          {
+            "evidence_id": "monitoring:payments-service",
+            "system_name": "payments-service",
+            "phase": null,
+            "status": "degraded",
+            "cpu_percent": 91.0,
+            "memory_percent": 55.0,
+            "alerts": [
+              "CPU 91% (threshold 80%)",
+              "payments-service-3 instance responding slow"
+            ],
+            "last_checked": "2026-10-21T00:05:00Z",
+            "verdict": "주의"
+          }
+        ],
+        "logs": [
+          {
+            "evidence_id": "logs:payments-service",
+            "system_name": "payments-service",
+            "entries": [
+              {
+                "time": "2026-10-21T00:05:00Z",
+                "level": "WARN",
+                "message": "batch settlement job started twice with the same schedule key"
+              },
+              {
+                "time": "2026-10-21T00:06:00Z",
+                "level": "WARN",
+                "message": "worker queue backlog increasing"
+              }
+            ],
+            "data_kind": "synthetic"
+          }
+        ],
+        "hypotheses": [
+          {
+            "id": "H:cpu-spike",
+            "text": "CPU 부하 증가의 원인은 반복 요청·중복 배치 등일 가능성이 있으며 로그와 프로파일링 확인이 필요합니다.",
+            "evidence_ids": [
+              "monitoring:payments-service",
+              "logs:payments-service",
+              "R:cpu-spike"
+            ],
+            "certainty": "추정"
+          }
+        ],
+        "recommendations": [
+          {
+            "id": "A:cpu-spike",
+            "text": "CPU가 90%를 초과하고 지속되는지 시계열로 확인한 뒤 승인 절차에 따라 부하 분산을 검토하세요. 단일 스냅샷으로 지속 여부를 확정할 수 없습니다.",
+            "evidence_ids": [
+              "monitoring:payments-service",
+              "logs:payments-service",
+              "R:cpu-spike"
+            ],
+            "condition": "Runbook의 적용 조건을 추가 확인한 뒤 담당자 승인 필요",
+            "executed": false
+          }
+        ],
+        "runbooks": [
+          {
+            "id": "R:cpu-spike",
+            "title": "Runbook: CPU 급증 대응 절차",
+            "uri": "runbook://incident-response/cpu-spike",
+            "score": 0.6573,
+            "text": "# Runbook: CPU 급증 대응 절차\n\n1. get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인한다.\n2. 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그에서 확인한다.\n3. CPU가 90%를 넘고 지속되면 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.\n4. 급증이 특정 배포 직후 시작됐다면 직전 배포를 롤백하고 원인 분석은 별도로 진행한다.\n5. 정상화 후 프로파일링 결과를 바탕으로 핫스팟 코드를 식별해 최적화 작업을 등록한다.\n",
+            "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+          },
+          {
+            "id": "R:memory-leak",
+            "title": "Runbook: 메모리 누수(Memory Leak) 대응 절차",
+            "uri": "runbook://incident-response/memory-leak",
+            "score": 0.5067,
+            "text": "# Runbook: 메모리 누수(Memory Leak) 대응 절차\n\n1. get_monitoring_status로 메모리 사용률 추세(시간에 따라 꾸준히 증가하는지)를 확인한다.\n2. OOM 직전(90% 이상)이면 해당 프로세스를 즉시 재시작해 서비스 중단을 막는다 — 재시작은 임시 조치일 뿐임을 기록해둔다.\n3. 힙 덤프 또는 프로파일링 도구로 어떤 객체가 계속 쌓이는지 확인한다.\n4. 캐시 무제한 증가, 커넥션 미반환, 이벤트 리스너 중복 등록 같은 패턴이 최근 배포에 있었는지 점검한다.\n5. 원인이 된 배포가 있으면 롤백하고, 컨테이너 메모리 상한선을 재확인해 재발 시 더 빨리 감지되도록 조정한다.\n",
+            "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+          },
+          {
+            "id": "R:network-timeout",
+            "title": "Runbook: 네트워크 타임아웃 대응 절차",
+            "uri": "runbook://incident-response/network-timeout",
+            "score": 0.435,
+            "text": "# Runbook: 네트워크 타임아웃 대응 절차\n\n1. get_monitoring_status로 어떤 시스템 간 호출에서 타임아웃이 발생하는지 확인한다.\n2. DNS 해석 실패, 방화벽/보안그룹 변경, 로드밸런서 헬스체크 실패 중 최근 변경 사항이 있었는지 점검한다.\n3. 특정 리전/가용영역에서만 발생하면 해당 구간을 우회하는 라우팅으로 임시 전환한다.\n4. 타임아웃 값이 너무 짧아 정상 응답도 실패로 처리되는 경우라면 임계값을 임시 상향해 2차 피해를 줄인다.\n5. 정상화 후 네트워크 경로 기록을 남기고, 재발 방지를 위해 헬스체크 주기와 재시도 정책을 재검토한다.\n",
+            "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+          },
+          {
+            "id": "R:high-latency",
+            "title": "Runbook: 응답 지연(High Latency) 대응 절차",
+            "uri": "runbook://incident-response/high-latency",
+            "score": 0.4769,
+            "text": "# Runbook: 응답 지연(High Latency) 대응 절차\n\n1. get_monitoring_status로 p95 지연시간과 커넥션 풀 사용률을 확인한다.\n2. 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다.\n3. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에서 일시 제외한다.\n4. 5분 내 p95가 임계치(1.0s) 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산한다.\n5. 정상화 후 느린 쿼리 로그를 분석해 근본 원인을 문서화하고 후속 최적화 티켓을 등록한다.\n",
+            "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+          }
+        ],
+        "comparisons": [],
+        "limitations": [
+          "고정 교육용 샘플입니다. 시간대별 실측 추세와 배포 변경 이력은 없으므로 인과관계를 확정하지 않습니다.",
+          "검색된 Runbook은 참고 후보입니다. 관측 조건이 맞는 문서만 권장 조치에 사용했습니다."
+        ],
+        "failures": [],
+        "thresholds": {
+          "cpu_warning": 80.0,
+          "memory_warning": 85.0,
+          "cpu_delta_warning_pp": 15.0,
+          "memory_delta_warning_pp": 10.0
+        },
+        "procedure": "시스템: payments-service\n사용자 증상(사실로 간주하지 말 것): payments-service CPU 급증 진단\n1. 확정된 대상만 조회하고 실패 항목을 격리한다.\n2. 모니터링과 로그를 수집하고 증상 및 관측값으로 여러 Runbook을 의미 검색한다.\n3. 관측 사실, 원인 가설, 조건부 권장 조치, 정보 부족과 근거 ID를 구분한다.\n4. 시스템명·수치·출처·조치 조건 검증 실패 시 재작성하며 강제 통과하지 않는다.\n"
+      },
+      "draft": {
+        "facts": [
+          {
+            "evidence_id": "monitoring:payments-service",
+            "system_name": "payments-service",
+            "phase": null,
+            "status": "degraded",
+            "cpu_percent": 91.0,
+            "memory_percent": 55.0,
+            "alerts": [
+              "CPU 91% (threshold 80%)",
+              "payments-service-3 instance responding slow"
+            ],
+            "last_checked": "2026-10-21T00:05:00Z",
+            "verdict": "주의"
+          }
+        ],
+        "hypothesis_ids": [
+          "H:cpu-spike"
+        ],
+        "action_ids": [
+          "A:cpu-spike"
+        ]
+      },
+      "validation": {
+        "passed": true,
+        "attempts": 1,
+        "rewrites": 0,
+        "errors": [],
+        "checks": [
+          "시스템명",
+          "수치",
+          "상태·알림",
+          "근거 ID",
+          "조치 조건",
+          "필수 항목"
+        ]
+      },
+      "validation_attempts": 1,
+      "validation_feedback": "",
+      "replan_rounds": 1,
+      "final": "인시던트 진단 보고서\n판정: 주의 · 교육용 고정 샘플\n\n확인된 사실\n- payments-service: degraded, CPU 91.0%, 메모리 55.0%, 알림 2건 [monitoring:payments-service]\n\n원인 추정\n- CPU 부하 증가의 원인은 반복 요청·중복 배치 등일 가능성이 있으며 로그와 프로파일링 확인이 필요합니다. [monitoring:payments-service, logs:payments-service, R:cpu-spike]\n\n권장 조치\n- CPU가 90%를 초과하고 지속되는지 시계열로 확인한 뒤 승인 절차에 따라 부하 분산을 검토하세요. 단일 스냅샷으로 지속 여부를 확정할 수 없습니다. [monitoring:payments-service, logs:payments-service, R:cpu-spike]\n\n추가 확인 필요\n- 고정 교육용 샘플입니다. 시간대별 실측 추세와 배포 변경 이력은 없으므로 인과관계를 확정하지 않습니다.\n- 검색된 Runbook은 참고 후보입니다. 관측 조건이 맞는 문서만 권장 조치에 사용했습니다.\n\n참고 출처\n- [R:cpu-spike] Runbook: CPU 급증 대응 절차 — runbook://incident-response/cpu-spike\n- [R:memory-leak] Runbook: 메모리 누수(Memory Leak) 대응 절차 — runbook://incident-response/memory-leak\n- [R:network-timeout] Runbook: 네트워크 타임아웃 대응 절차 — runbook://incident-response/network-timeout\n- [R:high-latency] Runbook: 응답 지연(High Latency) 대응 절차 — runbook://incident-response/high-latency",
+      "status": "completed",
+      "cost_usd": 0.0,
+      "tokens": 1976,
+      "retry_count": 0,
+      "model_usage": [
+        {
+          "model": "qwen3.5:2b",
+          "provider": "ollama",
+          "role": "writer",
+          "input_tokens": 1837,
+          "output_tokens": 139,
+          "tokens": 1976,
+          "elapsed_ms": 4293.03,
+          "finish_reason": "stop",
+          "provider_request_id": null,
+          "provider_durations_ms": {
+            "total_duration": 4261.141,
+            "load_duration": 26.282,
+            "prompt_eval_duration": 865.027,
+            "eval_duration": 3099.391
+          },
+          "usd": 0.0,
+          "api_cost_usd": 0.0,
+          "cost_basis": "local inference; hardware cost excluded",
+          "measured": true,
+          "created": "2026-10-21T09:20:41.005234+00:00"
+        }
+      ]
+    },
+    "judge": {
+      "status": "completed",
+      "scores": {
+        "groundedness": 5,
+        "numerical_accuracy": 5,
+        "action_conditions": 5,
+        "request_fulfillment": 5,
+        "next_action": 5,
+        "reason": "모든 항목이 도구 데이터와 일치하며, 원인 추정, 권장 조치, 추가 확인 필요, 참고 출처 등이 명확하게 제시되어 있습니다. 수치와 상태는 정확히 반영되었고, 조치 조건도 명시적으로 설명되었습니다. 요청된 정보가 모두 충족되었으며, 다음 조치도 명확하고 적절합니다."
+      },
+      "model": "ollama:qwen3:8b",
+      "usage": {
+        "model": "qwen3:8b",
+        "provider": "ollama",
+        "role": "judge",
+        "input_tokens": 2279,
+        "output_tokens": 139,
+        "tokens": 2418,
+        "elapsed_ms": 16682.94,
+        "finish_reason": "stop",
+        "provider_request_id": null,
+        "provider_durations_ms": {
+          "total_duration": 16666.859,
+          "load_duration": 4832.605,
+          "prompt_eval_duration": 4608.398,
+          "eval_duration": 7200.494
+        },
+        "usd": 0.0,
+        "api_cost_usd": 0.0,
+        "cost_basis": "local inference; hardware cost excluded",
+        "measured": true,
+        "created": "2026-10-21T09:20:57.700767+00:00"
+      }
+    },
+    "generation_ms": 4588.7,
+    "trace_id": "968bc1e2-1fa2-46d9-83f9-654492a97c77",
+    "remote_trace": {
+      "status": "verified",
+      "verified": true,
+      "run_id": "968bc1e2-1fa2-46d9-83f9-654492a97c77",
+      "url": "https://smith.langchain.com/o/470574ed-ef8c-4a69-b528-bc18b8702c54/projects/p/81b28083-02be-4992-a393-c96199b48e09/r/968bc1e2-1fa2-46d9-83f9-654492a97c77?poll=true",
+      "project": "capstone-all-total-live",
+      "span_count": 56,
+      "llm_spans": 2,
+      "llm_spans_with_tokens": 2,
+      "span_names": [
+        "ChatPromptTemplate",
+        "LangGraph",
+        "RunnableSequence",
+        "StrOutputParser",
+        "Unnamed",
+        "analyze",
+        "collect",
+        "evaluation.llm_as_judge",
+        "finalize",
+        "interpret",
+        "invoke",
+        "live_evaluation_case",
+        "llm.generate",
+        "logs_specialist.collect",
+        "mcp.call_tool",
+        "mcp.find_prompt",
+        "mcp.find_resource_template",
+        "mcp.get_prompt",
+        "mcp.list_prompts",
+        "mcp.list_resource_templates",
+        "mcp.read_resource",
+        "metrics_specialist.collect",
+        "plan",
+        "rag.semantic_search",
+        "replan",
+        "report.lcel_writer",
+        "research",
+        "resolve",
+        "runbook_specialist.retrieve",
+        "supervisor.evidence_replan",
+        "supervisor.parallel_research",
+        "supervisor.resolve",
+        "validate",
+        "with_retry",
+        "write"
+      ],
+      "missing_spans": [],
+      "feedback_ids": [
+        "01a15dc3-a730-736a-b2aa-3a87a38ef85b",
+        "01a15dc3-a8ce-7567-8bf1-57124f7db979",
+        "01a15dc3-aa0e-7158-a837-b8c8b82dd4ba",
+        "01a15dc3-ab40-7778-b02f-344212da198f",
+        "01a15dc3-ac5b-7676-8fbb-81eb166eda74"
+      ],
+      "feedback_verified": true,
+      "ended": true,
+      "error": null
+    },
+    "tool_calls": [
+      [
+        "get_monitoring_status",
+        {
+          "system_name": "payments-service"
+        }
+      ],
+      [
+        "get_recent_logs",
+        {
+          "system_name": "payments-service"
+        }
+      ]
+    ],
+    "generation_responses": [
+      {
+        "text": "{\"facts\": [{\"evidence_id\": \"monitoring:payments-service\", \"system_name\": \"payments-service\", \"phase\": null, \"status\": \"degraded\", \"cpu_percent\": 91.0, \"memory_percent\": 55.0, \"alerts\": [\"CPU 91% (threshold 80%)\", \"payments-service-3 instance responding slow\"], \"last_checked\": \"2026-10-21T00:05:00Z\", \"verdict\": \"주의\"}], \"hypothesis_ids\": [\"H:cpu-spike\"], \"action_ids\": [\"A:cpu-spike\"]}",
+        "usage": {
+          "model": "qwen3.5:2b",
+          "provider": "ollama",
+          "role": "writer",
+          "input_tokens": 1837,
+          "output_tokens": 139,
+          "tokens": 1976,
+          "elapsed_ms": 4293.03,
+          "finish_reason": "stop",
+          "provider_request_id": null,
+          "provider_durations_ms": {
+            "total_duration": 4261.141,
+            "load_duration": 26.282,
+            "prompt_eval_duration": 865.027,
+            "eval_duration": 3099.391
+          },
+          "usd": 0.0,
+          "api_cost_usd": 0.0,
+          "cost_basis": "local inference; hardware cost excluded",
+          "measured": true,
+          "created": "2026-10-21T09:20:41.005234+00:00"
+        }
+      }
+    ],
+    "judge_responses": [
+      {
+        "text": "{\n  \"groundedness\": 5,\n  \"numerical_accuracy\": 5,\n  \"action_conditions\": 5,\n  \"request_fulfillment\": 5,\n  \"next_action\": 5,\n  \"reason\": \"모든 항목이 도구 데이터와 일치하며, 원인 추정, 권장 조치, 추가 확인 필요, 참고 출처 등이 명확하게 제시되어 있습니다. 수치와 상태는 정확히 반영되었고, 조치 조건도 명시적으로 설명되었습니다. 요청된 정보가 모두 충족되었으며, 다음 조치도 명확하고 적절합니다.\"\n}",
+        "usage": {
+          "model": "qwen3:8b",
+          "provider": "ollama",
+          "role": "judge",
+          "input_tokens": 2279,
+          "output_tokens": 139,
+          "tokens": 2418,
+          "elapsed_ms": 16682.94,
+          "finish_reason": "stop",
+          "provider_request_id": null,
+          "provider_durations_ms": {
+            "total_duration": 16666.859,
+            "load_duration": 4832.605,
+            "prompt_eval_duration": 4608.398,
+            "eval_duration": 7200.494
+          },
+          "usd": 0.0,
+          "api_cost_usd": 0.0,
+          "cost_basis": "local inference; hardware cost excluded",
+          "measured": true,
+          "created": "2026-10-21T09:20:57.700767+00:00"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,427 @@
+{
+  "stable": {
+    "before": {
+      "auth-service": {
+        "system_name": "auth-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "web-01": {
+        "system_name": "web-01",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "payments-service": {
+        "system_name": "payments-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "cache-service": {
+        "system_name": "cache-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "gateway-service": {
+        "system_name": "gateway-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "log-service": {
+        "system_name": "log-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      }
+    },
+    "after": {
+      "auth-service": {
+        "system_name": "auth-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "web-01": {
+        "system_name": "web-01",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "payments-service": {
+        "system_name": "payments-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "cache-service": {
+        "system_name": "cache-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "gateway-service": {
+        "system_name": "gateway-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "log-service": {
+        "system_name": "log-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      }
+    }
+  },
+  "cpu-rise": {
+    "before": {
+      "auth-service": {
+        "system_name": "auth-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "web-01": {
+        "system_name": "web-01",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "payments-service": {
+        "system_name": "payments-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "cache-service": {
+        "system_name": "cache-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "gateway-service": {
+        "system_name": "gateway-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "log-service": {
+        "system_name": "log-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      }
+    },
+    "after": {
+      "auth-service": {
+        "system_name": "auth-service",
+        "status": "degraded",
+        "cpu_percent": 91.0,
+        "memory_percent": 48.0,
+        "alerts": [
+          "CPU above 80% threshold"
+        ],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "web-01": {
+        "system_name": "web-01",
+        "status": "degraded",
+        "cpu_percent": 91.0,
+        "memory_percent": 48.0,
+        "alerts": [
+          "CPU above 80% threshold"
+        ],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "payments-service": {
+        "system_name": "payments-service",
+        "status": "degraded",
+        "cpu_percent": 91.0,
+        "memory_percent": 48.0,
+        "alerts": [
+          "CPU above 80% threshold"
+        ],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "cache-service": {
+        "system_name": "cache-service",
+        "status": "degraded",
+        "cpu_percent": 91.0,
+        "memory_percent": 48.0,
+        "alerts": [
+          "CPU above 80% threshold"
+        ],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "gateway-service": {
+        "system_name": "gateway-service",
+        "status": "degraded",
+        "cpu_percent": 91.0,
+        "memory_percent": 48.0,
+        "alerts": [
+          "CPU above 80% threshold"
+        ],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "log-service": {
+        "system_name": "log-service",
+        "status": "degraded",
+        "cpu_percent": 91.0,
+        "memory_percent": 48.0,
+        "alerts": [
+          "CPU above 80% threshold"
+        ],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      }
+    }
+  },
+  "new-alert": {
+    "before": {
+      "auth-service": {
+        "system_name": "auth-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "web-01": {
+        "system_name": "web-01",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "payments-service": {
+        "system_name": "payments-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "cache-service": {
+        "system_name": "cache-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "gateway-service": {
+        "system_name": "gateway-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "log-service": {
+        "system_name": "log-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      }
+    },
+    "after": {
+      "auth-service": {
+        "system_name": "auth-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [
+          "new upstream timeout alert"
+        ],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "web-01": {
+        "system_name": "web-01",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [
+          "new upstream timeout alert"
+        ],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "payments-service": {
+        "system_name": "payments-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [
+          "new upstream timeout alert"
+        ],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "cache-service": {
+        "system_name": "cache-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [
+          "new upstream timeout alert"
+        ],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "gateway-service": {
+        "system_name": "gateway-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [
+          "new upstream timeout alert"
+        ],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      },
+      "log-service": {
+        "system_name": "log-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [
+          "new upstream timeout alert"
+        ],
+        "last_checked": "2026-10-21T00:10:00Z",
+        "data_kind": "synthetic"
+      }
+    }
+  },
+  "missing-after": {
+    "before": {
+      "auth-service": {
+        "system_name": "auth-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "web-01": {
+        "system_name": "web-01",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "payments-service": {
+        "system_name": "payments-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "cache-service": {
+        "system_name": "cache-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "gateway-service": {
+        "system_name": "gateway-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      },
+      "log-service": {
+        "system_name": "log-service",
+        "status": "healthy",
+        "cpu_percent": 34.0,
+        "memory_percent": 48.0,
+        "alerts": [],
+        "last_checked": "2026-10-21T00:00:00Z",
+        "data_kind": "synthetic"
+      }
+    },
+    "after": {}
+  }
+}

@@ -1,0 +1,534 @@
+{
+  "created": "2026-10-21T10:58:51.561898+00:00",
+  "description": "원본 v2 보존본과 현재 개선 그래프 · 고정 시나리오 12개 · 생성 모델은 fake · 실제 로컬 다국어 임베딩 사용",
+  "metrics": [
+    {
+      "label": "시나리오 통과율",
+      "before": "0.0%",
+      "after": "100.0%"
+    },
+    {
+      "label": "조사 대상 정확 일치율",
+      "before": "41.7%",
+      "after": "100.0%"
+    },
+    {
+      "label": "필수 Runbook 검색 재현율",
+      "before": "62.5%",
+      "after": "100.0%"
+    },
+    {
+      "label": "CPU 수치 근거 일치율",
+      "before": "92.9%",
+      "after": "100.0%"
+    },
+    {
+      "label": "처리 시간 중앙값 (warm)",
+      "before": "709.3 ms",
+      "after": "18.1 ms"
+    },
+    {
+      "label": "실제 생성 LLM / Judge",
+      "before": "사용 안 함 / 사용 안 함",
+      "after": "사용 안 함 / 미실행"
+    }
+  ],
+  "cases": [
+    {
+      "id": "ambiguous",
+      "label": "대상 없는 장애 질문",
+      "before": {
+        "passed": false,
+        "scope_exact": false,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 2,
+        "numeric_supported": 2,
+        "documents": [
+          "high-latency"
+        ],
+        "observed_targets": [
+          "auth-service",
+          "web-01"
+        ],
+        "status": "legacy",
+        "validation_attempts": 2,
+        "elapsed_ms": 715.66
+      },
+      "after": {
+        "passed": true,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": null,
+        "numeric_claims": 0,
+        "numeric_supported": 0,
+        "documents": [],
+        "observed_targets": [],
+        "status": "needs_clarification",
+        "validation_attempts": 0,
+        "elapsed_ms": 3.37
+      }
+    },
+    {
+      "id": "unknown",
+      "label": "미등록 시스템 자동 대체 방지",
+      "before": {
+        "passed": false,
+        "scope_exact": false,
+        "failure_handling": false,
+        "runbook_recall": null,
+        "numeric_accuracy": null,
+        "numeric_claims": 0,
+        "numeric_supported": 0,
+        "documents": [],
+        "observed_targets": [
+          "billing-service",
+          "web-01"
+        ],
+        "status": "legacy",
+        "validation_attempts": 0,
+        "elapsed_ms": 353.8
+      },
+      "after": {
+        "passed": true,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": null,
+        "numeric_claims": 0,
+        "numeric_supported": 0,
+        "documents": [],
+        "observed_targets": [],
+        "status": "needs_clarification",
+        "validation_attempts": 0,
+        "elapsed_ms": 2.07
+      }
+    },
+    {
+      "id": "two-targets",
+      "label": "명시한 두 시스템 모두 조사",
+      "before": {
+        "passed": false,
+        "scope_exact": false,
+        "failure_handling": true,
+        "runbook_recall": 0.5,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 3,
+        "numeric_supported": 3,
+        "documents": [
+          "cpu-spike"
+        ],
+        "observed_targets": [
+          "gateway-service",
+          "payments-service",
+          "web-01"
+        ],
+        "status": "legacy",
+        "validation_attempts": 2,
+        "elapsed_ms": 709.95
+      },
+      "after": {
+        "passed": true,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": 1.0,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 2,
+        "numeric_supported": 2,
+        "documents": [
+          "cpu-spike",
+          "high-latency",
+          "network-timeout"
+        ],
+        "observed_targets": [
+          "gateway-service",
+          "payments-service"
+        ],
+        "status": "completed",
+        "validation_attempts": 1,
+        "elapsed_ms": 25.03
+      }
+    },
+    {
+      "id": "cpu",
+      "label": "CPU 급증과 근거 수치 일치",
+      "before": {
+        "passed": false,
+        "scope_exact": false,
+        "failure_handling": true,
+        "runbook_recall": 1.0,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 2,
+        "numeric_supported": 2,
+        "documents": [
+          "cpu-spike"
+        ],
+        "observed_targets": [
+          "payments-service",
+          "web-01"
+        ],
+        "status": "legacy",
+        "validation_attempts": 2,
+        "elapsed_ms": 708.25
+      },
+      "after": {
+        "passed": true,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": 1.0,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 1,
+        "numeric_supported": 1,
+        "documents": [
+          "cpu-spike",
+          "high-latency",
+          "memory-leak"
+        ],
+        "observed_targets": [
+          "payments-service"
+        ],
+        "status": "completed",
+        "validation_attempts": 1,
+        "elapsed_ms": 17.92
+      }
+    },
+    {
+      "id": "paraphrase",
+      "label": "우회 표현으로 메모리 문서 검색",
+      "before": {
+        "passed": false,
+        "scope_exact": false,
+        "failure_handling": true,
+        "runbook_recall": 1.0,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 2,
+        "numeric_supported": 2,
+        "documents": [
+          "memory-leak"
+        ],
+        "observed_targets": [
+          "cache-service",
+          "web-01"
+        ],
+        "status": "legacy",
+        "validation_attempts": 2,
+        "elapsed_ms": 709.69
+      },
+      "after": {
+        "passed": true,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": 1.0,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 1,
+        "numeric_supported": 1,
+        "documents": [
+          "cpu-spike",
+          "disk-full",
+          "memory-leak"
+        ],
+        "observed_targets": [
+          "cache-service"
+        ],
+        "status": "completed",
+        "validation_attempts": 1,
+        "elapsed_ms": 19.31
+      }
+    },
+    {
+      "id": "partial",
+      "label": "일부 조회 시간 초과와 성공 결과 유지",
+      "before": {
+        "passed": false,
+        "scope_exact": true,
+        "failure_handling": false,
+        "runbook_recall": 0.0,
+        "numeric_accuracy": null,
+        "numeric_claims": 0,
+        "numeric_supported": 0,
+        "documents": [],
+        "observed_targets": [
+          "payments-service",
+          "web-01"
+        ],
+        "status": "legacy",
+        "validation_attempts": 0,
+        "elapsed_ms": 1556.87
+      },
+      "after": {
+        "passed": true,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": 1.0,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 1,
+        "numeric_supported": 1,
+        "documents": [
+          "cpu-spike",
+          "high-latency",
+          "memory-leak"
+        ],
+        "observed_targets": [
+          "payments-service",
+          "web-01"
+        ],
+        "status": "partial",
+        "validation_attempts": 1,
+        "elapsed_ms": 73.36
+      }
+    },
+    {
+      "id": "bad-draft",
+      "label": "CPU 39% 오류 초안 차단",
+      "before": {
+        "passed": false,
+        "scope_exact": false,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": 0.0,
+        "numeric_claims": 1,
+        "numeric_supported": 0,
+        "documents": [
+          "cpu-spike"
+        ],
+        "observed_targets": [
+          "payments-service",
+          "web-01"
+        ],
+        "status": "legacy",
+        "validation_attempts": 1,
+        "elapsed_ms": 708.65
+      },
+      "after": {
+        "passed": true,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 1,
+        "numeric_supported": 1,
+        "documents": [
+          "cpu-spike",
+          "high-latency",
+          "memory-leak"
+        ],
+        "observed_targets": [
+          "payments-service"
+        ],
+        "status": "validation_failed",
+        "validation_attempts": 3,
+        "elapsed_ms": 20.03
+      }
+    },
+    {
+      "id": "resume",
+      "label": "되묻기 후 원래 증상으로 조사",
+      "before": {
+        "passed": false,
+        "scope_exact": false,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": null,
+        "numeric_claims": 0,
+        "numeric_supported": 0,
+        "documents": [],
+        "observed_targets": [],
+        "status": "legacy",
+        "validation_attempts": 0,
+        "elapsed_ms": 1.93
+      },
+      "after": {
+        "passed": true,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 1,
+        "numeric_supported": 1,
+        "documents": [
+          "cpu-spike",
+          "high-latency",
+          "memory-leak"
+        ],
+        "observed_targets": [
+          "payments-service"
+        ],
+        "status": "completed",
+        "validation_attempts": 1,
+        "elapsed_ms": 18.18
+      }
+    },
+    {
+      "id": "stable",
+      "label": "배포 전후 정상 유지",
+      "before": {
+        "passed": false,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 1,
+        "numeric_supported": 1,
+        "documents": [
+          "db-down"
+        ],
+        "observed_targets": [
+          "web-01"
+        ],
+        "status": "legacy",
+        "validation_attempts": 2,
+        "elapsed_ms": 709.54
+      },
+      "after": {
+        "passed": true,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 2,
+        "numeric_supported": 2,
+        "documents": [
+          "cpu-spike",
+          "disk-full",
+          "memory-leak"
+        ],
+        "observed_targets": [
+          "web-01"
+        ],
+        "status": "completed",
+        "validation_attempts": 1,
+        "elapsed_ms": 14.16
+      }
+    },
+    {
+      "id": "cpu-rise",
+      "label": "배포 전후 CPU +57%p",
+      "before": {
+        "passed": false,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 1,
+        "numeric_supported": 1,
+        "documents": [
+          "db-down"
+        ],
+        "observed_targets": [
+          "web-01"
+        ],
+        "status": "legacy",
+        "validation_attempts": 2,
+        "elapsed_ms": 712.56
+      },
+      "after": {
+        "passed": true,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 2,
+        "numeric_supported": 2,
+        "documents": [
+          "cpu-spike",
+          "disk-full",
+          "memory-leak"
+        ],
+        "observed_targets": [
+          "web-01"
+        ],
+        "status": "completed",
+        "validation_attempts": 1,
+        "elapsed_ms": 22.87
+      }
+    },
+    {
+      "id": "new-alert",
+      "label": "수치가 같아도 새 알림 발생 감지",
+      "before": {
+        "passed": false,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 1,
+        "numeric_supported": 1,
+        "documents": [
+          "db-down"
+        ],
+        "observed_targets": [
+          "web-01"
+        ],
+        "status": "legacy",
+        "validation_attempts": 2,
+        "elapsed_ms": 709.16
+      },
+      "after": {
+        "passed": true,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 2,
+        "numeric_supported": 2,
+        "documents": [
+          "cpu-spike",
+          "disk-full",
+          "memory-leak"
+        ],
+        "observed_targets": [
+          "web-01"
+        ],
+        "status": "completed",
+        "validation_attempts": 1,
+        "elapsed_ms": 14.76
+      }
+    },
+    {
+      "id": "missing-after",
+      "label": "배포 후 샘플 누락은 정보 부족",
+      "before": {
+        "passed": false,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 1,
+        "numeric_supported": 1,
+        "documents": [
+          "db-down"
+        ],
+        "observed_targets": [
+          "web-01"
+        ],
+        "status": "legacy",
+        "validation_attempts": 2,
+        "elapsed_ms": 708.44
+      },
+      "after": {
+        "passed": true,
+        "scope_exact": true,
+        "failure_handling": true,
+        "runbook_recall": null,
+        "numeric_accuracy": 1.0,
+        "numeric_claims": 1,
+        "numeric_supported": 1,
+        "documents": [
+          "cpu-spike",
+          "disk-full",
+          "memory-leak"
+        ],
+        "observed_targets": [
+          "web-01"
+        ],
+        "status": "partial",
+        "validation_attempts": 1,
+        "elapsed_ms": 13.62
+      }
+    }
+  ],
+  "warmup_ms": 916.45,
+  "limitations": "소규모 교육용 데이터 1회 평가입니다. 원본의 태스크당 350ms 인위적 지연 제거가 시간 차이에 포함됩니다. 실모델 품질·운영 SLA·토큰 비용을 증명하지 않습니다. CPU 수치 평가는 최종 답변의 CPU 주장만 대상으로 합니다. LLM Judge는 명시적으로 실행할 때만 점수를 저장합니다."
+}

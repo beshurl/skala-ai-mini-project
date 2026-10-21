@@ -1,0 +1,32 @@
+{
+  "created": "2026-10-21T11:25:23.588264+00:00",
+  "report_pages": 7,
+  "slides": 8,
+  "planned_seconds": 300,
+  "speaker_notes_all_slides": true,
+  "code_locations_checked": true,
+  "visual_review": "all 7 report pages and all 8 slides inspected",
+  "a11y": {
+    "file": "doc/운영진단_개선결과_제출보고서.docx",
+    "counts": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "findings": []
+  },
+  "presentation_validation": "artifacts/final_docs_20261021/ppt/validation-v1.json",
+  "deliverables": {
+    "doc/운영진단_개선결과_제출보고서.docx": "003327e917f463e192f12dd4fc57201b88ffdc10f6e5aef41b5f0577774af25d",
+    "doc/presentation/운영진단_에이전트_5분발표.pptx": "1b080415625187b3e23e2b73676060a9df0d936ba2d06e7bb0ad4bb26dcc06ee",
+    "doc/PRESENTATION_5MIN.md": "8769638ce429750c9f018dc386d1a4f4cf18f90049b9cd3a0cb23c8c09caeebf"
+  },
+  "facts": {
+    "input_rejections": 5,
+    "generation_tokens": 0,
+    "current_tests": 99,
+    "historical_investigation_functional": "6/6",
+    "historical_investigation_overall": "5/6",
+    "overall_cost_savings_percent": "not measured"
+  }
+}

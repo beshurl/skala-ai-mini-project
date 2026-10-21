@@ -1,0 +1,74 @@
+{
+  "created": "2026-10-21T11:11:03.429885+00:00",
+  "passed": true,
+  "backend": "ollama:qwen3.5:2b",
+  "rule_engine": "local Python rules; no classifier LLM or embedding calls",
+  "rejected_requests": 5,
+  "generation_tokens": 0,
+  "remote_runs_without_llm_or_mcp": 5,
+  "rejected_input_not_saved": true,
+  "pending_question_preserved": true,
+  "pytest_passed": 99,
+  "cases": [
+    {
+      "transport": "json",
+      "message": "ㅋㅋㅋㅋ",
+      "tokens": 0,
+      "run_id": "01a15e28-0355-7026-b782-69372b364007",
+      "reason": "no_content",
+      "remote_verified": true,
+      "llm_spans": 0,
+      "mcp_spans": 0
+    },
+    {
+      "transport": "json",
+      "message": "asdf qwer",
+      "tokens": 0,
+      "run_id": "01a15e28-0367-7a3a-a0dd-9b494aedfa5a",
+      "reason": "out_of_scope",
+      "remote_verified": true,
+      "llm_spans": 0,
+      "mcp_spans": 0
+    },
+    {
+      "transport": "post-sse",
+      "message": "오늘 날씨 알려줘",
+      "tokens": 0,
+      "run_id": "01a15e28-0377-74ce-8d13-74e745a89581",
+      "reason": "out_of_scope",
+      "remote_verified": true,
+      "llm_spans": 0,
+      "mcp_spans": 0
+    },
+    {
+      "transport": "post-sse",
+      "message": "payments-service CPU에 대한 시를 써줘",
+      "tokens": 0,
+      "run_id": "01a15e28-0384-7ae1-9d54-801df0c1d20d",
+      "reason": "out_of_scope",
+      "remote_verified": true,
+      "llm_spans": 0,
+      "mcp_spans": 0
+    },
+    {
+      "transport": "get-sse",
+      "message": "😀😀😀",
+      "tokens": 0,
+      "run_id": "01a15e28-038f-7f78-923b-1dcf0377c47f",
+      "reason": "no_content",
+      "remote_verified": true,
+      "llm_spans": 0,
+      "mcp_spans": 0
+    }
+  ],
+  "browser_screenshot": "artifacts/screenshots/input-rejected-zero-tokens.png",
+  "source_fingerprints": {
+    "agent/input_validation.py": "5bacfc14755b622a58ee54ac19d2dc3b3fccf3db9b3c552294eb7e2b1f3ded2d",
+    "agent/targets.py": "3488f3ceac1643c3bf5bd29fd27eae3e28b6164630c17a6b454f2f9bce0a3241",
+    "server.py": "8727978101e98af44aa286fbb2cf38743e6709488d9dfa901ee38b6bda770eed",
+    "frontend/app.js": "c959c401c4e9e6efc0923824d11d261681623127f7fd09a328c065d2118ad1c0",
+    "tests/test_input_validation.py": "77d4a9cb43415cbb9b7d27d20e72d23770c1465e4094c5fd31469e2e4c6f8369",
+    "tests/test_api.py": "03576eb8b2b8fa6276e8f05420a418311a82c8708fcd9d77b539b50fa61ff903"
+  },
+  "limitations": "Rule-based admission is conservative, not universal semantic classification. Meaningful ambiguous operational requests retain target clarification."
+}

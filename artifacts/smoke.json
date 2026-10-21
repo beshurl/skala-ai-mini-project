@@ -1,0 +1,38 @@
+{
+  "url": "http://127.0.0.1:8600",
+  "health": {
+    "status": "ok",
+    "instance_id": 4533044880,
+    "creation_count": 1,
+    "supervisor_version": "v2",
+    "llm_backend": "fake",
+    "fast_llm": "fast-model-stub",
+    "quality_llm": "quality-model-stub",
+    "data_kind": "synthetic",
+    "rag_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "tracing_configured": false
+  },
+  "checks": [
+    {
+      "check": "same-origin API and catalog",
+      "passed": true
+    },
+    {
+      "check": "clarification persisted and original symptom resumed",
+      "passed": true
+    },
+    {
+      "check": "real MCP metrics/resource + dense RAG + validated-only SSE",
+      "passed": true
+    },
+    {
+      "check": "four deployment cases; failed-only retry preserves before evidence",
+      "passed": true
+    },
+    {
+      "check": "atomic SQLite records and session separation",
+      "passed": true
+    }
+  ],
+  "thread_id": "smoke-4ce972eb-a0a5-4d0e-a86d-e947b028cc01"
+}

@@ -1,0 +1,197 @@
+{
+  "created": "2026-10-21T09:21:21.759038+00:00",
+  "mode": "actual-generation-and-actual-judge",
+  "data_kind": "synthetic-monitoring-and-logs",
+  "generation_model": "ollama:qwen3.5:2b",
+  "judge_model": "ollama:qwen3:8b",
+  "case_count": 1,
+  "passed": 1,
+  "judge_completed": 1,
+  "judge_mean_scores": {
+    "groundedness": 5,
+    "numerical_accuracy": 5,
+    "action_conditions": 5,
+    "request_fulfillment": 5,
+    "next_action": 5
+  },
+  "negative_control": {
+    "status": "completed",
+    "passed": true,
+    "correct_answer_score": 5,
+    "corrupted_answer_score": 2,
+    "judge": {
+      "status": "completed",
+      "scores": {
+        "groundedness": 5,
+        "numerical_accuracy": 2,
+        "action_conditions": 5,
+        "request_fulfillment": 5,
+        "next_action": 5,
+        "reason": "groundedness: 모든 진단은 제공된 데이터와 도구 근거에 기반하여 이루어졌으며, 원인 추정과 권장 조치는 적절한 근거를 바탕으로 제공됨. numerical_accuracy: final_answer에서 CPU 사용률이 39.0%로 표시되었으나, monitoring:payments-service 데이터에서 CPU_percent는 91.0%로 기록되어 있음. action_conditions: 권장 조치는 CPU가 90%를 초과하고 지속되는지 확인하라고 명시하며, 무조건 재시작을 권하지 않음. request_fulfillment: 사용자의 질문인 payments-service CPU 급증 진단에 대해 원인 추정, 권장 조치, 추가 확인 필요 사항을 모두 제공함. next_action: 다음 확인/조치가 명확하고 적절함."
+      },
+      "model": "ollama:qwen3:8b",
+      "usage": {
+        "model": "qwen3:8b",
+        "provider": "ollama",
+        "role": "judge",
+        "input_tokens": 2226,
+        "output_tokens": 239,
+        "tokens": 2465,
+        "elapsed_ms": 13172.85,
+        "finish_reason": "stop",
+        "provider_request_id": null,
+        "provider_durations_ms": {
+          "total_duration": 13118.623,
+          "load_duration": 15.294,
+          "prompt_eval_duration": 1075.815,
+          "eval_duration": 11995.114
+        },
+        "usd": 0.0,
+        "api_cost_usd": 0.0,
+        "cost_basis": "local inference; hardware cost excluded",
+        "measured": true,
+        "created": "2026-10-21T09:21:21.115755+00:00"
+      }
+    },
+    "injection": "최종 답변만 CPU 91% → 39%로 바꾸고 검증 통과 플래그를 유지함"
+  },
+  "generation_tokens": 1976,
+  "judge_tokens": 2418,
+  "median_generation_ms": 4588.7,
+  "tracing": {
+    "requested": true,
+    "configured": true,
+    "project": "capstone-all-total-live",
+    "endpoint": "https://api.smith.langchain.com",
+    "reason": null,
+    "remote_verified_cases": 1,
+    "verified": true
+  },
+  "cases": [
+    {
+      "id": "cpu",
+      "label": "CPU 급증과 근거 수치 일치",
+      "fault_injection": false,
+      "passed": true,
+      "scope_exact": true,
+      "failure_handling": true,
+      "runbook_recall": 1.0,
+      "numeric_accuracy": 1.0,
+      "numeric_claims": 1,
+      "numeric_supported": 1,
+      "documents": [
+        "cpu-spike",
+        "high-latency",
+        "memory-leak",
+        "network-timeout"
+      ],
+      "observed_targets": [
+        "payments-service"
+      ],
+      "status": "completed",
+      "validation_attempts": 1,
+      "elapsed_ms": 4588.7,
+      "judge": {
+        "status": "completed",
+        "scores": {
+          "groundedness": 5,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5,
+          "reason": "모든 항목이 도구 데이터와 일치하며, 원인 추정, 권장 조치, 추가 확인 필요, 참고 출처 등이 명확하게 제시되어 있습니다. 수치와 상태는 정확히 반영되었고, 조치 조건도 명시적으로 설명되었습니다. 요청된 정보가 모두 충족되었으며, 다음 조치도 명확하고 적절합니다."
+        },
+        "model": "ollama:qwen3:8b",
+        "usage": {
+          "model": "qwen3:8b",
+          "provider": "ollama",
+          "role": "judge",
+          "input_tokens": 2279,
+          "output_tokens": 139,
+          "tokens": 2418,
+          "elapsed_ms": 16682.94,
+          "finish_reason": "stop",
+          "provider_request_id": null,
+          "provider_durations_ms": {
+            "total_duration": 16666.859,
+            "load_duration": 4832.605,
+            "prompt_eval_duration": 4608.398,
+            "eval_duration": 7200.494
+          },
+          "usd": 0.0,
+          "api_cost_usd": 0.0,
+          "cost_basis": "local inference; hardware cost excluded",
+          "measured": true,
+          "created": "2026-10-21T09:20:57.700767+00:00"
+        }
+      },
+      "generation_calls": 1,
+      "generation_tokens": 1976,
+      "judge_tokens": 2418,
+      "generation_input_tokens": 1837,
+      "generation_output_tokens": 139,
+      "judge_elapsed_ms": 16682.94,
+      "trace": {
+        "status": "verified",
+        "verified": true,
+        "run_id": "968bc1e2-1fa2-46d9-83f9-654492a97c77",
+        "url": "https://smith.langchain.com/o/470574ed-ef8c-4a69-b528-bc18b8702c54/projects/p/81b28083-02be-4992-a393-c96199b48e09/r/968bc1e2-1fa2-46d9-83f9-654492a97c77?poll=true",
+        "project": "capstone-all-total-live",
+        "span_count": 56,
+        "llm_spans": 2,
+        "llm_spans_with_tokens": 2,
+        "span_names": [
+          "ChatPromptTemplate",
+          "LangGraph",
+          "RunnableSequence",
+          "StrOutputParser",
+          "Unnamed",
+          "analyze",
+          "collect",
+          "evaluation.llm_as_judge",
+          "finalize",
+          "interpret",
+          "invoke",
+          "live_evaluation_case",
+          "llm.generate",
+          "logs_specialist.collect",
+          "mcp.call_tool",
+          "mcp.find_prompt",
+          "mcp.find_resource_template",
+          "mcp.get_prompt",
+          "mcp.list_prompts",
+          "mcp.list_resource_templates",
+          "mcp.read_resource",
+          "metrics_specialist.collect",
+          "plan",
+          "rag.semantic_search",
+          "replan",
+          "report.lcel_writer",
+          "research",
+          "resolve",
+          "runbook_specialist.retrieve",
+          "supervisor.evidence_replan",
+          "supervisor.parallel_research",
+          "supervisor.resolve",
+          "validate",
+          "with_retry",
+          "write"
+        ],
+        "missing_spans": [],
+        "feedback_ids": [
+          "01a15dc3-a730-736a-b2aa-3a87a38ef85b",
+          "01a15dc3-a8ce-7567-8bf1-57124f7db979",
+          "01a15dc3-aa0e-7158-a837-b8c8b82dd4ba",
+          "01a15dc3-ab40-7778-b02f-344212da198f",
+          "01a15dc3-ac5b-7676-8fbb-81eb166eda74"
+        ],
+        "feedback_verified": true,
+        "ended": true,
+        "error": null
+      }
+    }
+  ],
+  "api_cost_usd": 0,
+  "cost_limit": "Local hardware/electricity cost is not included. No fabricated provider price.",
+  "limitations": "고정 합성 데이터의 단일 실행이며 실제 운영 정확도나 모델 전반의 성능을 뜻하지 않습니다. 같은 Qwen 계열 생성기와 Judge의 상관 편향이 있을 수 있습니다. fault-injection 사례는 실제 모델 출력에 의도적으로 오류를 주입했습니다."
+}

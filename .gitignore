@@ -1,4 +1,4 @@
-# Local credentials and machine-specific configuration. Commit templates only.
+# Credentials: only commit the empty configuration template.
 .env
 .env.*
 !.env.example
@@ -6,17 +6,15 @@
 .envrc
 credentials*.json
 *service-account*.json
+secrets/
+credentials/
 *.pem
 *.key
 *.p12
 *.pfx
 *.keystore
-.ssh/
-.aws/
-secrets/
-credentials/
 
-# Python environments, bytecode and test/coverage caches.
+# Python, frontend and editor caches.
 .venv/
 venv/
 __pycache__/
@@ -24,77 +22,51 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-.coverage
-.coverage.*
+.coverage*
 htmlcov/
-coverage/
 *.egg-info/
-
-# Frontend dependencies, builds, browser reports and local design scratch notes.
 node_modules/
 dist/
 .vite/
-*.tsbuildinfo
-test-results/
-playwright-report/
-blob-report/
-.impeccable/
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
 
-# Runtime state, collected source material, review ledgers and experiment results.
-/outputs/
-/runtime/
-/backups/
-/RECASE_data_vault/
-quarantine/
-*.log
-*.jsonl
-*.csv
-*.tsv
-*.parquet
-*.arrow
+# Local conversations, vector indexes, runtime logs and model downloads.
+*.db
+*.db-*
 *.sqlite
 *.sqlite3
 *.sqlite-*
 *.sqlite3-*
-*.db
-*.db-*
+*.log
 *.bak
 *.backup
-*.enc
-
-# Keep data private by default. Only source templates, static policy
-# specifications and the explicitly synthetic practice fixture belong in Git.
-/data/**
-!/data/*.example.json
-!/data/local_operations_policy.json
-!/data/local_operations_policy.proposed.json
-!/data/local_operations_policy.90d-30d.proposed.json
-!/data/local_operations_policy.90d-30d.schema2.proposed.json
-!/data/local_operations_policy.90d-30d.encrypted.proposed.json
-!/data/practice/
-!/data/practice/v1/
-!/data/practice/v1/cases.json
-
-# Model weights, adapters, checkpoints and tensor datasets.
-models/
-adapters/
-checkpoints/
 *.safetensors
 *.gguf
 *.onnx
 *.ckpt
 *.pt
 *.pth
-*.bin
-*.npy
-*.npz
-*.h5
-*.hdf5
+models/
+checkpoints/
 
-# Local OS/editor files.
-.DS_Store
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
+# Only the project's explicit synthetic fixtures and runbooks are public.
+/data/*
+!/data/monitoring.json
+!/data/logs.json
+!/data/snapshots.json
+!/data/investigation_cases.json
+!/data/response_policy.json
+!/data/runbooks/
+
+# Keep evaluation evidence and report screenshots; omit authoring scratch files.
+/artifacts/*_build/
+/artifacts/ppt_output/
+/artifacts/final_docs_20261021/*
+!/artifacts/final_docs_20261021/verification.json
+!/artifacts/final_docs_20261021/ppt/
+/artifacts/final_docs_20261021/ppt/*
+!/artifacts/final_docs_20261021/ppt/previews/

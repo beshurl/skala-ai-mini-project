@@ -1,0 +1,46 @@
+{
+  "data_kind": "synthetic",
+  "systems": {
+    "auth-service": [
+      {
+        "time": "2026-10-21T00:05:00Z",
+        "level": "WARN",
+        "message": "connection acquisition wait exceeded application budget"
+      }
+    ],
+    "web-01": [],
+    "payments-service": [
+      {
+        "time": "2026-10-21T00:05:00Z",
+        "level": "WARN",
+        "message": "batch settlement job started twice with the same schedule key"
+      },
+      {
+        "time": "2026-10-21T00:06:00Z",
+        "level": "WARN",
+        "message": "worker queue backlog increasing"
+      }
+    ],
+    "cache-service": [
+      {
+        "time": "2026-10-21T00:05:00Z",
+        "level": "WARN",
+        "message": "heap retained object count increasing; investigate with profiling"
+      }
+    ],
+    "gateway-service": [
+      {
+        "time": "2026-10-21T00:05:00Z",
+        "level": "ERROR",
+        "message": "upstream request returned 504 from payments-service"
+      }
+    ],
+    "log-service": [
+      {
+        "time": "2026-10-21T00:05:00Z",
+        "level": "WARN",
+        "message": "log rotation could not allocate disk space"
+      }
+    ]
+  }
+}

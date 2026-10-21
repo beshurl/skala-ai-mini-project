@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "ports": [
+    18101,
+    18601
+  ],
+  "backend": "fake",
+  "cleanup_verified": true
+}

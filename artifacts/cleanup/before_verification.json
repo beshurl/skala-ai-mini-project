@@ -1,0 +1,122 @@
+{
+  "created": "2026-10-21T10:53:43.207607+00:00",
+  "feature": "contrastive-hypothesis-investigation",
+  "tests": {
+    "passed": 62,
+    "command": ".venv/bin/python -m pytest -q"
+  },
+  "fixed_regression": {
+    "passed": 12,
+    "total": 12,
+    "source": "artifacts/evaluation.json"
+  },
+  "actual_llm": {
+    "functional_passed": 6,
+    "total": 6,
+    "judge_completed": 6,
+    "overall_passed": 5,
+    "review_required": [
+      "release"
+    ],
+    "remote_runs": 6,
+    "read_back_feedback": 30,
+    "source_fingerprints_current": true,
+    "source": "artifacts/investigation_evaluation.json"
+  },
+  "negative_control": {
+    "passed": true,
+    "good_score": 5,
+    "corrupted_score": 2,
+    "remote_verified": true,
+    "score_policy": "actual LLM contradiction detection caps groundedness at 2; original overall score retained"
+  },
+  "api_smoke": {
+    "passed": true,
+    "checks": {
+      "actual_backend": true,
+      "done_marker": true,
+      "sse_actual_plan_and_single_final": true,
+      "sqlite_board_restore": true,
+      "json_conflict_withholds_actions": true,
+      "session_isolation": true,
+      "remote_traces": true
+    },
+    "source": "artifacts/investigation_api_smoke.json"
+  },
+  "browser": {
+    "desktop": "artifacts/screenshots/investigation-traffic-desktop.png",
+    "mobile": "artifacts/screenshots/investigation-traffic-mobile.png",
+    "console_errors": 0,
+    "mobile_viewport": 375,
+    "mobile_document_width": 360
+  },
+  "document": {
+    "path": "doc/운영진단_개선결과_제출보고서.docx",
+    "pages": 6,
+    "visual_check": "all six pages; final revision pages 4 and 5 rechecked",
+    "a11y_findings": 0,
+    "sha256": "fd04c52319b60db93d54870868bd6fec0bd7c6c1d518661e7a4126fb98c1f9ca"
+  },
+  "limitations": [
+    "CPU three-hypothesis policy; synthetic observations",
+    "Judge false-positive on release preserved as overall failure",
+    "same Qwen family, fixed small corpus"
+  ],
+  "previous_version": {
+    "pytest": {
+      "passed": 38
+    },
+    "evaluation_cases": {
+      "passed": 12,
+      "total": 12
+    },
+    "real_generation_llm_used": true,
+    "real_embedding_model_used": true,
+    "langsmith_remote_verified": true,
+    "llm_judge_executed": true,
+    "browser_checks": [
+      "desktop diagnosis",
+      "deployment delta +57pp",
+      "API restart and browser reload restore",
+      "deployment mode/scenario restore",
+      "mobile report layout; document width does not exceed viewport",
+      "history selection focuses exact record",
+      "real Ollama diagnosis via browser",
+      "actual Judge and verified remote trace summary",
+      "12 per-case remote links",
+      "mobile evaluation no horizontal overflow; no browser console errors"
+    ],
+    "frontend_review_fixes": [
+      "IME composition guard",
+      "retry session scoping",
+      "record anchor",
+      "terminal workflow status",
+      "workflow restoration",
+      "timeout/cancel feedback",
+      "evidence font and target size"
+    ],
+    "previous_fixed_response_verification": {
+      "pytest": {
+        "passed": 32
+      },
+      "real_generation_llm_used": false,
+      "langsmith_remote_verified": false,
+      "llm_judge_executed": false
+    },
+    "verified_at": "2026-10-21T09:33:58.536584+00:00",
+    "live_evaluation": {
+      "artifact": "artifacts/live_evaluation.json",
+      "cases_passed": 12,
+      "cases_total": 12,
+      "judge_completed": 12,
+      "remote_verified": 12,
+      "feedback_verified": 60,
+      "negative_control_passed": true,
+      "data_kind": "synthetic-monitoring-and-logs"
+    },
+    "live_http_sse": {
+      "artifact": "artifacts/live_api_smoke.json",
+      "passed": true
+    }
+  }
+}

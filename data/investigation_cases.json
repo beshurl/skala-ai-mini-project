@@ -1,0 +1,45 @@
+{
+  "data_kind": "synthetic",
+  "description": "모든 사례의 최초 CPU는 91%로 동일하다. 기존 경고 로그는 단서이며 아래 구간 관측으로 검증한다. 원인 정답은 도구에 전달하지 않는다.",
+  "window_start": "2026-10-21T00:00:00Z",
+  "window_end": "2026-10-21T00:05:00Z",
+  "cases": {
+    "batch": {
+      "label": "중복 배치 단서 지지",
+      "probes": {
+        "job-window": {"duplicate_active_jobs": 2, "overlap_minutes": 4},
+        "traffic-window": {"baseline_rps": 100, "current_rps": 110, "sustained_minutes": 5},
+        "release-window": {"new_release": false, "baseline_error_percent": 1, "current_error_percent": 1},
+        "cpu-attribution": {"batch_cpu_share": 0.86, "request_cpu_share": 0.08, "new_release_cpu_share": 0.02}
+      }
+    },
+    "traffic": {
+      "label": "배치 로그 단서가 뒤집히는 요청량 증가",
+      "probes": {
+        "job-window": {"duplicate_active_jobs": 0, "overlap_minutes": 0},
+        "traffic-window": {"baseline_rps": 100, "current_rps": 320, "sustained_minutes": 5},
+        "release-window": {"new_release": false, "baseline_error_percent": 1, "current_error_percent": 1},
+        "cpu-attribution": {"batch_cpu_share": 0.05, "request_cpu_share": 0.88, "new_release_cpu_share": 0.02}
+      }
+    },
+    "release": {
+      "label": "배치·요청량 가설 반증 후 릴리스 연관성",
+      "probes": {
+        "job-window": {"duplicate_active_jobs": 0, "overlap_minutes": 0},
+        "traffic-window": {"baseline_rps": 100, "current_rps": 105, "sustained_minutes": 5},
+        "release-window": {"new_release": true, "baseline_error_percent": 1, "current_error_percent": 6},
+        "cpu-attribution": {"batch_cpu_share": 0.04, "request_cpu_share": 0.07, "new_release_cpu_share": 0.84}
+      }
+    },
+    "conflict": {
+      "label": "작업 기록과 CPU 기여 근거 충돌",
+      "probes": {
+        "job-window": {"duplicate_active_jobs": 2, "overlap_minutes": 4},
+        "traffic-window": {"baseline_rps": 100, "current_rps": 110, "sustained_minutes": 5},
+        "release-window": {"new_release": false, "baseline_error_percent": 1, "current_error_percent": 1},
+        "cpu-attribution": {"batch_cpu_share": 0.05, "request_cpu_share": 0.08, "new_release_cpu_share": 0.02}
+      }
+    },
+    "missing": {"label": "자료 없음·결론 보류", "probes": {}}
+  }
+}
