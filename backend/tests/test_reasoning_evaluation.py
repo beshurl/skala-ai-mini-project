@@ -3,6 +3,8 @@ import copy
 import fcntl
 import json
 import os
+import subprocess
+import signal
 from pathlib import Path
 
 import pytest
@@ -82,6 +84,23 @@ def test_real_model_metadata_cannot_mislabel_base_as_adapter():
     assert not evaluator.model_matches(info, value, "mlx", "existing_ft")
     assert evaluator.model_matches({**info, "adapter_loaded": True, "adapter_sha256": "adapter"}, value, "mlx", "existing_ft")
     assert not evaluator.model_matches({**info, "revision": "other"}, value, "mlx", "base")
+
+
+def test_supervisor_deadline_only_stops_its_owned_worker(plan, tmp_path, monkeypatch):
+    value, path = plan
+    killed = []
+    class OwnedWorker:
+        pid = 987654
+        calls = 0
+        def wait(self, timeout):
+            self.calls += 1
+            if self.calls == 1:raise subprocess.TimeoutExpired("UNIT_TEST_FIXTURE", timeout)
+            return -signal.SIGTERM
+    monkeypatch.setattr(evaluator.subprocess, "Popen", lambda *a, **k: OwnedWorker())
+    monkeypatch.setattr(evaluator.os, "killpg", lambda pid, sig: killed.append((pid, sig)))
+    result = evaluator.execute(path, "base", "fixture", tmp_path / "timeout")
+    assert killed == [(987654, signal.SIGTERM)]
+    assert result["supervisor_terminated_worker"] and result["missing_or_duplicate_stages"] == 36
 
 
 def test_complete_36_stage_api_mcp_fixture_and_source_tampering(plan, tmp_path):

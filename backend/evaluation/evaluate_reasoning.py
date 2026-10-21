@@ -6,7 +6,9 @@ lock to be free. This tool cannot pause or restart the production service.
 import argparse
 import fcntl
 import json
+import importlib.metadata
 import os
+import platform
 import secrets
 import signal
 import stat
@@ -28,6 +30,12 @@ LOCK = PROJECT_ROOT / "runtime/model.lock"
 LIMITS = {"stages": 36, "seconds_per_job": 180, "seconds_per_variant": 1800,
           "maximum_model_calls_per_variant": 36, "generation_tokens": 1024,
           "context_tokens": 4096, "consecutive_invalid_stop": 3, "automatic_retries": 0}
+
+
+def runtime_identity():
+    return {"platform": platform.platform(), "python": platform.python_version(),
+            "packages": {name: importlib.metadata.version(name) for name in
+                         ("mlx", "mlx-lm", "transformers", "tokenizers", "fastapi", "langgraph", "mcp")}}
 
 
 def write(path, value):
@@ -78,6 +86,7 @@ def prepare(out):
             "contract": "evidence-reasoning-v1", "input": str(BUNDLE), "reference": str(REFERENCE),
             "sample_ids": expected, "variants": ["base", "existing_ft"], "limits": LIMITS,
             "model_identity": identity,
+            "runtime_identity": runtime_identity(),
             "shared_lock": {"path": str(LOCK), "device": LOCK.stat().st_dev, "inode": LOCK.stat().st_ino},
             "bound_files": [{"path": str(p), "sha256": file_digest(p)} for p in dict.fromkeys(paths)],
             "metrics": ["complete_and_missing_stages", "valid_result_fraction_over_36", "exact_public_quote_checks",
@@ -106,6 +115,8 @@ def checked_plan(path):
     for ref in plan["bound_files"]:
         if file_digest(ref["path"]) != ref["sha256"]:
             raise PermissionError("PLAN_BOUND_SOURCE_DATA_OR_MODEL_CHANGED")
+    if runtime_identity() != plan["runtime_identity"]:
+        raise PermissionError("INSTALLED_RUNTIME_CHANGED")
     lock = Path(plan["shared_lock"]["path"]).stat()
     if (lock.st_dev, lock.st_ino) != (plan["shared_lock"]["device"], plan["shared_lock"]["inode"]):
         raise PermissionError("ORIGINAL_MODEL_LOCK_CHANGED")
@@ -252,6 +263,7 @@ def score(plan, records, backend, variant, worker_exit):
     rows = {r["sample_id"]: r for r in records if counts[r["sample_id"]] == 1}
     statuses, errors = Counter(), Counter()
     valid = agreed = quote_total = quote_valid = 0
+    unique_quotes = set()
     stage_results = []
     for sample_id in plan["sample_ids"]:
         row = rows.get(sample_id)
@@ -268,6 +280,7 @@ def score(plan, records, backend, variant, worker_exit):
                     quote_total += 1
                     text = public[row["evidence_map"][citation["evidence_id"]]]["text"]
                     a, b = citation.get("start"), citation.get("end")
+                    unique_quotes.add((citation["evidence_id"], a, b))
                     passed = type(a) is int and type(b) is int and 0 <= a < b <= len(text) and text[a:b] == citation["quote"]
                     quote_valid += int(passed);span_checks.append(passed)
                 checks = [row["job_status"] == "COMPLETED", result.analysis_contract_version == plan["contract"],
@@ -297,7 +310,7 @@ def score(plan, records, backend, variant, worker_exit):
             "missing_or_duplicate_stages": sum(r["status"] == "NOT_RUN" for r in stage_results),
             "statuses": dict(statuses), "valid_stages": valid, "valid_fraction": valid / len(plan["sample_ids"]),
             "ai_proposed_relation_agreement": agreed / len(plan["sample_ids"]) if backend == "mlx" and records else None,
-            "exact_quote_checks": {"checked": quote_total, "valid": quote_valid}, "validation_codes": dict(errors),
+            "exact_quote_checks": {"checked": quote_total, "valid": quote_valid, "unique_source_spans": len(unique_quotes)}, "validation_codes": dict(errors),
             "model_calls_attempted_observed": sum(r.get("model_calls_attempted_observed", 0) for r in records),
             "recorded_wall_seconds": sum(r.get("wall_seconds", 0) for r in records),
             "recorded_prompt_tokens": sum((r.get("result") or {}).get("usage", {}).get("prompt_tokens", 0) for r in records),
@@ -319,6 +332,7 @@ def execute(plan_path, variant, backend, out):
     write(out / "plan-copy.json", plan)
     write(out / "execution-marker.json", {"kind": "fresh_reasoning_run", "plan_sha256": plan["plan_sha256"]})
     code = 2
+    supervisor_terminated = False
     if gate["status"] == "PASS":
         env = dict(os.environ)
         for key in ("RECASE_AUTH_FILE", "RECASE_ADMIN_AUTH_FILE", "RECASE_DB", "RECASE_ACCOUNTS_DB",
@@ -334,11 +348,13 @@ def execute(plan_path, variant, backend, out):
             try:
                 code = process.wait(timeout=LIMITS["seconds_per_variant"] + 30)
             except subprocess.TimeoutExpired:
-                os.killpg(process.pid, signal.SIGTERM)
-                try:process.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    os.killpg(process.pid, signal.SIGKILL);process.wait(timeout=5)
+                stop_worker(process)
+                supervisor_terminated = True
                 code = 3
+            except KeyboardInterrupt:
+                stop_worker(process)
+                supervisor_terminated = True
+                code = 130
     try:
         after = checked_plan(plan_path)
         if after["plan_sha256"] != plan["plan_sha256"]:
@@ -358,8 +374,20 @@ def execute(plan_path, variant, backend, out):
             row = {"sample_id": "MALFORMED_LINE_" + str(i), "job_status": "INVALID_RECORD"}
         records.append(row)
     metrics = score(plan, records, backend, variant, code)
+    metrics["supervisor_terminated_worker"] = supervisor_terminated
     write(out / "metrics.json", metrics)
     return metrics
+
+
+def stop_worker(process):
+    """Only the process group created for this worker; never the live daemon."""
+    try:os.killpg(process.pid, signal.SIGTERM)
+    except ProcessLookupError:pass
+    try:process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        try:os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:pass
+        process.wait(timeout=5)
 
 
 def compare(paths):

@@ -329,3 +329,11 @@ preparation-plan.json은 execution_ready=false/executable=null인 준비본이�
 ## 2026-10-21 Git 원격·게시 준비
 
 사용자 지정 공개 저장소 origin=https://github.com/beshurl/skala-ai-mini-project.git, 브랜치 back/feature/recase-auth-evidence-data-pipeline. 기존 codex 이름 로컬 브랜치1개를 이름 변경하고 기존 커밋 이력을 보존했다. .gitignore에서 실제 수집 원문·모델·계정/사건DB·비밀정보·실행 산출물을 제외하고 정적 예시/운영명세/합성 연습자료와 화면 자산만 포함한다. 별도 Git 소스 사본에서 backend257 tests·추가 평가7 tests/frontend16·typecheck/build PASS, 과거 이력/소스 비밀값 검사0건. 새 클론에서 로컬 data/processed에 의존하던 테스트 실패는 보존했으며 임시 합성 자료 생성으로 수정했다. 캐시 없는 토크나이저 검사는 명시 skip하며 모델 자동 다운로드/추론0이다. 푸시 최종 결과/정확한 명령·시각·종료코드는 outputs/runs/20261021T100053+0900-github-publish-fee619/에 로컬 기록한다. 실제 수집 원문·기존 어댑터·평가·운영서비스·모델 잠금은 변경하지 않는다.
+
+## 2026-10-21 main 통합·추가 변경 검증 및 SafetyDream 연결
+
+사용자의 전체 변경 게시·병합 요청으로 기존 게시본 bcb1924를 main 기본 소스로 올리고, 이후 평가 실행 환경 식별/감독 시간 제한·로컬 실행 세션/복구 시뮬레이션 등 미추적 소스를 포함해 새 사본에서 검증했다. outputs/runs/20261021T101256+0900-main-merge-45ba96의 backend-tests.json/log: 10:15:25~10:16:39 KST, .venv/bin/python -m pytest -q backend/tests, exit0/271 PASS. frontend-checks.json/log: 10:15:40~10:15:45 KST, npm ci --offline --ignore-scripts --no-audit --no-fund 및 test/typecheck/build 모두 exit0, 16 tests PASS. 명령의 cwd는 run/source이며 실제 프론트 빌드/운영 서비스/모델은 변경하지 않았다. 비밀값 검사 이력/소스0건. 병합·원격 SHA·작업 폴더 최종 상태는 같은 run에 별도 기록한다. Git clean을 위해 실제 자료를 삭제하거나 소스 제외 규칙을 추가하지 않는다.
+
+사용자 제공 SafetyDream 키는 프로젝트 밖 개인 저장소의 새0600 파일에 보관했다. 공식 HTTPS POST 최소 조회1회에 HTTP200/result00·반환1건·totalCount321을 확인했다. 원문/개인정보 저장0·키 출력/URL 노출0·전체 인증 수집/전처리/학습 NOT_RUN. 연결 결과는 개인 저장소 connection_checks/에 보관하며 키를 Git에 넣지 않는다. 모델 실행 세션 도구는 소스/시뮬레이션만 검증했으며 실제 sudo·서비스 중지/재개·학습/모델 요청은 실행하지 않았다.
+
+게시 직전 병행 추가된 FAILED/CANCELLED/STALE 작업의 후속 모델 중단 조건과 복구 테스트를 포함했다. backend-reasoning-final.json/log: 10:18:30~10:18:35 KST, pytest -q backend/tests/test_reasoning_session.py backend/tests/test_reasoning_evaluation.py, exit0/15 PASS. 전체271 PASS 이후 변경한 두 소스에 대한 후속 검증이다.
