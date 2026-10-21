@@ -24,7 +24,9 @@
 
 최신 review/queue.jsonl에 목적별 권리·개인정보·라벨·사건 계열 검수 양식, review/sparse-pdf-pages.json에13쪽 원문 안내를 준비했다. AI 참고 라벨은 evaluation/reference-proposals.jsonl에 입력과 분리했으며 사람 정답이 아니다. 양식의 boolean/문자열 변경으로 기존 ledger·동결·OS·최대3후보 gate를 대체하지 않는다. 공개 NLI450건의 AI 위임 검토를 신규 실제 사건으로 확대하지 않았다.
 
-NamUs CSV·SafetyDream API·법제처 판례 API는 계정/본인인증/신청키가 없어 미수집이다. 국가기록원은 공개 목록2개만 확보했고 비공개 수사기록 원문을 취득하지 않았다. FBI 옛 아카이브2주소와 Contra Costa1주소는 robots403으로 수집하지 않았다. Seale 자료는 접근 가능한 DOJ 공식 원문으로 별도 확보했다. 인증 우회·가입 대행·유료 호출·공개 배포·미공개 원문 외부 전송은0이다.
+초기 수집 당시 NamUs CSV·SafetyDream API·법제처 판례 API는 계정/본인인증/신청키가 없어 미수집이었다. 국가기록원은 공개 목록2개만 확보했고 비공개 수사기록 원문을 취득하지 않았다. FBI 옛 아카이브2주소와 Contra Costa1주소는 robots403으로 수집하지 않았다. Seale 자료는 접근 가능한 DOJ 공식 원문으로 별도 확보했다. 인증 우회·가입 대행·유료 호출·공개 배포·미공개 원문 외부 전송은0이다.
+
+2026-10-21 10:16 KST 사용자가 제공한 SafetyDream 인증정보로 [공식 실종검색 API](https://www.safe182.go.kr/home/api/guide5.do)에 HTTPS POST 최소 조회1회(rowSize=1)를 수행했다. HTTP200/result00·응답1건·API 보고 totalCount321을 확인했다. 전체 수집 완료나 독립 미제사건321건을 뜻하지 않으며 응답 원문/개인정보는 저장하지 않았다. 인증정보는 Git 밖 개인 저장소 credentials/의0600 파일, 연결 확인 결과는 connection_checks/에 별도로 보관한다. 채팅·URL·명령 인자·Git·결과 로그에 키를 출력하지 않았다. 기존 비인증 공개 수집기의 인증 URL 거부는 유지하며, 인증 수집·신규 자료 전처리·검수·서비스 반입·학습은 아직 NOT_RUN이다. NamUs·법제처 인증은 계속 대기다.
 
 ## 검증과 상태
 
