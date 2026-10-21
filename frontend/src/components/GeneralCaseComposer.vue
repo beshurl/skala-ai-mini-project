@@ -1,29 +1,48 @@
 <!-- Local Operate extension: explicit synthetic input, retained drafts, no retry. -->
 <script setup lang="ts">
 import { ref, reactive, useId, nextTick } from 'vue';
+import CaseFileImport from './CaseFileImport.vue';
+import {casePayload} from '../caseFiles';
+import type {CaseDraft,DraftEvidence} from '../caseFiles';
 const props=defineProps<{ createCase:(payload:Record<string,unknown>)=>Promise<void>; disabled?:boolean }>();
 const prefix=useId(), busy=ref(false), error=ref(''), confirmed=ref(false);
 const title=ref(''), summary=ref(''), claims=ref('');
 const creationId=ref(crypto.randomUUID().replaceAll('-',''));
 const evidence=reactive([{title:'',text:'',kind:'record',initially_released:true}]);
 const disclosure=ref<HTMLDetailsElement|null>(null), titleInput=ref<HTMLInputElement|null>(null);
+const importer=ref<InstanceType<typeof CaseFileImport>|null>(null),importReading=ref(false),importNotice=ref('');
+const previous=ref<{title:string;summary:string;claims:string;evidence:DraftEvidence[];confirmed:boolean;creationId:string}|null>(null);
+const hasDraft=()=>!!(title.value || summary.value || claims.value || evidence.some(e=>e.title || e.text));
 async function open(){
   if(!disclosure.value)return;
   disclosure.value.open=true;
   await nextTick();
   titleInput.value?.focus();
 }
-defineExpose({open});
+async function openImport(){await open();importer.value?.focus();}
+defineExpose({open,openImport});
+function importDraft(draft:CaseDraft,filename:string){
+  previous.value={title:title.value,summary:summary.value,claims:claims.value,evidence:evidence.map(e=>({...e})),confirmed:confirmed.value,creationId:creationId.value};
+  title.value=draft.title;summary.value=draft.summary;claims.value=draft.claims.join('\n');evidence.splice(0,evidence.length,...draft.evidence.map(e=>({...e})));
+  confirmed.value=false;creationId.value=crypto.randomUUID().replaceAll('-','');error.value='';
+  importNotice.value=`${filename}의 초안을 적용했습니다. 내용을 확인한 뒤 가상 자료 여부를 직접 확인하고 저장하세요.`;
+}
+function restoreDraft(){
+  const draft=previous.value;if(!draft)return;
+  title.value=draft.title;summary.value=draft.summary;claims.value=draft.claims;evidence.splice(0,evidence.length,...draft.evidence.map(e=>({...e})));
+  confirmed.value=draft.confirmed;creationId.value=draft.creationId;previous.value=null;error.value='';importNotice.value='파일을 적용하기 전 입력으로 복원했습니다.';
+}
 async function submit(){
-  if(busy.value || props.disabled)return;
+  if(busy.value || props.disabled || importReading.value)return;
   busy.value=true;error.value='';
   try {
     const items=claims.value.split('\n').map(s=>s.trim()).filter(Boolean);
     if(!confirmed.value || !items.length || items.length>8 || items.some(c=>c.length>700))throw new Error('가상 자료 여부와 주장 1~8개, 주장당 700자 한도를 확인하세요.');
     if(evidence.reduce((sum,e)=>sum+e.text.length,0)>24000)throw new Error('전체 자료 원문은 24,000자까지 입력할 수 있습니다.');
-    await props.createCase({creation_id:creationId.value,synthetic_only:true,title:title.value,summary:summary.value,claims:items,evidence:evidence.map(e=>({...e}))});
+    await props.createCase(casePayload({title:title.value,summary:summary.value,claims:items,evidence:evidence.map(e=>({...e}))},creationId.value));
     creationId.value=crypto.randomUUID().replaceAll('-','');
     title.value='';summary.value='';claims.value='';confirmed.value=false;evidence.splice(0,evidence.length,{title:'',text:'',kind:'record',initially_released:true});
+    previous.value=null;importNotice.value='';
   } catch(e) {error.value=e instanceof Error?e.message:'사건을 저장하지 못했습니다. 목록을 확인한 뒤 다시 시도하세요.';}
   finally{busy.value=false;}
 }
@@ -33,8 +52,11 @@ async function submit(){
   <details ref="disclosure" class="case-composer">
     <summary>새 가상 사건 작성</summary>
     <p class="composer-help">여러 주장과 자료를 함께 검토할 수 있습니다. 실제 사건·판결문·개인정보를 넣지 마세요. 작성한 자료는 학습이나 검수 완료 데이터로 등록되지 않습니다.</p>
+    <CaseFileImport ref="importer" :disabled="busy || disabled" :has-draft="hasDraft()" @apply="importDraft" @reading="importReading=$event" />
+    <p v-if="importNotice" class="import-notice" role="status">{{importNotice}}</p>
+    <button v-if="previous" type="button" class="subtle" :disabled="busy || disabled || importReading" @click="restoreDraft">이전 입력 복원</button>
     <form @submit.prevent="submit">
-      <fieldset :disabled="busy || disabled"><legend class="sr-only">가상 사건 입력</legend>
+      <fieldset :disabled="busy || disabled || importReading"><legend class="sr-only">가상 사건 입력</legend>
         <label :for="`${prefix}-title`">사건 제목</label><input ref="titleInput" :id="`${prefix}-title`" v-model="title" required maxlength="120" />
         <label :for="`${prefix}-summary`">사건 개요</label><textarea :id="`${prefix}-summary`" v-model="summary" maxlength="2000" rows="2" />
         <label :for="`${prefix}-claims`">검토할 주장 <span>한 줄에 하나, 최대 8개</span></label><textarea :id="`${prefix}-claims`" v-model="claims" required rows="3" />
@@ -59,3 +81,4 @@ async function submit(){
 button{min-height:44px;border:1px solid var(--line-strong);border-radius:var(--radius);padding:10px 16px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}button:disabled{opacity:.55;cursor:default}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}.secondary{background:var(--surface-raised);color:var(--text)}.subtle{background:transparent;color:var(--muted)}button:hover:not(:disabled){border-color:var(--accent)}
 .case-composer{margin-block:24px;max-width:70ch}.case-composer summary{cursor:pointer;padding-block:12px;color:var(--text);font-weight:600;min-height:44px}.case-composer summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.composer-help{color:var(--muted);font-size:13px;line-height:1.8;margin-block:12px 20px}.case-composer fieldset{border:0;padding:0;margin:0;min-width:0}.case-composer label:not(.composer-checkbox){display:block;margin-block:20px 8px;font-size:14px}.case-composer label span{color:var(--muted);font-size:13px}.case-composer input:not([type=checkbox]),.case-composer textarea,.case-composer select{box-sizing:border-box;width:100%;min-height:44px;padding:12px;background:var(--panel);color:var(--text);border:1px solid var(--line-strong);border-radius:var(--radius);font:inherit}.case-composer textarea{resize:vertical;line-height:1.7}.case-composer .evidence-input{margin-block:28px}.case-composer legend{font-size:15px;font-weight:600}.composer-checkbox{display:flex;align-items:center;gap:12px;min-height:44px;margin-block:16px;line-height:1.7;font-size:14px}.composer-checkbox input{flex:none;width:18px;height:18px;accent-color:var(--accent)}.composer-error{color:var(--danger);font-size:14px;line-height:1.8}.case-composer .primary{margin-block:8px 16px}
 </style>
+<style scoped>.import-notice{font-size:13px;line-height:1.8;color:var(--text-secondary);overflow-wrap:anywhere}</style>

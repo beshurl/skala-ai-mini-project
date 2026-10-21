@@ -392,7 +392,7 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
       <h2 id="entry-help-heading">이용 방법</h2>
       <ol><li>사건을 선택하고 공개된 증거를 확인합니다.</li><li>분석을 시작해 주장과 기록의 관계, 인용된 근거를 살펴봅니다.</li><li>새 증거를 공개한 뒤 다시 분석하면 이전 결과와 비교할 수 있습니다.</li></ol>
     </section>
-    <p class="fineprint">준비된 합성 사건을 열거나 직접 가상 자료를 작성할 수 있습니다. 파일 업로드는 지원하지 않습니다.<br />분석 결과는 실제 사건의 사실·유죄 판단을 대신하지 않습니다.</p>
+    <p class="fineprint">준비된 합성 사건을 열거나 TXT·MD·JSON 파일로 가상 사건 초안을 불러올 수 있습니다.<br />분석 결과는 실제 사건의 사실·유죄 판단을 대신하지 않습니다.</p>
   </main>
   <main v-else-if="!caseId" id="workspace" class="case-library">
     <div class="library-heading">
@@ -400,7 +400,7 @@ onBeforeUnmount(()=>{disconnect();viewAbort.abort();});
       <h1 ref="workspaceHeading" tabindex="-1">사건 기록</h1>
       <p>미제사건 재수사를 위한 진술·증거 대조와 새 증거 전후의 분석 비교를 체험합니다.</p>
       </div>
-      <button class="secondary library-create" :disabled="busy" aria-label="새 가상 사건 작성 폼 열기" aria-controls="library-composer" @click="composer?.open()">새 가상 사건 작성 <span aria-hidden="true">＋</span></button>
+      <div class="library-create-actions"><button class="secondary library-create" :disabled="busy" aria-label="사건 파일 불러오기 폼 열기" aria-controls="library-composer" @click="composer?.openImport()">사건 파일 불러오기</button><button class="subtle library-create" :disabled="busy" aria-label="새 가상 사건 작성 폼 열기" aria-controls="library-composer" @click="composer?.open()">직접 작성 <span aria-hidden="true">＋</span></button></div>
     </div>
     <p v-if="model?.backend==='fixture'" class="fixture-notice" role="status">테스트 모드 · 실제 모델을 호출하지 않는 예시 분석입니다.</p>
     <p v-if="practiceNotice" class="practice-notice" role="status">{{practiceNotice}}</p>
@@ -777,6 +777,7 @@ mark {background:var(--accent);color:var(--accent-ink);padding-inline:2px}
 .library-heading {display:flex;align-items:flex-start;justify-content:space-between;gap:28px}
 .library-heading>div {min-width:0;max-width:72ch}
 .library-create {display:inline-flex;align-items:center;gap:18px;flex-shrink:0}
+.library-create-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end}
 .library-tools {margin-block-start:32px}
 .practice-entry {margin-block:16px}
 .practice-entry summary {padding-block:12px;font-size:14px;font-weight:550;cursor:pointer}
