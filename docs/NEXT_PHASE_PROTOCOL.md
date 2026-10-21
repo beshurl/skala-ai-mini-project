@@ -1,6 +1,22 @@
 # 독립 데이터·로컬 운영 후속 프로토콜
 
+2026-10-21 최신: 계정 개편 후 [ACCOUNT_RECOVERY](ACCOUNT_RECOVERY.md)의123파일/195 backend·14 frontend 합성 검증을 따른다. 전환은 같은 현재 계정 DB를 요구하며 구 접근키/계정 과거 사본/새 기록 없는 사건 DB를 거부한다. 과거 계정 자동 복원/폐기0. 실제 UID499 운영·기존 소유권·계정 소실 복구·관리자/모델/부하/정답 OS·학습0/3·독립 최종/승인 판례/A~F는 미완료다. 아래119/174 및 계정 개편 대기는 시점 이력이다.
+
+현재 후보는 [RELEASE_TRANSITION](RELEASE_TRANSITION.md)의119파일이다. SQLite close 수정·새 전환 검사로 중지 DB의 현재 결과/기록·lifecycle·삭제 이력·코드 SHA를 대조한다. 합성 schema1→2·새 기록 후 schema2 동일 DB 코드 복귀·옛/오래된 DB 거부·후보 crypto CLI/전체174 tests를 확인했다. 실제 운영 UID499·root 게시/보호 정답/원래 model.lock·최신 journal/인증·실제MLX·배포/복귀·자동 보존/완전 폐기는 별도 관리자 진단 뒤 검증한다. 이 결과로 데이터·정답·모델 gate를 대신하지 않으며 새 학습0/3·LOCAL_VALIDATED 유지다. 아래115파일 재생성 전 상태는 시점 이력이다.
+
+백업별 암호화/복구의 현재 소스·합성 검증은 [ENCRYPTED_BACKUPS](ENCRYPTED_BACKUPS.md)와 run 20261020T170913+0900-encrypted-backups-0d84fb를 따른다. 새 비활성90/30일 v4 정책을 추가했지만 활성 수동 정책/UID499 운영/기존 백업은 미변경이다. 새 키 이름 변경·복원 시험은 완전 폐기 증명이 아니며 실제 key/backup 폐기·스케줄러0이다. 이전115파일 후보는 새 도구를 포함하지 않아 적용 전 재생성한다. 현재 키/journal·불변 암호문/receipt 결합, 복구 후 보류·세션 폐기 요건을 유지한다. 모델·정답·사람/위임 검토의 기존 gate를 이 운영 결과로 대체하지 않는다.
+
+최신 UI의 종료/재개·보류/해제와 사유/버전·revision은 fixture 데스크톱 및 코드·빌드115파일 사본의 stdio MCP 흐름으로 검증했다. [결과](../outputs/runs/20261020T164135+0900-lifecycle-ui-9152c8/RESULT.txt)/[배포 검토 초안](../outputs/runs/20261020T164135+0900-lifecycle-ui-9152c8/DEPLOYMENT_REVIEW.txt). 실제 UID499 작업 진단·새 백업/migration·잠금·최신 journal·rollback 검증은 남고 자동90/30일 삭제는 비활성이다. 공개 NLI450건 사용자 위임 검토 통과262/139·49격리와 실행 전 관리자 OS 인증 조건은 DELEGATED_NLI_REVIEW.md를 우선한다. 사람/독립 최종/실제 판결문 승인으로 확대하지 않으며 아래 옛450건 승인 누락/노출556/UI 미연결은 이력이다. 새 학습0/3·독립 최종/A~F 미실행 유지.
+
+현재 checkout Store는 schema2이며 schema1은 새 rollback 백업·중지 잠금·알려진 열 구조를 확인하는 명시적 migration 전 쓰기를 거부한다. 과거 생성/종료 시각·출처를 추측하지 않는다. 백업 생성 receipt와 새 복구 사본 검증을 metadata 미리보기에 연결했고 복구한 사건은 모두 보류한다. 이는 아직 UID499 운영 배포/자동 삭제 승인이 아니며 실제 결과·절차는 run 20261020T161845+0900-retention-lifecycle-10ab30 및 OPERATIONS 최신 절을 따른다. 활성 수동 정책·현재 독립 journal/모델 잠금 보존 요건은 유지한다.
+
+최신 실행은 [세 단계 후속 결과](../outputs/runs/20261020T155158+0900-remaining-work-b82291/RESULT.txt)를 따른다. 현재 native600건 검수 경로는 NEXT_ACTIONS 맨 위에 있으며 미검수450/이력 확인 누락으로 동결을 실제 차단했다. 사용자 보존기간 선택은 사건90일·백업30일로 완료했고 비활성 초안·메타데이터 미리보기만 준비했다. 실제 서비스 지속 시험 첫 요청 미완료로 중단한 상태이므로 추가 생성 전에 관리자 읽기 전용 집계를 확인한다. 아래 이전 시점의 수치·미정 입력과 구분하며 사람 검수/새 정답 OS proof/빈 모델 잠금/최대3후보/독립 최종 요건은 유지한다.
+
 2026-10-20 KST. 사용자가 목표 환경을 **이 Mac의 로컬 전용**으로 지정했다. 공개 배포/유료 호출/원문 외부 전송은 승인 전 금지다. 기존 EVALUATION_PROTOCOL v2와 노출된54건 결과는 역사적 개발 비교로 보존한다.
+
+15:05 KST 상태 갱신: 실제 UID499의 운영 읽기 전용 백업·새 합성 복사본 삭제복구/최신 journal 보존/세션 폐기/무결성 PASS. 현재 서버 PID41133/UID499/56 LoRA/ready와 계획·코드·정책 해시도 독립 대조했다. 실제 결과는 operations run의 execution-4df356d4005c442992653e0cfc76fd09/result.json, 사후 대조는 outputs/runs/20261020T150521+0900-operations-confirmed-6923ae/verification.json이다. 자동 기간 삭제·물리 삭제·실제 자료 파생본 정책은 별도 미완료다. 검수는 validation1/150·대기149(전체1/892), 학습용300건/이력 확인은 미완료이며 아래 초기0건/동일UID501 기록은 이력이다. 새 자료 평가/학습·A~F는 여전히 미실행이다. 재평가 전 실제 정답 OS probe와 빈 모델 잠금·검수 승인을 모두 다시 확인하는 요건을 유지한다.
+
+14:43 KST 갱신: 전용 서비스UID499와 기존 평가자UID501, 별도 암호화 이미지에 있는 실제 정답7개·workspace 정답/키4경로 접근 거부를 실제 확인했다. 아래 초기 동일UID501 실패는 이력이며 최신 root 검증은 outputs/runs/20261020T134803+0900-isolation-review-0385fc/finish-20261020T144251-f1772e/의 result.json과 isolation-*.json을 따른다. 새 평가/학습 시에는 대상 정답 파일의 경로/해시와 당시 서비스UID로 다시 검증해야 한다. 실제 현재 서비스/DB/삭제 journal/중단·기동 명령은 OPERATIONS의 격리 배포 항목을 따른다. 사람 검수0건·새 자료 재평가/학습 NOT_RUN과 기존 동결/3회 ledger 요건은 유지한다.
 
 ## 현재 판정
 
@@ -93,3 +109,14 @@
 현재 승격 판정은 LOCAL_VALIDATED(합성·개인 로컬 범위) 유지다. PILOT_READY는 검수 자료/OS 격리/운영 보존정책이 없어 BLOCKED다. 공개 운영은 사용자 요청 범위 밖이며 승인하지 않는다.
 
 개인 서버는 독립 deletion journal이 없으면 기동을 거부하며 기동 시 미완료 삭제를 먼저 재적용한다. 복구 경로는 모든 세션을 폐기하고, 일반 기동은 삭제 대상 소유자의 세션을 폐기한다. journal은 이전 DB 백업과 함께 롤백하지 않는다.
+
+
+## native NLI 연결 후 현재 실행 경로
+
+공개 NLI는 기존 사건의 한국어 label/reason/evidence_ids 계약과 다르다. `freeze_training_cycle.py --prepared`가 봉인된 NLI train/validation을 검수/권리/중복·계열/알려진 학습 노출/실제 OS probe/실제 tokenizer 길이 검사 후에만 변환한다. 전역 improvement_cycle과 runtime/training-attempts.jsonl의3회 제한은 기존 경로와 공유한다. 실패도 사용 횟수이며 새 freeze 폴더로 초기화하지 않는다. 진단 정답은 학습 파일에 넣지 않는다.
+
+현재 사람 검수 CLI는 `backend/scripts/review_prepared.py`다. 승인/반려/보류와 전체 자료의 재개 검수, 집계, 지정 ID 재검수를 지원한다. 기존 봉인 패킷과 과거 CLI 기록은 보존한다. 실제 사람의 의미/개인정보/라이선스/목적 확인 없이 처리/학습 승인을 생성하지 않는다. 정확한 사용자 절차와 현재 OS 결과는 [NEXT_ACTIONS](NEXT_ACTIONS.md)를 따른다.
+
+`backend/evaluation/evaluate_prepared.py`는 실행할 때 실제 OS 접근 probe와 모델 잠금을 다시 확인한다. 현재 세션이 다른 계정 probe를 실행할 수 없으면 ACCOUNT_SWITCH_AUTH_REQUIRED로 차단하며, 사용자가 같은 터미널에서 sudo 인증을 갱신한다. 이것은 과거 root OS PASS를 새 실행의 실제 접근 검사로 대신하지 않기 위한 조건이다.
+
+새 후보는 실제 완료된 학습 ledger/동결 주기를 확인하고 nli_validation에서만 비교한다. Base/기존 FT와 후보 비교에서도 데이터·모델·생성·평가기·실행기 해시를 맞추고 비용을 보고한다. 자동 선택/서비스 배포는 없다. NLI 어댑터의 한국어 사건 앱 계약/인용/시나리오 적합성, 비공개 최종셋, 승인 RAG 코퍼스·A~F는 별도 검증이다.

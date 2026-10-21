@@ -1,5 +1,7 @@
 # 구조와 데이터 흐름
 
+현재 일반 경로는 [GENERAL_REASONING](GENERAL_REASONING.md)을 따른다. analysis_mode=general은 동일 그래프의 공개 snapshot 전체 → 주장별 구조화 검토 → 원문 인용 검증 경로이며 최대8호출이다. 아래 최대4호출/두 자료 설명은 보존된 legacy-relation-v2에 한정한다. 실제 의미 성능은 미검증이다.
+
 로컬 단일 프로세스 FastAPI + Vue3/Vite. 서버는127.0.0.1:8100에 한 worker로 기동한다. UI와 로그인 자산은 frontend/, 서비스는 backend/recase/, 오프라인 도구와 테스트는 backend/ 하위에 둔다. 공용 data/outputs/runtime은 루트에 유지한다. 상세 경로는 [STRUCTURE](STRUCTURE.md)를 따른다.
 
 ```mermaid
@@ -37,7 +39,7 @@ SQLite schema v1: sessions, cases, evidence, claims, jobs, events, audit. eviden
 
 ## 개인 로컬 운영과 데이터 통제 후속
 
-개인 접근키 → 로컬 폼 또는 API Basic → HttpOnly/SameSiteStrict 1시간 메모리 인증 세션 → 기존 owner/CSRF/public-version API → MCP → 단일 MLX → 결과의 흐름이다. 접근키는 보호 파일에만 있고 브라우저 저장소/프론트엔드 번들/로그에 넣지 않는다. 데모 owner는 여전히 합성 세션이며 다중 사용자 실명 계정 모델이 아니다.
+현재 checkout은 이메일·비밀번호 → 별도 계정 DB/scrypt 검증 → HttpOnly/SameSiteStrict 1시간 메모리 세션 → 영속 계정 ID의 owner/CSRF/public-version API → MCP → 단일 모델 → 결과 흐름이다. 사용자와 운영자는 같은 세션에서 서버 role로 구분한다. 로컬 이메일 소유/실명 확인 기능은 아니다. 실제 UID499 복사본에는 이 변경을 아직 적용하지 않았다. 계정 DB 백업/복구·운영 이전 검증은 AUTHENTICATION.md를 따른다.
 
 데이터 경로는 별도다: 격리 반입 → 사람 검수/목적별 권한 해시 ledger → 계열/중복/노출/정답 계약 감사 → 실제 OS 정답 접근 거부 → 고정 train/valid bundle → 최대3개 학습 예산. 한 단계라도 없으면 학습을 실행하지 않는다. 이력 해시 체인은 같은 UID 운영자의 전면 재작성을 막는 OS 경계가 아니다.
 

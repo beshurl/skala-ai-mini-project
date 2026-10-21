@@ -1,5 +1,7 @@
 # 프론트·백엔드 폴더 구분
 
+후속 계정 개편으로 아래 과거 이동 표의 local-login.html은 더 이상 활성 파일이 아닙니다. 현재는 frontend/src/views/AuthView.vue와 backend/recase/accounts.py·auth_api.py를 사용합니다. 기존 구조 변경 이력은 보존합니다.
+
 2026-10-20 KST. Python 소스를 backend/로 이동했고 기존 Vue 폴더는 frontend/로 유지했다.
 
 | 이전 경로 | 현재 경로 |
@@ -18,7 +20,7 @@
 직접 실행 예시(프로젝트 루트):
 
 ```bash
-.venv/bin/python backend/scripts/local_auth.py --help
+.venv/bin/python backend/scripts/accounts.py --help
 .venv/bin/python backend/scripts/operations.py --help
 .venv/bin/python backend/evaluation/compare_af.py --help
 ```
