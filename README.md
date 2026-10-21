@@ -10,6 +10,10 @@
 
 실제 계획·작성·평가 모델을 연결해 검증했다. 장애 지표·로그·추가 관측은 교육용 합성 데이터이며, 실제 운영 환경의 원인 진단 정확도를 측정한 결과는 아니다.
 
+[보고서 보기](doc/IMPROVEMENT_REPORT.md) · [Word 다운로드](doc/운영진단_개선결과_제출보고서.docx?raw=true) · [PPT 다운로드](doc/presentation/운영진단_에이전트_5분발표.pptx?raw=true) · [발표 멘트·코드 위치](doc/PRESENTATION_5MIN.md)
+
+Word와 PPT는 내려받아 해당 프로그램에서 연다. GitHub에서 바로 읽을 수 있는 보고서와 코드 링크도 함께 제공한다.
+
 ## 1. 프로젝트 개요
 
 사용자가 시스템과 증상을 입력하면 모니터링·로그·런북을 조회하고, 확인한 사실과 원인 가설, 조건부 권장 조치를 구분해 제공하는 운영 진단 워크스페이스다. 헬프데스크 장애 조사와 배포 전후 점검을 지원한다.
@@ -249,14 +253,14 @@ PPT는 **8장·총 300초**다. 발표자 노트와 [발표 진행표](doc/PRESE
 
 | 시간 | 설명 및 화면 | 보여줄 코드와 시작 행 |
 | --- | --- | --- |
-| 0:00~0:20 | 개선 목표: 호출 전 차단과 반증 조사 | [input_validation.py](agent/input_validation.py) 19행 |
-| 0:20~1:05 | 공통 입력 검사 → 조기 반환 → 그래프 실행 순서 | [server.py](server.py) 217·227·232행 |
-| 1:05~1:45 | 거절 5건과 생성 0토큰 검증 | [test_api.py](tests/test_api.py) 129행 |
-| 1:45~2:30 | 계획·관측·판정 노드의 조건부 반복 | [graph.py](agent/graph.py) 174행, [investigation.py](agent/investigation.py) 134·154행 |
-| 2:30~3:20 | 배치 반증 → 요청량 교차 지지 화면 | [investigation.py](agent/investigation.py) 25·285행 |
-| 3:20~3:55 | 사실 검증과 별도 Judge의 역할 | [validation.py](agent/validation.py) 25행, [judge.py](agent/judge.py) 85행 |
+| 0:00~0:20 | 개선 목표: 호출 전 차단과 반증 조사 | [input_validation.py](agent/input_validation.py#L19) 19행 |
+| 0:20~1:05 | 공통 입력 검사 → 조기 반환 → 그래프 실행 순서 | [server.py](server.py#L217) 217·227·232행 |
+| 1:05~1:45 | 거절 5건과 생성 0토큰 검증 | [test_api.py](tests/test_api.py#L129) 129행 |
+| 1:45~2:30 | 계획·관측·판정 노드의 조건부 반복 | [graph.py](agent/graph.py#L174) 174행, [investigation.py](agent/investigation.py#L134) 134·154행 |
+| 2:30~3:20 | 배치 반증 → 요청량 교차 지지 화면 | [investigation.py](agent/investigation.py#L25) 25·285행 |
+| 3:20~3:55 | 사실 검증과 별도 Judge의 역할 | [validation.py](agent/validation.py#L25) 25행, [judge.py](agent/judge.py#L85) 85행 |
 | 3:55~4:30 | 현재 검증과 이전 실제 평가 구분 | [input_validation_verification.json](artifacts/input_validation_verification.json), [investigation_evaluation.json](artifacts/investigation_evaluation.json) |
-| 4:30~5:00 | 한계와 다음 개선 | [investigation.py](agent/investigation.py) 20행의 적용 범위 |
+| 4:30~5:00 | 한계와 다음 개선 | [investigation.py](agent/investigation.py#L20) 20행의 적용 범위 |
 
 5분 발표에서는 입력 거절만 짧게 실시간 시연하고, 가설 조사는 저장된 실제 실행 화면으로 설명한다. 전체 조사와 Judge 재평가는 발표 전에 완료해 둔다.
 
@@ -332,9 +336,9 @@ LANGCHAIN_TRACING_V2=false LANGSMITH_TRACING=false .venv/bin/python -m evaluatio
 | 자료 | 위치 |
 | --- | --- |
 | 최종 보고서 | 이 README |
-| Word 제출본 | [운영진단_개선결과_제출보고서.docx](doc/운영진단_개선결과_제출보고서.docx) |
+| Word 제출본 | [운영진단_개선결과_제출보고서.docx 다운로드](doc/운영진단_개선결과_제출보고서.docx?raw=true) |
 | 별도 보고서 원문 | [IMPROVEMENT_REPORT.md](doc/IMPROVEMENT_REPORT.md) |
-| 5분 발표 PPT | [운영진단_에이전트_5분발표.pptx](doc/presentation/운영진단_에이전트_5분발표.pptx) |
+| 5분 발표 PPT | [운영진단_에이전트_5분발표.pptx 다운로드](doc/presentation/운영진단_에이전트_5분발표.pptx?raw=true) |
 | 발표 멘트·시연 순서·코드 위치 | [PRESENTATION_5MIN.md](doc/PRESENTATION_5MIN.md) |
 | 입력 validation 및 대상 확인 | [input_validation.py](agent/input_validation.py), [targets.py](agent/targets.py), [server.py](server.py) |
 | 그래프와 전문 조회 | [graph.py](agent/graph.py), [specialists.py](agent/specialists.py) |
