@@ -1,0 +1,106 @@
+{
+  "capture_date": "2026-10-22",
+  "record_id": "79e0279e-c96a-413a-b1d7-4ba1467503b3",
+  "created": "2026-10-22T04:36:46.223253+00:00",
+  "question": "payments-service CPU가 91%이고 중복 배치 경고가 있습니다. 실제 원인을 다른 가설과 구별해주세요.",
+  "data_kind": "synthetic",
+  "generation": "actual Ollama qwen3.5:2b",
+  "validation": {
+    "passed": true,
+    "attempts": 2,
+    "rewrites": 1,
+    "errors": [],
+    "checks": [
+      "시스템명",
+      "수치",
+      "상태·알림",
+      "근거 ID",
+      "조치 조건",
+      "필수 항목"
+    ]
+  },
+  "validation_events": [
+    {
+      "type": "Validation",
+      "attempt": 1,
+      "verdict": "불합격",
+      "errors": [
+        "action_ids: 확인 가능한 가설/다음 행동이 누락되었습니다."
+      ],
+      "node": "validate"
+    },
+    {
+      "type": "Validation",
+      "attempt": 2,
+      "verdict": "합격",
+      "errors": [],
+      "node": "validate"
+    }
+  ],
+  "runbooks": [
+    {
+      "id": "R:cpu-spike",
+      "title": "Runbook: CPU 급증 대응 절차",
+      "score": 0.696
+    },
+    {
+      "id": "R:memory-leak",
+      "title": "Runbook: 메모리 누수(Memory Leak) 대응 절차",
+      "score": 0.5833
+    },
+    {
+      "id": "R:high-latency",
+      "title": "Runbook: 응답 지연(High Latency) 대응 절차",
+      "score": 0.5232
+    }
+  ],
+  "investigation": {
+    "used": 3,
+    "stop_reason": "한 가설이 두 관측으로 교차 지지되고 경쟁 가설에 반증이 확보되어 종료했습니다."
+  },
+  "model_usage": [
+    {
+      "model": "qwen3.5:2b",
+      "role": "fast",
+      "input_tokens": 746,
+      "output_tokens": 28,
+      "tokens": 774
+    },
+    {
+      "model": "qwen3.5:2b",
+      "role": "fast",
+      "input_tokens": 673,
+      "output_tokens": 27,
+      "tokens": 700
+    },
+    {
+      "model": "qwen3.5:2b",
+      "role": "fast",
+      "input_tokens": 610,
+      "output_tokens": 26,
+      "tokens": 636
+    },
+    {
+      "model": "qwen3.5:2b",
+      "role": "writer",
+      "input_tokens": 1719,
+      "output_tokens": 135,
+      "tokens": 1854
+    },
+    {
+      "model": "qwen3.5:2b",
+      "role": "writer",
+      "input_tokens": 1735,
+      "output_tokens": 140,
+      "tokens": 1875
+    }
+  ],
+  "screenshot": "live-validation-20261022.png",
+  "screenshot_crop_pixels": {
+    "x": 1005,
+    "y": 258,
+    "width": 250,
+    "height": 160
+  },
+  "scope": "실제 생성·코드 검증과 프론트 표시 확인. Judge 재평가와 원격 추적 재조회는 이번 캡처 검증 범위에 포함하지 않음."
+}
