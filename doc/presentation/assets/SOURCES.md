@@ -9,6 +9,12 @@
 - 표지와 4번은 [Ollama 진단](../../../artifacts/screenshots/live-diagnosis-desktop.png), [가설 조사](../../../artifacts/screenshots/investigation-traffic-desktop.png)의 저장된 실행 화면이다.
 - 3번의 비교 수치는 [고정 관측 데이터](../../../data/investigation_cases.json)와 [실제 LLM 평가 기록](../../../artifacts/investigation_evaluation.json)의 batch·traffic 사례를 사용했다. 관측은 교육용 합성 데이터이며 모델 선택·작성·평가는 실제 Ollama 실행이다.
 
+## 실행 결과 발췌
+
+- 3번의 질문·답변과 6번의 작성 이벤트는 [실행 결과 발췌 JSON](execution-evidence.json)의 실제 LLM 기록이다. 이벤트 요약은 원래 판정과 재작성 횟수를 보존했다.
+- 7번 개별 Judge 점수와 원격 추적 확인은 [가설 조사 평가 원본](../../../artifacts/investigation_evaluation.json)을 사용했다. 다른 시기의 12건 평가 화면과 혼합하지 않았다.
+- [기능별 실행 결과 안내](../EXECUTION_EXAMPLES.md)에 입력·처리·출력과 원본 출처를 정리했다.
+
 ## 이전 상세 시안
 
 [기존 SVG](architecture-overview.svg)는 기술 로고를 포함한 이전 상세 시안이며 최신 발표 구조와 구분한다. 해당 시안의 브랜드 로고는 [Simple Icons](https://github.com/simple-icons/simple-icons), CC0-1.0에서 가져왔고 상표권은 각 소유자에게 있다. LangSmith 옆 추적 아이콘은 직접 제작했다.

@@ -1,0 +1,714 @@
+{
+  "source_kind": "preserved_actual_llm_execution",
+  "execution_date": "2026-10-21",
+  "generation_model": "ollama:qwen3.5:2b",
+  "judge_model": "ollama:qwen3:8b",
+  "data_kind": "synthetic",
+  "provenance": {
+    "detail_path": "artifacts/investigation/20261021T104332Z/details.json",
+    "detail_sha256": "55fe3f8940cfe2d610d1b22e82b39dae7213637815cd687f19312f6d08ef3f11",
+    "summary_path": "artifacts/investigation_evaluation.json"
+  },
+  "cases": [
+    {
+      "id": "batch",
+      "question": "payments-service CPU가 91%이고 중복 배치 경고가 있습니다. 실제 원인을 다른 가설과 구별해주세요.",
+      "final_answer": "인시던트 진단 보고서\n판정: 주의 · 교육용 고정 샘플\n\n확인된 사실\n- payments-service: degraded, CPU 91.0%, 메모리 55.0%, 알림 2건 [monitoring:payments-service]\n\n원인 추정\n- payments-service: 중복 배치 작업의 CPU 점유 (교차 지지). 인과관계 확정은 아닙니다. [monitoring:payments-service, probe:batch:payments-service/cpu-attribution, probe:batch:payments-service/job-window]\n\n권장 조치\n- CPU가 90%를 초과하고 지속되는지 시계열로 확인한 뒤 승인 절차에 따라 부하 분산을 검토하세요. 단일 스냅샷으로 지속 여부를 확정할 수 없습니다. [monitoring:payments-service, logs:payments-service, R:cpu-spike]\n\n반증 우선 추가 조사 · 관측 조건에 따른 판단\n- payments-service / 중복 배치 작업의 CPU 점유: 교차 지지\n  지지: CPU 기여 비중 86% [probe:batch:payments-service/cpu-attribution]\n  지지: 중복 활성 작업 2개 · 중첩 4분 [probe:batch:payments-service/job-window]\n- payments-service / 요청량 증가에 따른 CPU 점유: 반증\n  반증: CPU 기여 비중 8% [probe:batch:payments-service/cpu-attribution]\n  반증: 요청량 100 → 110 RPS (1.10배) · 5분 지속 [probe:batch:payments-service/traffic-window]\n- payments-service / 새 릴리스와 연관된 CPU 점유: 반증\n  반증: CPU 기여 비중 2% [probe:batch:payments-service/cpu-attribution]\n- 1차 조사: CPU 점유가 실제 어느 작업에 귀속되는지 확인. 이유: CPU 상승만으로 원인을 구별할 수 없어, CPU 점유가 실제 어느 작업에 귀속되는지 확인으로 경쟁 가설을 시험합니다.\n  사전 조건: 배치·요청 처리·새 릴리스 각각의 CPU 기여 비중을 비교합니다. 70% 이상은 지지, 15% 이하는 반증입니다.\n- 2차 조사: 평소 대비 요청량과 지속 시간 확인. 이유: CPU 상승만으로 원인을 구별할 수 없어, 평소 대비 요청량과 지속 시간 확인으로 경쟁 가설을 시험합니다.\n  사전 조건: 요청량이 기준의 2배 이상으로 3분 이상 지속되면 요청량 가설을 지지합니다.\n- 3차 조사: 동일 실행키 작업의 실제 중첩 확인. 이유: CPU 상승만으로 원인을 구별할 수 없어, 동일 실행키 작업의 실제 중첩 확인으로 경쟁 가설을 시험합니다.\n  사전 조건: 같은 실행키의 중복 활성 작업이 1개 이상이고 3분 이상 중첩되면 배치 가설을 지지합니다.\n- 종료: 한 가설이 두 관측으로 교차 지지되고 경쟁 가설에 반증이 확보되어 종료했습니다.\n\n추가 확인 필요\n- 교육용 합성 관측입니다. 추가 조사의 5분 구간·CPU 기여 비중도 실제 운영 실측이 아니며 인과관계를 확정하지 않습니다.\n- 한 가설이 두 관측으로 교차 지지되고 경쟁 가설에 반증이 확보되어 종료했습니다.\n- 검색된 Runbook은 참고 후보입니다. 관측 조건이 맞는 문서만 권장 조치에 사용했습니다.\n\n참고 출처\n- [R:cpu-spike] Runbook: CPU 급증 대응 절차 — runbook://incident-response/cpu-spike\n- [R:memory-leak] Runbook: 메모리 누수(Memory Leak) 대응 절차 — runbook://incident-response/memory-leak\n- [R:high-latency] Runbook: 응답 지연(High Latency) 대응 절차 — runbook://incident-response/high-latency",
+      "validation": {
+        "passed": true,
+        "attempts": 2,
+        "rewrites": 1,
+        "errors": [],
+        "checks": [
+          "시스템명",
+          "수치",
+          "상태·알림",
+          "근거 ID",
+          "조치 조건",
+          "필수 항목"
+        ]
+      },
+      "validation_events": [
+        {
+          "type": "Validation",
+          "attempt": 1,
+          "verdict": "불합격",
+          "errors": [
+            "action_ids: 확인 가능한 가설/다음 행동이 누락되었습니다."
+          ]
+        },
+        {
+          "type": "Validation",
+          "attempt": 2,
+          "verdict": "합격",
+          "errors": []
+        }
+      ],
+      "writer_action_ids": [
+        [],
+        [
+          "A:cpu-spike"
+        ]
+      ],
+      "investigation": {
+        "version": "contrastive-v1",
+        "phase": "stopped",
+        "data_kind": "synthetic",
+        "budget": 4,
+        "used": 3,
+        "steps": [
+          {
+            "id": "payments-service/cpu-attribution",
+            "target": "payments-service",
+            "probe": "cpu-attribution",
+            "title": "CPU 점유가 실제 어느 작업에 귀속되는지 확인",
+            "priority": 1,
+            "prediction": "배치·요청 처리·새 릴리스 각각의 CPU 기여 비중을 비교합니다. 70% 이상은 지지, 15% 이하는 반증입니다.",
+            "otherwise": "15% 초과 70% 미만은 판단 보류합니다. 작업 기록과 반대이면 근거 상충으로 남깁니다.",
+            "hypothesis_ids": [
+              "IH:payments-service:batch",
+              "IH:payments-service:traffic",
+              "IH:payments-service:release"
+            ],
+            "probe_id": "payments-service/cpu-attribution",
+            "round": 1,
+            "reason": "CPU 상승만으로 원인을 구별할 수 없어, CPU 점유가 실제 어느 작업에 귀속되는지 확인으로 경쟁 가설을 시험합니다.",
+            "purpose": "verify_attribution",
+            "planner_mode": "actual-llm",
+            "status": "completed",
+            "before": [
+              {
+                "id": "IH:payments-service:batch",
+                "status": "untested",
+                "status_label": "미확인"
+              },
+              {
+                "id": "IH:payments-service:traffic",
+                "status": "untested",
+                "status_label": "미확인"
+              },
+              {
+                "id": "IH:payments-service:release",
+                "status": "untested",
+                "status_label": "미확인"
+              }
+            ],
+            "outcomes": [
+              {
+                "hypothesis_id": "IH:payments-service:batch",
+                "title": "중복 배치 작업의 CPU 점유",
+                "signal": "support",
+                "detail": "CPU 기여 비중 86%",
+                "status": "pending",
+                "status_label": "단서 지지"
+              },
+              {
+                "hypothesis_id": "IH:payments-service:traffic",
+                "title": "요청량 증가에 따른 CPU 점유",
+                "signal": "against",
+                "detail": "CPU 기여 비중 8%",
+                "status": "refuted",
+                "status_label": "반증"
+              },
+              {
+                "hypothesis_id": "IH:payments-service:release",
+                "title": "새 릴리스와 연관된 CPU 점유",
+                "signal": "against",
+                "detail": "CPU 기여 비중 2%",
+                "status": "refuted",
+                "status_label": "반증"
+              }
+            ],
+            "evidence_id": "probe:batch:payments-service/cpu-attribution",
+            "observation": {
+              "id": "probe:batch:payments-service/cpu-attribution",
+              "source": "diagnostic",
+              "target": "payments-service",
+              "status": "completed",
+              "data": {
+                "system_name": "payments-service",
+                "probe": "cpu-attribution",
+                "evidence_case": "batch",
+                "window_start": "2026-10-21T00:00:00Z",
+                "window_end": "2026-10-21T00:05:00Z",
+                "data_kind": "synthetic",
+                "available": true,
+                "values": {
+                  "batch_cpu_share": 0.86,
+                  "request_cpu_share": 0.08,
+                  "new_release_cpu_share": 0.02
+                },
+                "missing_reason": ""
+              },
+              "retries": 0
+            },
+            "reused": false
+          },
+          {
+            "id": "payments-service/traffic-window",
+            "target": "payments-service",
+            "probe": "traffic-window",
+            "title": "평소 대비 요청량과 지속 시간 확인",
+            "priority": 4,
+            "prediction": "요청량이 기준의 2배 이상으로 3분 이상 지속되면 요청량 가설을 지지합니다.",
+            "otherwise": "조건 미충족이면 지속적인 요청량 급증 가설에 반증으로 기록합니다.",
+            "hypothesis_ids": [
+              "IH:payments-service:traffic"
+            ],
+            "probe_id": "payments-service/traffic-window",
+            "round": 2,
+            "reason": "CPU 상승만으로 원인을 구별할 수 없어, 평소 대비 요청량과 지속 시간 확인으로 경쟁 가설을 시험합니다.",
+            "purpose": "verify_attribution",
+            "planner_mode": "actual-llm",
+            "status": "completed",
+            "before": [
+              {
+                "id": "IH:payments-service:batch",
+                "status": "pending",
+                "status_label": "단서 지지"
+              },
+              {
+                "id": "IH:payments-service:traffic",
+                "status": "refuted",
+                "status_label": "반증"
+              },
+              {
+                "id": "IH:payments-service:release",
+                "status": "refuted",
+                "status_label": "반증"
+              }
+            ],
+            "outcomes": [
+              {
+                "hypothesis_id": "IH:payments-service:traffic",
+                "title": "요청량 증가에 따른 CPU 점유",
+                "signal": "against",
+                "detail": "요청량 100 → 110 RPS (1.10배) · 5분 지속",
+                "status": "refuted",
+                "status_label": "반증"
+              }
+            ],
+            "evidence_id": "probe:batch:payments-service/traffic-window",
+            "observation": {
+              "id": "probe:batch:payments-service/traffic-window",
+              "source": "diagnostic",
+              "target": "payments-service",
+              "status": "completed",
+              "data": {
+                "system_name": "payments-service",
+                "probe": "traffic-window",
+                "evidence_case": "batch",
+                "window_start": "2026-10-21T00:00:00Z",
+                "window_end": "2026-10-21T00:05:00Z",
+                "data_kind": "synthetic",
+                "available": true,
+                "values": {
+                  "baseline_rps": 100.0,
+                  "current_rps": 110.0,
+                  "sustained_minutes": 5.0
+                },
+                "missing_reason": ""
+              },
+              "retries": 0
+            },
+            "reused": false
+          },
+          {
+            "id": "payments-service/job-window",
+            "target": "payments-service",
+            "probe": "job-window",
+            "title": "동일 실행키 작업의 실제 중첩 확인",
+            "priority": 3,
+            "prediction": "같은 실행키의 중복 활성 작업이 1개 이상이고 3분 이상 중첩되면 배치 가설을 지지합니다.",
+            "otherwise": "조건 미충족이면 이 시간 구간의 중복 배치 가설에 반증으로 기록합니다.",
+            "hypothesis_ids": [
+              "IH:payments-service:batch"
+            ],
+            "probe_id": "payments-service/job-window",
+            "round": 3,
+            "reason": "CPU 상승만으로 원인을 구별할 수 없어, 동일 실행키 작업의 실제 중첩 확인으로 경쟁 가설을 시험합니다.",
+            "purpose": "verify_attribution",
+            "planner_mode": "actual-llm",
+            "status": "completed",
+            "before": [
+              {
+                "id": "IH:payments-service:batch",
+                "status": "pending",
+                "status_label": "단서 지지"
+              },
+              {
+                "id": "IH:payments-service:traffic",
+                "status": "refuted",
+                "status_label": "반증"
+              },
+              {
+                "id": "IH:payments-service:release",
+                "status": "refuted",
+                "status_label": "반증"
+              }
+            ],
+            "outcomes": [
+              {
+                "hypothesis_id": "IH:payments-service:batch",
+                "title": "중복 배치 작업의 CPU 점유",
+                "signal": "support",
+                "detail": "중복 활성 작업 2개 · 중첩 4분",
+                "status": "supported",
+                "status_label": "교차 지지"
+              }
+            ],
+            "evidence_id": "probe:batch:payments-service/job-window",
+            "observation": {
+              "id": "probe:batch:payments-service/job-window",
+              "source": "diagnostic",
+              "target": "payments-service",
+              "status": "completed",
+              "data": {
+                "system_name": "payments-service",
+                "probe": "job-window",
+                "evidence_case": "batch",
+                "window_start": "2026-10-21T00:00:00Z",
+                "window_end": "2026-10-21T00:05:00Z",
+                "data_kind": "synthetic",
+                "available": true,
+                "values": {
+                  "duplicate_active_jobs": 2,
+                  "overlap_minutes": 4.0
+                },
+                "missing_reason": ""
+              },
+              "retries": 0
+            },
+            "reused": false
+          }
+        ],
+        "hypotheses": [
+          {
+            "id": "IH:payments-service:batch",
+            "target": "payments-service",
+            "kind": "batch",
+            "title": "중복 배치 작업의 CPU 점유",
+            "status": "supported",
+            "status_label": "교차 지지",
+            "support": [
+              {
+                "evidence_id": "probe:batch:payments-service/cpu-attribution",
+                "detail": "CPU 기여 비중 86%"
+              },
+              {
+                "evidence_id": "probe:batch:payments-service/job-window",
+                "detail": "중복 활성 작업 2개 · 중첩 4분"
+              }
+            ],
+            "against": [],
+            "unknown": [],
+            "observation_id": "monitoring:payments-service",
+            "anchor": "2026-10-21T00:05:00Z"
+          },
+          {
+            "id": "IH:payments-service:traffic",
+            "target": "payments-service",
+            "kind": "traffic",
+            "title": "요청량 증가에 따른 CPU 점유",
+            "status": "refuted",
+            "status_label": "반증",
+            "support": [],
+            "against": [
+              {
+                "evidence_id": "probe:batch:payments-service/cpu-attribution",
+                "detail": "CPU 기여 비중 8%"
+              },
+              {
+                "evidence_id": "probe:batch:payments-service/traffic-window",
+                "detail": "요청량 100 → 110 RPS (1.10배) · 5분 지속"
+              }
+            ],
+            "unknown": [],
+            "observation_id": "monitoring:payments-service",
+            "anchor": "2026-10-21T00:05:00Z"
+          },
+          {
+            "id": "IH:payments-service:release",
+            "target": "payments-service",
+            "kind": "release",
+            "title": "새 릴리스와 연관된 CPU 점유",
+            "status": "refuted",
+            "status_label": "반증",
+            "support": [],
+            "against": [
+              {
+                "evidence_id": "probe:batch:payments-service/cpu-attribution",
+                "detail": "CPU 기여 비중 2%"
+              }
+            ],
+            "unknown": [],
+            "observation_id": "monitoring:payments-service",
+            "anchor": "2026-10-21T00:05:00Z"
+          }
+        ],
+        "stop_code": "evidence_separated",
+        "stop_reason": "한 가설이 두 관측으로 교차 지지되고 경쟁 가설에 반증이 확보되어 종료했습니다.",
+        "scope": "CPU 상승의 세 경쟁 가설 · 관측 조건 검증이며 인과관계 확정이 아닙니다."
+      },
+      "runbooks": [
+        {
+          "id": "R:cpu-spike",
+          "title": "Runbook: CPU 급증 대응 절차",
+          "uri": "runbook://incident-response/cpu-spike",
+          "score": 0.696
+        },
+        {
+          "id": "R:memory-leak",
+          "title": "Runbook: 메모리 누수(Memory Leak) 대응 절차",
+          "uri": "runbook://incident-response/memory-leak",
+          "score": 0.5833
+        },
+        {
+          "id": "R:high-latency",
+          "title": "Runbook: 응답 지연(High Latency) 대응 절차",
+          "uri": "runbook://incident-response/high-latency",
+          "score": 0.5232
+        }
+      ]
+    },
+    {
+      "id": "traffic",
+      "question": "payments-service CPU가 91%이고 중복 배치 경고가 있습니다. 실제 원인을 다른 가설과 구별해주세요.",
+      "final_answer": "인시던트 진단 보고서\n판정: 주의 · 교육용 고정 샘플\n\n확인된 사실\n- payments-service: degraded, CPU 91.0%, 메모리 55.0%, 알림 2건 [monitoring:payments-service]\n\n원인 추정\n- payments-service: 요청량 증가에 따른 CPU 점유 (교차 지지). 인과관계 확정은 아닙니다. [monitoring:payments-service, probe:traffic:payments-service/cpu-attribution, probe:traffic:payments-service/traffic-window]\n\n권장 조치\n- CPU가 90%를 초과하고 지속되는지 시계열로 확인한 뒤 승인 절차에 따라 부하 분산을 검토하세요. 단일 스냅샷으로 지속 여부를 확정할 수 없습니다. [monitoring:payments-service, logs:payments-service, R:cpu-spike]\n\n반증 우선 추가 조사 · 관측 조건에 따른 판단\n- payments-service / 중복 배치 작업의 CPU 점유: 반증\n  반증: CPU 기여 비중 5% [probe:traffic:payments-service/cpu-attribution]\n- payments-service / 요청량 증가에 따른 CPU 점유: 교차 지지\n  지지: CPU 기여 비중 88% [probe:traffic:payments-service/cpu-attribution]\n  지지: 요청량 100 → 320 RPS (3.20배) · 5분 지속 [probe:traffic:payments-service/traffic-window]\n- payments-service / 새 릴리스와 연관된 CPU 점유: 반증\n  반증: CPU 기여 비중 2% [probe:traffic:payments-service/cpu-attribution]\n- 1차 조사: CPU 점유가 실제 어느 작업에 귀속되는지 확인. 이유: CPU 상승만으로 원인을 구별할 수 없어, CPU 점유가 실제 어느 작업에 귀속되는지 확인으로 경쟁 가설을 시험합니다.\n  사전 조건: 배치·요청 처리·새 릴리스 각각의 CPU 기여 비중을 비교합니다. 70% 이상은 지지, 15% 이하는 반증입니다.\n- 2차 조사: 평소 대비 요청량과 지속 시간 확인. 이유: CPU 상승만으로 원인을 구별할 수 없어, 평소 대비 요청량과 지속 시간 확인으로 경쟁 가설을 시험합니다.\n  사전 조건: 요청량이 기준의 2배 이상으로 3분 이상 지속되면 요청량 가설을 지지합니다.\n- 종료: 한 가설이 두 관측으로 교차 지지되고 경쟁 가설에 반증이 확보되어 종료했습니다.\n\n추가 확인 필요\n- 교육용 합성 관측입니다. 추가 조사의 5분 구간·CPU 기여 비중도 실제 운영 실측이 아니며 인과관계를 확정하지 않습니다.\n- 한 가설이 두 관측으로 교차 지지되고 경쟁 가설에 반증이 확보되어 종료했습니다.\n- 검색된 Runbook은 참고 후보입니다. 관측 조건이 맞는 문서만 권장 조치에 사용했습니다.\n\n참고 출처\n- [R:cpu-spike] Runbook: CPU 급증 대응 절차 — runbook://incident-response/cpu-spike\n- [R:memory-leak] Runbook: 메모리 누수(Memory Leak) 대응 절차 — runbook://incident-response/memory-leak\n- [R:high-latency] Runbook: 응답 지연(High Latency) 대응 절차 — runbook://incident-response/high-latency",
+      "validation": {
+        "passed": true,
+        "attempts": 1,
+        "rewrites": 0,
+        "errors": [],
+        "checks": [
+          "시스템명",
+          "수치",
+          "상태·알림",
+          "근거 ID",
+          "조치 조건",
+          "필수 항목"
+        ]
+      },
+      "validation_events": [
+        {
+          "type": "Validation",
+          "attempt": 1,
+          "verdict": "합격",
+          "errors": []
+        }
+      ],
+      "writer_action_ids": [
+        [
+          "A:cpu-spike"
+        ]
+      ],
+      "investigation": {
+        "version": "contrastive-v1",
+        "phase": "stopped",
+        "data_kind": "synthetic",
+        "budget": 4,
+        "used": 2,
+        "steps": [
+          {
+            "id": "payments-service/cpu-attribution",
+            "target": "payments-service",
+            "probe": "cpu-attribution",
+            "title": "CPU 점유가 실제 어느 작업에 귀속되는지 확인",
+            "priority": 1,
+            "prediction": "배치·요청 처리·새 릴리스 각각의 CPU 기여 비중을 비교합니다. 70% 이상은 지지, 15% 이하는 반증입니다.",
+            "otherwise": "15% 초과 70% 미만은 판단 보류합니다. 작업 기록과 반대이면 근거 상충으로 남깁니다.",
+            "hypothesis_ids": [
+              "IH:payments-service:batch",
+              "IH:payments-service:traffic",
+              "IH:payments-service:release"
+            ],
+            "probe_id": "payments-service/cpu-attribution",
+            "round": 1,
+            "reason": "CPU 상승만으로 원인을 구별할 수 없어, CPU 점유가 실제 어느 작업에 귀속되는지 확인으로 경쟁 가설을 시험합니다.",
+            "purpose": "verify_attribution",
+            "planner_mode": "actual-llm",
+            "status": "completed",
+            "before": [
+              {
+                "id": "IH:payments-service:batch",
+                "status": "untested",
+                "status_label": "미확인"
+              },
+              {
+                "id": "IH:payments-service:traffic",
+                "status": "untested",
+                "status_label": "미확인"
+              },
+              {
+                "id": "IH:payments-service:release",
+                "status": "untested",
+                "status_label": "미확인"
+              }
+            ],
+            "outcomes": [
+              {
+                "hypothesis_id": "IH:payments-service:batch",
+                "title": "중복 배치 작업의 CPU 점유",
+                "signal": "against",
+                "detail": "CPU 기여 비중 5%",
+                "status": "refuted",
+                "status_label": "반증"
+              },
+              {
+                "hypothesis_id": "IH:payments-service:traffic",
+                "title": "요청량 증가에 따른 CPU 점유",
+                "signal": "support",
+                "detail": "CPU 기여 비중 88%",
+                "status": "pending",
+                "status_label": "단서 지지"
+              },
+              {
+                "hypothesis_id": "IH:payments-service:release",
+                "title": "새 릴리스와 연관된 CPU 점유",
+                "signal": "against",
+                "detail": "CPU 기여 비중 2%",
+                "status": "refuted",
+                "status_label": "반증"
+              }
+            ],
+            "evidence_id": "probe:traffic:payments-service/cpu-attribution",
+            "observation": {
+              "id": "probe:traffic:payments-service/cpu-attribution",
+              "source": "diagnostic",
+              "target": "payments-service",
+              "status": "completed",
+              "data": {
+                "system_name": "payments-service",
+                "probe": "cpu-attribution",
+                "evidence_case": "traffic",
+                "window_start": "2026-10-21T00:00:00Z",
+                "window_end": "2026-10-21T00:05:00Z",
+                "data_kind": "synthetic",
+                "available": true,
+                "values": {
+                  "batch_cpu_share": 0.05,
+                  "request_cpu_share": 0.88,
+                  "new_release_cpu_share": 0.02
+                },
+                "missing_reason": ""
+              },
+              "retries": 0
+            },
+            "reused": false
+          },
+          {
+            "id": "payments-service/traffic-window",
+            "target": "payments-service",
+            "probe": "traffic-window",
+            "title": "평소 대비 요청량과 지속 시간 확인",
+            "priority": 4,
+            "prediction": "요청량이 기준의 2배 이상으로 3분 이상 지속되면 요청량 가설을 지지합니다.",
+            "otherwise": "조건 미충족이면 지속적인 요청량 급증 가설에 반증으로 기록합니다.",
+            "hypothesis_ids": [
+              "IH:payments-service:traffic"
+            ],
+            "probe_id": "payments-service/traffic-window",
+            "round": 2,
+            "reason": "CPU 상승만으로 원인을 구별할 수 없어, 평소 대비 요청량과 지속 시간 확인으로 경쟁 가설을 시험합니다.",
+            "purpose": "verify_attribution",
+            "planner_mode": "actual-llm",
+            "status": "completed",
+            "before": [
+              {
+                "id": "IH:payments-service:batch",
+                "status": "refuted",
+                "status_label": "반증"
+              },
+              {
+                "id": "IH:payments-service:traffic",
+                "status": "pending",
+                "status_label": "단서 지지"
+              },
+              {
+                "id": "IH:payments-service:release",
+                "status": "refuted",
+                "status_label": "반증"
+              }
+            ],
+            "outcomes": [
+              {
+                "hypothesis_id": "IH:payments-service:traffic",
+                "title": "요청량 증가에 따른 CPU 점유",
+                "signal": "support",
+                "detail": "요청량 100 → 320 RPS (3.20배) · 5분 지속",
+                "status": "supported",
+                "status_label": "교차 지지"
+              }
+            ],
+            "evidence_id": "probe:traffic:payments-service/traffic-window",
+            "observation": {
+              "id": "probe:traffic:payments-service/traffic-window",
+              "source": "diagnostic",
+              "target": "payments-service",
+              "status": "completed",
+              "data": {
+                "system_name": "payments-service",
+                "probe": "traffic-window",
+                "evidence_case": "traffic",
+                "window_start": "2026-10-21T00:00:00Z",
+                "window_end": "2026-10-21T00:05:00Z",
+                "data_kind": "synthetic",
+                "available": true,
+                "values": {
+                  "baseline_rps": 100.0,
+                  "current_rps": 320.0,
+                  "sustained_minutes": 5.0
+                },
+                "missing_reason": ""
+              },
+              "retries": 0
+            },
+            "reused": false
+          }
+        ],
+        "hypotheses": [
+          {
+            "id": "IH:payments-service:batch",
+            "target": "payments-service",
+            "kind": "batch",
+            "title": "중복 배치 작업의 CPU 점유",
+            "status": "refuted",
+            "status_label": "반증",
+            "support": [],
+            "against": [
+              {
+                "evidence_id": "probe:traffic:payments-service/cpu-attribution",
+                "detail": "CPU 기여 비중 5%"
+              }
+            ],
+            "unknown": [],
+            "observation_id": "monitoring:payments-service",
+            "anchor": "2026-10-21T00:05:00Z"
+          },
+          {
+            "id": "IH:payments-service:traffic",
+            "target": "payments-service",
+            "kind": "traffic",
+            "title": "요청량 증가에 따른 CPU 점유",
+            "status": "supported",
+            "status_label": "교차 지지",
+            "support": [
+              {
+                "evidence_id": "probe:traffic:payments-service/cpu-attribution",
+                "detail": "CPU 기여 비중 88%"
+              },
+              {
+                "evidence_id": "probe:traffic:payments-service/traffic-window",
+                "detail": "요청량 100 → 320 RPS (3.20배) · 5분 지속"
+              }
+            ],
+            "against": [],
+            "unknown": [],
+            "observation_id": "monitoring:payments-service",
+            "anchor": "2026-10-21T00:05:00Z"
+          },
+          {
+            "id": "IH:payments-service:release",
+            "target": "payments-service",
+            "kind": "release",
+            "title": "새 릴리스와 연관된 CPU 점유",
+            "status": "refuted",
+            "status_label": "반증",
+            "support": [],
+            "against": [
+              {
+                "evidence_id": "probe:traffic:payments-service/cpu-attribution",
+                "detail": "CPU 기여 비중 2%"
+              }
+            ],
+            "unknown": [],
+            "observation_id": "monitoring:payments-service",
+            "anchor": "2026-10-21T00:05:00Z"
+          }
+        ],
+        "stop_code": "evidence_separated",
+        "stop_reason": "한 가설이 두 관측으로 교차 지지되고 경쟁 가설에 반증이 확보되어 종료했습니다.",
+        "scope": "CPU 상승의 세 경쟁 가설 · 관측 조건 검증이며 인과관계 확정이 아닙니다."
+      },
+      "runbooks": [
+        {
+          "id": "R:cpu-spike",
+          "title": "Runbook: CPU 급증 대응 절차",
+          "uri": "runbook://incident-response/cpu-spike",
+          "score": 0.696
+        },
+        {
+          "id": "R:memory-leak",
+          "title": "Runbook: 메모리 누수(Memory Leak) 대응 절차",
+          "uri": "runbook://incident-response/memory-leak",
+          "score": 0.5833
+        },
+        {
+          "id": "R:high-latency",
+          "title": "Runbook: 응답 지연(High Latency) 대응 절차",
+          "uri": "runbook://incident-response/high-latency",
+          "score": 0.5232
+        }
+      ]
+    }
+  ],
+  "evaluation": {
+    "case_count": 6,
+    "functional_passed": 6,
+    "combined_passed": 5,
+    "remote_runs_verified": 6,
+    "remote_scores_verified": 30,
+    "examples": [
+      {
+        "id": "traffic",
+        "checks": {
+          "same_cpu_preserved": true,
+          "expected_conclusion": true,
+          "precommit_before_observation": true,
+          "actual_planner": true,
+          "budget_and_no_duplicate": true,
+          "scope_preserved": true,
+          "writer_validation": true,
+          "separated_or_withheld": true,
+          "judge_quality": true
+        },
+        "judge_scores": {
+          "groundedness": 5,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5
+        },
+        "trace_verified": true
+      },
+      {
+        "id": "release",
+        "checks": {
+          "same_cpu_preserved": true,
+          "expected_conclusion": true,
+          "precommit_before_observation": true,
+          "actual_planner": true,
+          "budget_and_no_duplicate": true,
+          "scope_preserved": true,
+          "writer_validation": true,
+          "separated_or_withheld": true,
+          "judge_quality": false
+        },
+        "judge_scores": {
+          "groundedness": 2,
+          "numerical_accuracy": 5,
+          "action_conditions": 5,
+          "request_fulfillment": 5,
+          "next_action": 5
+        },
+        "trace_verified": true
+      }
+    ]
+  },
+  "input_validation": {
+    "rejected_requests": 5,
+    "generation_tokens": 0,
+    "pytest_passed": 99
+  },
+  "limitations": "입력 검사 도입 전의 가설 조사 실행과 도입 후 입력 거절 검증을 구분한다. 교육용 합성 관측이며 교차 지지는 인과 확정이 아니다. 이번 PPT 수정에서 모델 평가를 재실행하지 않았다."
+}
