@@ -1,11 +1,15 @@
-# 아키텍처 이미지 출처와 사용 범위
+# 아키텍처 자료 출처
 
-- 전체 구성·배치·연결선·설명 문구: 이 저장소 구현을 바탕으로 직접 제작.
-- 이미지 편집 원본: [architecture-overview.svg](architecture-overview.svg)
-- 고해상도 PNG: [architecture-overview.png](architecture-overview.png), 4800 × 2701.
-- 기술 로고: [Simple Icons](https://github.com/simple-icons/simple-icons), CC0-1.0. Vue.js, FastAPI, Python, LangGraph, Model Context Protocol, NumPy, Ollama, SQLite 아이콘을 사용했다. 각 브랜드의 상표권은 해당 소유자에게 있다.
-- LangSmith 옆의 선형 추적 아이콘: 직접 제작한 일반 추적 기호이며 공식 로고로 표시하지 않는다.
-- 참조한 사용자 예시는 시각적 배치에만 활용했다. 예시의 AWS·React·Spring·Netlify 등은 우리 프로젝트 기술로 넣지 않았다.
+## 최신 핵심 구조
+
+- 전체 구성·배치·연결선·설명 문구는 이 저장소 구현을 바탕으로 직접 제작했다.
+- 편집 원본은 [발표 PPT](../운영진단_에이전트_5분발표.pptx)의 **5번 슬라이드**다. 8개 도형과 연결선을 각각 수정할 수 있다.
+- [PNG 미리보기](architecture-overview.png)는 같은 전체 구조의 정지 화면이다.
+- 최신 PPT는 로고 그림이나 확대 화면을 사용하지 않는다.
+
+## 이전 상세 시안
+
+[기존 SVG](architecture-overview.svg)는 기술 로고를 포함한 이전 상세 시안이며 최신 발표 구조와 구분한다. 해당 시안의 브랜드 로고는 [Simple Icons](https://github.com/simple-icons/simple-icons), CC0-1.0에서 가져왔고 상표권은 각 소유자에게 있다. LangSmith 옆 추적 아이콘은 직접 제작했다.
 
 ## 저장소 구현과 대응
 

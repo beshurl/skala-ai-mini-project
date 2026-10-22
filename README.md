@@ -226,27 +226,24 @@ release는 코드 조건을 충족한 답변에 Judge가 잘못 감점한 검토
 | 6 | 배포 전후 점검의 CPU 증가 또는 새 알림 사례 선택 | 전후 차이, 새 알림과 정상·주의·정보 부족 판정 확인. |
 | 7 | 완료 후 새로고침하고 문의 기록 선택 | 완료 결과·근거·가설 이력 복원과 후속 질문 연결. |
 
-**최신 발표 자료: 2026년 10월 22일 오프라인 PowerPoint Morph 적용본**
+**최신 발표 자료: 2026년 10월 22일 8장 핵심 정리본**
 
-PPT는 **9장·총 5분**이며, 기술 로고와 연결선이 있는 시스템 아키텍처 PNG 한 장을 직접 제작했다. 전체 구조에서 가운데 백엔드를 확대하고, 같은 그림의 왼쪽 프론트엔드·오른쪽 AI·위쪽 평가 영역으로 이동하며 설명한다. PowerPoint 변환(Morph)을 3~7장 사이의 네 전환에 각각 1.4초로 저장해, 같은 사진의 위치·크기·자르기를 이어준다. 그림을 파일 내부에 포함하므로 Canva 접속 없이 발표할 수 있다. Noto Sans KR 산세리프 글꼴과 밝은 배경을 사용하고 코드 발췌 없이 그림과 실제 실행 화면으로 설명한다. 발표자 노트와 대본도 같은 흐름으로 맞췄다. Morph를 지원하는 데스크톱 PowerPoint의 슬라이드 쇼에서 재생한다. Microsoft 365 또는 PowerPoint 2021/2024를 권장하며, 지원하지 않는 뷰어는 페이드로 표시할 수 있다. Canva에서 다시 내보낸 파일 대신 아래 최신 PPTX를 사용한다.
+PPT는 **8장·총 5분**이다. 전체 아키텍처는 5번 슬라이드 한 장에 핵심 구성과 연결만 표시한다. Vue, FastAPI, LangGraph, LLM, MCP·RAG, SQLite, Judge·LangSmith의 역할을 정리했으며, 상자·문구·연결선을 직접 수정할 수 있다. Noto Sans KR 계열 산세리프 글꼴을 사용하고 확대·이동 효과는 제거했다. 발표자 노트와 대본도 8장 순서로 맞췄다.
 
 | 요구 항목 | 발표 내용 | 슬라이드 |
 | --- | --- | --- |
 | 1) 표지 | 프로젝트명·소속·고유번호·이름 | 1 |
-| 2) 문제 개선 및 신규 구현 | 해결 과제와 개선 이유, 입력 검증과 가설 조사 | 2·4~6 |
-| 3) 적용 기술 | 시스템 구성도와 확대 화면의 LangGraph·MCP·RAG·코드 품질·Judge·LangSmith 등 | 3~7 |
-| 4) 구현 결과 | 전체·확대 흐름도, 실제 저장 화면, 0토큰 및 실제 모델 평가 | 3~8 |
-| 5) 교훈 | 한계·트레이드오프, 향후 개선, 수행 소감 | 9 |
+| 2) 문제 개선 및 신규 구현 | 해결 과제·개선 이유·입력 검증·가설 기반 추가 조사 | 2~4 |
+| 3) 적용 기술 | 전체 구조·LangGraph·MCP·RAG·검증·Judge·LangSmith·코드 품질 | 5~6 |
+| 4) 구현 결과 | 전체 아키텍처·실제 저장 화면·0토큰 및 실제 모델 평가 | 5·7 |
+| 5) 교훈 | 한계·트레이드오프·향후 개선·수행 소감 | 8 |
 
 - [최신 5분 발표 PPT 다운로드](doc/presentation/운영진단_에이전트_5분발표.pptx?raw=true)
-- [슬라이드별 발표 대본·확대 진행·예상 질문](doc/PRESENTATION_5MIN.md)
-- [아키텍처 원본 이미지 PNG](doc/presentation/assets/architecture-overview.png)
-- [이미지 편집 원본 SVG](doc/presentation/assets/architecture-overview.svg)
-- [Canva 편집본 열기](https://www.canva.com/design/DAHYsfUQRzk/uEC9A93J8V0PhYRna1dZ4g/edit) — Canva 계정의 접근 권한이 필요하다. 디자인 편집용 링크이며 오프라인 발표에는 위 PPTX를 사용한다.
+- [슬라이드별 발표 대본·화면 진행·예상 질문](doc/PRESENTATION_5MIN.md)
+- [전체 아키텍처 미리보기 PNG](doc/presentation/assets/architecture-overview.png)
+- [Canva 편집본 열기](https://www.canva.com/design/DAHYsfUQRzk/uEC9A93J8V0PhYRna1dZ4g/edit)
 
-발표 파일의 9장 렌더링, 수정 전후 화면·본문·노트 보존과 네 Morph 설정을 확인했다. 현재 작업 환경에는 PowerPoint 앱이 없어 실제 PowerPoint 슬라이드쇼 재생은 미확인이다. [Morph 지원 및 객체 연결 안내](https://support.microsoft.com/en-us/powerpoint/morph-transition-tips-and-tricks)를 참고한다.
-
-슬라이드 8에서 저장된 실제 실행 화면으로 가설 변경을 설명한다. 검증 수치는 2026년 10월 21일 보존 기록이며 이번 발표 수정 과정에서 모델 평가를 재실행하지 않았다. 입력 거절 검증과 그 도입 전 가설 조사 평가의 범위를 구분했다. [Word 보고서 다운로드](doc/운영진단_개선결과_제출보고서.docx?raw=true)도 제공한다.
+7번 슬라이드에서 저장된 실제 실행 화면으로 가설 변경을 설명한다. 검증 수치는 2026년 10월 21일 보존 기록이며 이번 발표 수정 과정에서 모델 평가를 재실행하지 않았다. 입력 거절 검증과 그 도입 전 가설 조사 평가의 범위를 구분했다. [Word 보고서 다운로드](doc/운영진단_개선결과_제출보고서.docx?raw=true)도 제공한다.
 
 ## 5) 교훈
 
