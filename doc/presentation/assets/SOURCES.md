@@ -1,31 +1,25 @@
-# 아키텍처 자료 출처
+# 발표 자료 출처
 
-## 최신 핵심 구조
+## 전체 아키텍처
 
-- 전체 구성·배치·연결선·설명 문구는 이 저장소 구현을 바탕으로 직접 제작했다.
-- 편집 원본은 [발표 PPT](../운영진단_에이전트_5분발표.pptx)의 **5번 슬라이드**다. 8개 도형과 연결선을 각각 수정할 수 있다.
-- [PNG 미리보기](architecture-overview.png)는 같은 전체 구조의 정지 화면이다.
-- 최신 PPT의 아키텍처는 확대 없이 한 장에 제시한다.
-- 표지와 4번은 [Ollama 진단](../../../artifacts/screenshots/live-diagnosis-desktop.png), [가설 조사](../../../artifacts/screenshots/investigation-traffic-desktop.png)의 저장된 실행 화면이다.
-- 3번의 비교 수치는 [고정 관측 데이터](../../../data/investigation_cases.json)와 [실제 LLM 평가 기록](../../../artifacts/investigation_evaluation.json)의 batch·traffic 사례를 사용했다. 관측은 교육용 합성 데이터이며 모델 선택·작성·평가는 실제 Ollama 실행이다.
+- 저장소 구현을 바탕으로 구성·배치·연결선·문구를 직접 제작했다.
+- [발표 PPT](../운영진단_에이전트_5분발표.pptx)의 **3번 슬라이드**가 편집 원본이다. 8개 도형과 연결선을 각각 수정할 수 있다.
+- [PNG 미리보기](architecture-overview.png)는 동일한 전체 구조이며 확대 없이 한 장으로 제시한다.
 
-## 실행 결과 발췌
+## 실제 실행 화면과 기록
 
-- 3번의 질문·답변과 이전 재작성 사례의 이벤트는 [실행 결과 발췌 JSON](execution-evidence.json)의 실제 LLM 기록이다. 이벤트 요약은 원래 판정과 재작성 횟수를 보존했다.
-- 7번 개별 Judge 점수와 원격 추적 확인은 [가설 조사 평가 원본](../../../artifacts/investigation_evaluation.json)을 사용했다. 다른 시기의 12건 평가 화면과 혼합하지 않았다.
-- [기능별 실행 결과 안내](../EXECUTION_EXAMPLES.md)에 입력·처리·출력과 원본 출처를 정리했다.
+- 표지는 [Ollama 진단 화면](../../../artifacts/screenshots/live-diagnosis-desktop.png)을 사용했다.
+- 5번은 [실제 조사 화면](../../../artifacts/screenshots/investigation-traffic-desktop.png)의 결과 영역을 발췌했다. 배치 반증과 요청량 교차 지지를 그대로 보여준다.
+- 6번 비교는 [실행 결과 발췌](execution-evidence.json)와 [고정 관측 데이터](../../../data/investigation_cases.json)의 batch·traffic 사례다.
+- 9번은 [2026-10-22 프론트 원본 PNG](live-validation-20261022.png)의 보고서 검증 영역을 사용했다. [동일 실행 로그](live-validation-20261022.json)의 작성 2회·재작성 1회·검증 통과와 일치한다. 1차 불합격 사유는 저장된 이벤트 근거이며 화면은 최종 상태다.
+- 10~11번의 Judge·LangSmith 결과는 [2026-10-21 평가 원본](../../../artifacts/investigation_evaluation.json)을 사용했다. 9번의 재실행에서 Judge·추적 재검증을 했다고 설명하지 않는다.
+- [기능별 실행 안내](../EXECUTION_EXAMPLES.md)에 입력·처리·출력과 원본 출처를 정리했다.
 
-## 6번 실제 프론트 캡처
+## 기술 설명과 해석 범위
 
-- [프론트 원본 PNG](live-validation-20261022.png)는 2026-10-22 실제 Ollama qwen3.5:2b로 질문을 보내고 완료된 화면을 캡처했다. PPT에는 보고서 검증 영역을 확대 배치했다.
-- [같은 실행의 검증 로그](live-validation-20261022.json)에 질문·기록 ID·모델 사용·1차 불합격 사유·2차 통과를 보존했다.
-- 화면의 여섯 검사 항목과 작성 2회·재작성 1회가 SQLite 결과와 일치한다. 7번의 이전 Judge 평가와 구분하며, 이번 캡처에서 Judge 재평가나 원격 추적 재조회는 하지 않았다.
-
-## 기술 설명 보강
-
-- 4번은 [가설 조사 정책](../../../agent/investigation.py)의 작업 CPU 기여 70% 지지 기준을 예시로 표시했다.
-- 5~6번은 [전문 서브그래프](../../../agent/specialists.py), [MCP 인터페이스](../../../mcp_server.py), [벡터 인덱스](../../../agent/retrieval.py), [의존성 주입](../../../agent/deps.py)의 실제 역할을 반영했다.
-- 7~8번의 평가 수치와 한계는 기존 보존 기록을 사용했다. 이번 자료 보강에서 모델 평가나 테스트를 새로 실행하지 않았다. 대본과 노트의 목표 시간은 8장·330초다.
+- 4번의 CPU 작업 기여 70% 기준은 [조사 정책](../../../agent/investigation.py)의 사전 조건이다.
+- 3·7~8번은 [전문 서브그래프](../../../agent/specialists.py), [MCP](../../../mcp_server.py), [벡터 인덱스](../../../agent/retrieval.py), [의존성 주입](../../../agent/deps.py)의 실제 역할을 반영했다.
+- 자료는 12장·330초 구성이다. 이번 페이지 확장에서 모델 평가나 테스트를 새로 실행하지 않았다. 지표·로그·추가 관측은 교육용 합성 데이터이며 교차 지지는 인과 확정과 구분한다.
 
 ## 이전 상세 시안
 
