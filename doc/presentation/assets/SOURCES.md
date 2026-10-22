@@ -6,7 +6,8 @@
 - 편집 원본은 [발표 PPT](../운영진단_에이전트_5분발표.pptx)의 **5번 슬라이드**다. 8개 도형과 연결선을 각각 수정할 수 있다.
 - [PNG 미리보기](architecture-overview.png)는 같은 전체 구조의 정지 화면이다.
 - 최신 PPT의 아키텍처는 확대 없이 한 장에 제시한다.
-- 표지·3번·4번 슬라이드에는 저장된 실제 실행 화면을 사용했다. 출처는 각각 [Ollama 진단](../../../artifacts/screenshots/live-diagnosis-desktop.png), [입력 거절](../../../artifacts/screenshots/input-rejected-zero-tokens.png), [가설 조사](../../../artifacts/screenshots/investigation-traffic-desktop.png)이며 관측은 교육용 합성 데이터다.
+- 표지와 4번은 [Ollama 진단](../../../artifacts/screenshots/live-diagnosis-desktop.png), [가설 조사](../../../artifacts/screenshots/investigation-traffic-desktop.png)의 저장된 실행 화면이다.
+- 3번의 비교 수치는 [고정 관측 데이터](../../../data/investigation_cases.json)와 [실제 LLM 평가 기록](../../../artifacts/investigation_evaluation.json)의 batch·traffic 사례를 사용했다. 관측은 교육용 합성 데이터이며 모델 선택·작성·평가는 실제 Ollama 실행이다.
 
 ## 이전 상세 시안
 
